@@ -82,18 +82,20 @@ button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);backgro
 const $=i=>document.getElementById(i),PI=Math.PI,CX=490,CY=330;
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+// Indirizzo del servizio che tiene nascosta la chiave (vedi cloudflare-worker.js). Se è vuoto, la pagina chiede a ogni visitatore la sua chiave TMDB.
+const PROXY="https://cinelegami.mariomautone1.workers.dev";
 const API="https://api.themoviedb.org/3",IMG="https://image.tmdb.org/t/p/",DEFAULT_ID=27205;
 let KEY=(store.get("cl_tmdb_key")||"").trim(),cur=null,sel=null,tok=0;
 const cache=new Map();
 async function api(path,params){
-const u=new URL(API+path);u.searchParams.set("language","it-IT");
+const u=new URL((PROXY?PROXY.replace(/\/$/,""):API)+path);u.searchParams.set("language","it-IT");
 for(const[k,v]of Object.entries(params||{}))u.searchParams.set(k,v);
 const ck=u.pathname+u.search;
 if(cache.has(ck))return cache.get(ck);
 const opt={};
-if(KEY.length>60&&KEY.includes("."))opt.headers={Authorization:"Bearer "+KEY};else u.searchParams.set("api_key",KEY);
+if(!PROXY){if(KEY.length>60&&KEY.includes("."))opt.headers={Authorization:"Bearer "+KEY};else u.searchParams.set("api_key",KEY)}
 const r=await fetch(u.toString(),opt);
-if(r.status===401)throw{code:"key"};
+if(r.status===401)throw{code:PROXY?"http":"key"};
 if(r.status===429)throw{code:"rate"};
 if(!r.ok)throw{code:"http"};
 const j=await r.json();cache.set(ck,j);return j}
@@ -187,7 +189,7 @@ el.innerHTML=[born&&`<div>${esc(born)}</div>`,b&&`<div style="margin-top:6px">${
 
 async function cerca(){
 const v=$("q").value.trim();if(!v)return;
-if(!KEY){$("keybox").hidden=false;setMsg("Inserisci prima la chiave per cercare.");return}
+if(!KEY&&!PROXY){$("keybox").hidden=false;setMsg("Inserisci prima la chiave per cercare.");return}
 const b=$("go");b.disabled=true;setMsg("Cerco…");
 try{const r=await api("/search/movie",{query:v,include_adult:"false"}),L=r.results||[];
 if(!L.length){setMsg("Nessun film trovato per «"+v+"».");$("res").innerHTML="";return}
@@ -207,7 +209,7 @@ function saveKey(){const v=$("k").value.trim();if(!v)return;KEY=v;store.set("cl_
 $("ks").addEventListener("click",saveKey);
 $("k").addEventListener("keydown",e=>{if(e.key==="Enter")saveKey()});
 $("chg").addEventListener("click",()=>{$("keybox").hidden=false;$("k").focus()});
-if(KEY)loadFilm(DEFAULT_ID);else $("keybox").hidden=false;
+if(PROXY){$("chg").style.display="none";loadFilm(DEFAULT_ID)}else if(KEY)loadFilm(DEFAULT_ID);else $("keybox").hidden=false;
 </script>
 </body>
 </html>
