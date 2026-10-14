@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1512">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CineLegami">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>CineLegami</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&display=swap" rel="stylesheet">
@@ -10,7 +18,7 @@
 :root{color-scheme:dark;--bg:#0d1512;--card:#15211d;--fg:#f3efdc;--mut:#9fb2a8;--bd:#2a3b34;--film:#BC4B51;--film-t:#E8858A;--dir:#5B8E7D;--dir-t:#93cbb8;--act:#F4A259;--hl:#8CB369;--acc:#F4E285;--edge:#3f564b}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45}
-main{max-width:900px;margin:0 auto;padding:22px 16px 40px}
+main{max-width:900px;margin:0 auto;padding:max(22px,env(safe-area-inset-top)) 16px max(40px,env(safe-area-inset-bottom))}
 h1{font-family:Cinzel,"Iowan Old Style","Palatino Linotype",Georgia,serif;font-weight:800;font-size:3rem;letter-spacing:.07em;text-align:center;color:var(--acc);text-shadow:0 0 22px rgba(244,226,133,.28);margin:6px 0 4px}
 h2{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-size:1.2rem;margin:26px 0 6px}
 p.sub{margin:0 0 18px;color:var(--mut);text-align:center}
@@ -51,7 +59,7 @@ g[tabindex]:focus-visible{outline:3px solid var(--acc);outline-offset:4px;border
 .cap{margin:10px 2px 0;font-size:1rem}
 .n.tap{filter:drop-shadow(0 0 8px var(--acc))}
 @media(max-width:700px){
-main{padding:16px 12px 32px}
+main{padding:max(16px,env(safe-area-inset-top)) 12px max(32px,env(safe-area-inset-bottom))}
 h1{font-size:2.1rem;letter-spacing:.05em}
 .box{overflow:hidden}
 svg{min-width:0}
@@ -287,6 +295,7 @@ $("k").addEventListener("keydown",e=>{if(e.key==="Enter")saveKey()});
 $("chg").addEventListener("click",()=>{$("keybox").hidden=false;$("k").focus()});
 if(PROXY)$("chg").style.display="none";
 if(PROXY||KEY){show("home");loadHome()}else $("keybox").hidden=false;
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
 </body>
 </html>
