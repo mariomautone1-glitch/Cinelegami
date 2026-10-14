@@ -155,6 +155,12 @@ body.dlgopen{overflow:hidden}
 .sug .fa{width:30px;height:44px;font-size:.7rem}
 .sug .pa{width:34px;height:34px;margin:0;flex:none}
 .sug .st{font-weight:600;line-height:1.25}
+.wh{margin-top:2px}
+.wr{margin-top:8px}
+.wl{display:block;color:var(--mut);font-size:.8rem;margin-bottom:2px}
+.pv{display:inline-flex;align-items:center;gap:6px;margin:4px 8px 0 0;padding:3px 12px 3px 3px;border:1px solid var(--bd);border-radius:999px;font-size:.85rem;background:var(--card)}
+.pv img{width:26px;height:26px;border-radius:50%;object-fit:cover}
+.pv:not(:has(img)){padding-left:12px}
 </style>
 </head>
 <body>
@@ -173,6 +179,9 @@ body.dlgopen{overflow:hidden}
 <section id="home" hidden>
 <h2>Al cinema adesso</h2><div id="now" class="rail"></div>
 <h2>In arrivo</h2><div id="soon" class="rail"></div>
+<h2>Più popolari su Netflix</h2><div id="nf" class="rail"></div>
+<h2>Più popolari su Prime Video</h2><div id="pv" class="rail"></div>
+<h2>Più popolari su Disney+</h2><div id="dp" class="rail"></div>
 </section>
 <div id="film" hidden>
 <button id="back" class="link" type="button">← Novità al cinema</button>
@@ -180,7 +189,7 @@ body.dlgopen{overflow:hidden}
 <div id="info"></div>
 <div id="p"></div>
 </div>
-<p class="note">Dati e immagini: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. <button id="chg" class="link" type="button">Cambia chiave</button></p>
+<p class="note">Dati e immagini: TMDB. Disponibilità in streaming: JustWatch. This product uses the TMDB API but is not endorsed or certified by TMDB. <button id="chg" class="link" type="button">Cambia chiave</button></p>
 </main>
 <div id="dlg" class="dlg" hidden><div class="dbk"></div><div class="dcard" role="dialog" aria-modal="true" aria-labelledby="dt"><button class="dx" type="button" aria-label="Chiudi">×</button><div id="dbody"></div></div></div>
 <script>
@@ -297,7 +306,7 @@ function centre(key){closeDlg();if(key[0]==="p")loadPerson(Number(key.slice(1)))
 
 const show=v=>{$("home").hidden=v!=="home";$("film").hidden=v!=="film"};
 const fmtD=d=>{const t=new Date(d+"T00:00:00");return isNaN(t)?d:t.toLocaleDateString("it-IT",{day:"numeric",month:"short"})};
-const pc=(f,soon)=>`<button class="pc" data-w="${f.k}"><img src="${img(f.poster_path,"w342")}" alt="" loading="lazy"><span class="pt">${ckm(f.k)}${esc(f.title)}</span><span class="pd">${soon?(f.release_date?"dal "+esc(fmtD(f.release_date)):""):(f.vote_average>0?"★ "+f.vote_average.toFixed(1):"")}</span></button>`;
+const pc=(f,soon)=>`<button class="pc" data-w="${f.k}"><img src="${img(f.poster_path,"w342")}" alt="" loading="lazy"><span class="pt">${ckm(f.k)}${esc(f.title)}</span><span class="pd">${soon?(f.release_date?"dal "+esc(fmtD(f.release_date)):""):kindOf(f)+(f.vote_average>0?" · ★ "+f.vote_average.toFixed(1):"")}</span></button>`;
 async function loadHome(){
 setMsg("Carico le novità…");
 try{const[n0,u0]=await Promise.all([api("/movie/now_playing",{region:"IT"}),api("/movie/upcoming",{region:"IT"})]);
@@ -308,9 +317,36 @@ const ids=new Set(now.map(f=>f.k));
 const soon=(u.results||[]).filter(f=>f.poster_path&&!ids.has(f.k)&&(f.release_date||"")>=today).sort((a,b)=>(a.release_date||"").localeCompare(b.release_date||"")).slice(0,20);
 $("now").innerHTML=now.map(f=>pc(f,false)).join("")||"<p class=\"sub\">Nessun film trovato.</p>";
 $("soon").innerHTML=soon.map(f=>pc(f,true)).join("")||"<p class=\"sub\">Nessuna uscita in programma trovata.</p>";
-setMsg("");
+setMsg("");loadPlatforms();
 }catch(e){if(e&&e.code==="key"){showErr(e);return}
 if(!cur){setMsg("");loadWork("movie",DEFAULT_ID)}else setMsg("Le novità non sono disponibili al momento.")}}
+// Più popolari per servizio: TMDB non pubblica le visualizzazioni, uso la popolarità tra i titoli disponibili in abbonamento in Italia
+const PLAT=[["nf",8],["pv",119],["dp",337]];
+async function railFor(id){
+const q={watch_region:"IT",with_watch_providers:String(id),with_watch_monetization_types:"flatrate",sort_by:"popularity.desc"};
+const[m,t]=await Promise.all([api("/discover/movie",q),api("/discover/tv",q)]);
+return[...(m.results||[]).map(x=>nw(x,"movie")),...(t.results||[]).map(x=>nw(x,"tv"))].filter(f=>f.poster_path).sort((a,b)=>b.pop-a.pop).slice(0,20)}
+function loadPlatforms(){PLAT.forEach(([el,id])=>{
+railFor(id).then(L=>{$(el).innerHTML=L.map(f=>pc(f,false)).join("")||'<p class="sub">Nessun titolo trovato.</p>'})
+.catch(()=>{$(el).innerHTML='<p class="sub">Non disponibile al momento.</p>'})})}
+// Dove vederlo: cinema in Italia e servizi di streaming (dati JustWatch tramite TMDB)
+let THEA=null;
+function theatres(){if(!THEA){const today=new Date().toISOString().slice(0,10),g=(path,p)=>api(path,{region:"IT",page:String(p)}).catch(()=>({results:[]}));
+THEA=Promise.all([g("/movie/now_playing",1),g("/movie/now_playing",2),g("/movie/now_playing",3),g("/movie/upcoming",1),g("/movie/upcoming",2)]).then(r=>{const m=new Map();
+r.slice(0,3).forEach(x=>(x.results||[]).forEach(f=>m.set("m"+f.id,{t:"now"})));
+r.slice(3).forEach(x=>(x.results||[]).forEach(f=>{if(!m.has("m"+f.id)&&(f.release_date||"")>=today)m.set("m"+f.id,{t:"soon",d:f.release_date})}));return m})}return THEA}
+const whc=new Map();
+async function whereHtml(w){
+const[pr,th]=await Promise.all([api((w.mt==="tv"?"/tv/":"/movie/")+w.id+"/watch/providers").catch(()=>null),w.mt==="movie"?theatres().catch(()=>new Map()):Promise.resolve(new Map())]);
+const it=(pr&&pr.results&&pr.results.IT)||{},t=th.get(w.k);
+const uniq=a=>{const seen=new Set();return(a||[]).filter(p=>!seen.has(p.provider_id)&&seen.add(p.provider_id))};
+const grp=(lab,a)=>{a=uniq(a).slice(0,8);return a.length?`<div class="wr"><span class="wl">${lab}</span>${a.map(p=>`<span class="pv">${p.logo_path?`<img src="${img(p.logo_path,"w92")}" alt="">`:""}${esc(p.provider_name)}</span>`).join("")}</div>`:""};
+const cin=t?`<div class="wr"><span class="wl">Al cinema</span><span class="tag">${t.t==="now"?"In sala in Italia":"In sala dal "+esc(fmtD(t.d))}</span></div>`:"";
+const str=grp("In streaming con abbonamento",it.flatrate)+grp("Gratis (con pubblicità)",[...(it.free||[]),...(it.ads||[])])+grp("A noleggio",it.rent)+grp("Da acquistare",it.buy);
+if(!cin&&!str)return'<p class="kd">Al momento non risulta disponibile in Italia al cinema o in streaming.</p>';
+return cin+str+'<p class="kd" style="margin-top:8px">Disponibilità in Italia, dati JustWatch.</p>'}
+function fillWhere(id,w,ok){if(whc.has(w.k)){const e=$(id);if(e)e.innerHTML=whc.get(w.k);return}
+whereHtml(w).then(h=>{whc.set(w.k,h);const e=$(id);if(e&&(!ok||ok()))e.innerHTML=h}).catch(()=>{const e=$(id);if(e&&(!ok||ok()))e.innerHTML='<p class="kd">Disponibilità non disponibile al momento.</p>'})}
 const lay=(a,r)=>[CX+r*Math.cos(a),CY+r*Math.sin(a)];
 function lab(p,txt,off,bold,dim,ex,ey,sl){const dx=p[0]-CX,dy=p[1]-CY,m=Math.abs(dx)<30;
 const sx=m?0:(dx>0?1:-1)*Math.max(0,Math.round((ex||0)+10-off)),sy=m?(dy>0?1:-1)*Math.max(0,Math.round((ey||0)+8-off)):0;
@@ -357,7 +393,7 @@ if(!isP){
 i=`<section class="card"><div class="hd">${poster(cur.poster,cur.title,1)}<div><h2>${esc(cur.title)}</h2>${tags([kindOf(cur.w),cur.year,cur.runtime,...cur.genres])}</div></div>`+
 (cur.overview?`<p class="ov">${esc(cut(cur.overview,320))}</p>`:"")+
 `<div class="k">${cur.w.mt==="tv"?"Creata da":"Regia"}</div>${dirs.map(ch).join("")||'<span class="kd">non indicata</span>'}<div class="k">Cast principale</div>${cast.map(ch).join("")}`+
-`<div class="k">Collegamenti</div>${tags([cur.links.length+" opere collegate"])}<div class="dact"><button class="go alt${isSeen(cur.w.k)?" on":""}" type="button" data-seenc="1">${isSeen(cur.w.k)?"✓ Visto":"Segna come visto"}</button></div></section>`}
+`<div class="k">Dove vederlo</div><div id="wh" class="wh">Carico…</div><div class="k">Collegamenti</div>${tags([cur.links.length+" opere collegate"])}<div class="dact"><button class="go alt${isSeen(cur.w.k)?" on":""}" type="button" data-seenc="1">${isSeen(cur.w.k)?"✓ Visto":"Segna come visto"}</button></div></section>`}
 else{
 const kn=cur.known[cur.id]||[];
 i=`<section class="card p"><div class="hd">${pa(cur.person,1)}<div><h2>${esc(cur.title)}</h2>${tags([cur.year])}</div></div>${sel?"":'<div id="bio" class="ov"></div>'}`+
@@ -369,6 +405,7 @@ i=`<section class="card p"><div class="hd">${pa(p,1)}<div><h2>${esc(p.name)}</h2
 if(!kn)ensureKnown(p)}
 if(fsel){i=`<section class="card"><div class="hd">${poster(fsel.f.poster_path,fsel.f.title,1)}<div><h2>${esc(fsel.f.title)}</h2>${tags([kindOf(fsel.f),yr(fsel.f)])}</div></div>${fsel.who.some(id=>P.find(x=>x.id===id))?`<div class="k">In comune con</div>${fsel.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}`:""}<div class="dact"><button class="go dgo" type="button" data-det="${fsel.f.k}">Dettagli</button><button class="go dgo alt" type="button" data-go="${fsel.f.k}">Scopri i legami</button></div></section>`+i}
 $("info").innerHTML=i;
+if(!isP&&$("wh")){const ck=cur;fillWhere("wh",cur.w,()=>cur===ck)}
 $("p").innerHTML=`<h2>${isP?"Opere di ":"Collegamenti di "}${esc(cur.title)}</h2><ul>`+L.slice(0,24).map(o=>`<li>${poster(o.f.poster_path,o.f.title)}<div><button class="l" data-w="${o.f.k}">${esc(o.f.title)}${yr(o.f)?" ("+yr(o.f)+")":""}</button> <span class="kd">${kindOf(o.f)}</span><div>${o.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}</div></div></li>`).join("")+"</ul>";
 if(p)bio(p);else if(isP)bio(cur.person)}
 
@@ -473,10 +510,10 @@ const len=mt==="tv"?[d.number_of_seasons?d.number_of_seasons+(d.number_of_season
 const rate=d.vote_average>0?"★ "+d.vote_average.toFixed(1)+" ("+d.vote_count+" voti)":"";
 const com=o?o.who.map(i=>(cur.people.find(x=>x.id===i)||{}).name).filter(Boolean).join(", "):"";
 openDlg(`<div class="dtop">${d.poster_path?`<img class="dposter" src="${img(d.poster_path,"w342")}" alt="">`:`<span class="dposter ph">${esc(ini(W.title))}</span>`}<div><h2 id="dt">${esc(W.title)}</h2>${tags([kindOf(W),yr(W),len,...(d.genres||[]).map(g=>g.name)])}${rate?`<p class="ov">${esc(rate)}</p>`:""}${d.tagline?`<p class="ov"><i>${esc(d.tagline)}</i></p>`:""}</div></div>`+
-`<p class="ov dbio">${esc(d.overview||"Trama non disponibile.")}</p>`+
+`<p class="ov dbio">${esc(d.overview||"Trama non disponibile.")}</p>`+`<div class="k">Dove vederlo</div><div id="whd" class="wh">Carico…</div>`+
 (com?`<p class="ov"><b>In comune con:</b> ${esc(com)}</p>`:"")+
 `<div class="k">${mt==="tv"?"Creata da":"Regia"}</div><div>${c.dirs.slice(0,3).map(x=>dpc(x,"Regista")).join("")||'<span class="kd">non indicata</span>'}</div><div class="k">Cast</div><div>${c.cast.slice(0,10).map(x=>dpc(x,"Attore")).join("")}</div>`+
-`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button></div>`)}
+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button></div>`);fillWhere("whd",W,()=>my===dTok)}
 }catch(e){if(my===dTok){closeDlg();showErr(e)}}}
 const kindK=x=>x.a?"Anime":x[0]==="t"?"Serie TV":"Film";
 function openSeen(pt,keep){if(!keep)lastFocus=document.activeElement;dTok++;
