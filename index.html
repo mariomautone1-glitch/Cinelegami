@@ -125,7 +125,6 @@ button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);backgro
 <button id="back" class="link" type="button">← Novità al cinema</button>
 <div class="box"><svg id="g" viewBox="0 0 980 660" role="img" aria-label="Grafo dei collegamenti"></svg></div>
 <p id="cap" class="cap" hidden></p>
-<div class="leg"><span><i style="border-radius:3px;background:var(--film)"></i>Film (rettangolo con pellicola)</span><span><i style="background:var(--dir);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)"></i>Regista (esagono con ciak)</span><span><i style="border-radius:50%;background:var(--act)"></i>Attore o attrice (cerchio con stella della Walk of Fame)</span><span>Più grande = più persone in comune</span><span>Tocca un nome per vedere altri suoi film, tocca un film per aprirlo</span></div>
 <div id="info"></div>
 <div id="p"></div>
 </div>
@@ -253,7 +252,7 @@ if(p){const kn=cur.known[p.id]||[];
 i=`<section class="card p"><div class="hd">${pa(p,1)}<div><h2>${esc(p.name)}</h2>${tags([isDir(p)?"Regista":"Attore o attrice",p.char?"Interpreta "+p.char:""])}</div></div><div id="bio" class="ov"></div>`+
 `<div class="k">Altri film di ${esc(p.name)}</div><div>${kn.slice(0,10).map(fc).join("")||"Nessun altro film trovato."}</div></section>`+i}
 $("info").innerHTML=i;
-$("p").innerHTML=`<h2>Film collegati a ${esc(cur.title)}</h2>${L.length>12?`<p class="sub">Nel grafo compaiono i 12 più collegati: qui sotto ne vedi fino a 24.</p>`:""}<ul>`+L.slice(0,24).map(o=>`<li>${poster(o.f.poster_path,o.f.title)}<div><button class="l" data-f="${o.f.id}">${esc(o.f.title)}${yr(o.f)?" ("+yr(o.f)+")":""}</button><div>${o.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}</div></div></li>`).join("")+"</ul>";
+$("p").innerHTML=`<h2>Film collegati a ${esc(cur.title)}</h2><ul>`+L.slice(0,24).map(o=>`<li>${poster(o.f.poster_path,o.f.title)}<div><button class="l" data-f="${o.f.id}">${esc(o.f.title)}${yr(o.f)?" ("+yr(o.f)+")":""}</button><div>${o.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}</div></div></li>`).join("")+"</ul>";
 if(p)bio(p)}
 
 async function bio(p){
