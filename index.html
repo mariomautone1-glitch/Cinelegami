@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CineLegami</title>
+<style>
+:root{--bg:#fbf7e0;--card:#fffdf2;--fg:#1f3a33;--mut:#5d6f66;--bd:#e6dfb8;--film:#BC4B51;--dir:#5B8E7D;--act:#F4A259;--hl:#8CB369;--acc:#F4E285;--edge:#c3cfa8}
+@media(prefers-color-scheme:dark){:root{--bg:#17211d;--card:#1f2c27;--fg:#f6f0d6;--mut:#a8b8ac;--bd:#33453d;--edge:#4b5f50}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45}
+main{max-width:900px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-size:2.2rem;letter-spacing:-.01em;margin:0 0 4px}
+h2{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-size:1.2rem;margin:26px 0 6px}
+p.sub{margin:0 0 16px;color:var(--mut)}
+a{color:var(--dir)}
+input{flex:1;min-width:0;width:100%;font:inherit;padding:13px 16px;border:2px solid var(--bd);border-radius:999px;background:var(--card);color:var(--fg)}
+input:focus-visible,button:focus-visible{outline:3px solid var(--dir);outline-offset:2px}
+.row{display:flex;gap:8px}
+.go{font:inherit;font-weight:600;padding:0 22px;border:0;border-radius:999px;background:var(--film);color:#fff;cursor:pointer}
+.go:disabled{opacity:.6;cursor:wait}
+#msg{color:var(--mut);min-height:1.4em;font-size:.9rem;margin:6px 4px 0}
+.box{border:1px solid var(--bd);border-radius:16px;margin-top:12px;overflow-x:auto;background-color:var(--card);background-image:radial-gradient(var(--bd) 1px,transparent 1px);background-size:20px 20px}
+svg{width:100%;min-width:760px;height:auto;display:block}
+svg text{fill:var(--fg);font-size:17px;paint-order:stroke;stroke:var(--card);stroke-width:5px;stroke-linejoin:round;pointer-events:none}
+svg text.in{fill:#14251f;stroke:none;font-size:14px;font-weight:700}
+svg text.in.f{fill:#fff}
+.leg{display:flex;gap:18px;flex-wrap:wrap;align-items:center;font-size:.85rem;color:var(--mut);margin-top:10px}
+.leg i{display:inline-block;width:14px;height:14px;margin-right:6px;vertical-align:-2px}
+.card{background:var(--card);border:1px solid var(--bd);border-left:6px solid var(--film);border-radius:16px;padding:16px;margin-top:18px}
+.card.p{border-left-color:var(--act)}
+.card[hidden]{display:none}
+.hd{display:flex;gap:14px;align-items:center}
+.hd h2{margin:0}
+.k{color:var(--mut);font-size:.82rem;margin:14px 0 2px}
+.ov{margin:10px 0 0;font-size:.92rem}
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;background:var(--acc);color:#3b3510;font-size:.8rem;font-weight:600;margin:4px 6px 0 0}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)}
+.fa{flex:none;display:grid;place-items:center;width:40px;height:58px;border-radius:6px;color:#fff;background:var(--film);font-size:.8rem;font-weight:700;object-fit:cover}
+.fa.big{width:64px;height:94px;font-size:1rem}
+.pa{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;color:#14251f;font-size:.62rem;font-weight:700;margin-right:6px;object-fit:cover;object-position:top;border:2px solid var(--act)}
+.pa.dir{border-color:var(--dir)}
+.pa.big{width:68px;height:68px;font-size:1rem;margin:0;border-width:3px}
+.chip{display:inline-flex;align-items:center;margin:4px 8px 0 0;padding:2px 12px 2px 2px;border:1px solid var(--bd);border-radius:999px;background:var(--card);font:inherit;font-size:.85rem;color:var(--fg);cursor:pointer;text-align:left}
+.chip .po{width:22px;height:32px;border-radius:4px;object-fit:cover;margin:2px 8px 2px 2px}
+.chip:not(:has(.pa)):not(:has(.po)){padding-left:12px}
+button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film);background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.note{margin-top:28px;font-size:.82rem;color:var(--mut)}
+.link{font:inherit;font-size:.82rem;color:var(--dir);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+<main>
+<h1>CineLegami</h1>
+<p class="sub">Scegli un film e guarda come è legato ad altri film attraverso registi e attori.</p>
+<section id="keybox" class="card" hidden>
+<h2 style="margin-top:0">Collega il database dei film</h2>
+<p class="ov">Per cercare film veri serve una chiave gratuita di TMDB. Registrati su <a href="https://www.themoviedb.org/signup" target="_blank" rel="noopener">themoviedb.org</a>, poi in <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">Impostazioni, API</a> richiedi la chiave (uso personale) e incollala qui. Vanno bene sia la "API Key" sia il "API Read Access Token". Resta salvata solo nel tuo browser.</p>
+<div class="row" style="margin-top:12px"><input id="k" type="password" placeholder="Incolla qui la chiave" autocomplete="off" aria-label="Chiave TMDB"><button id="ks" class="go" type="button">Salva</button></div>
+</section>
+<div class="row"><input id="q" placeholder="Scrivi il titolo di un film" autocomplete="off" aria-label="Titolo del film"><button id="go" class="go" type="button">Cerca</button></div>
+<p id="msg" role="status" aria-live="polite"></p>
+<div id="res"></div>
+<div class="box"><svg id="g" viewBox="0 0 980 660" role="img" aria-label="Grafo dei collegamenti"></svg></div>
+<div class="leg"><span><i style="border-radius:3px;background:var(--film)"></i>Film</span><span><i style="border-radius:50%;background:var(--dir)"></i>Regista</span><span><i style="border-radius:50%;background:var(--act)"></i>Attore o attrice</span><span>Tocca un nome per vedere altri suoi film, tocca un film per aprirlo</span></div>
+<div id="info"></div>
+<div id="p"></div>
+<p class="note">Dati e immagini: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. <button id="chg" class="link" type="button">Cambia chiave</button></p>
+</main>
+<script>
+const $=i=>document.getElementById(i),PI=Math.PI,CX=490,CY=330;
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const API="https://api.themoviedb.org/3",IMG="https://image.tmdb.org/t/p/",DEFAULT_ID=27205;
+let KEY=(store.get("cl_tmdb_key")||"").trim(),cur=null,sel=null,tok=0;
+const cache=new Map();
+async function api(path,params){
+const u=new URL(API+path);u.searchParams.set("language","it-IT");
+for(const[k,v]of Object.entries(params||{}))u.searchParams.set(k,v);
+const ck=u.pathname+u.search;
+if(cache.has(ck))return cache.get(ck);
+const opt={};
+if(KEY.length>60&&KEY.includes("."))opt.headers={Authorization:"Bearer "+KEY};else u.searchParams.set("api_key",KEY);
+const r=await fetch(u.toString(),opt);
+if(r.status===401)throw{code:"key"};
+if(r.status===429)throw{code:"rate"};
+if(!r.ok)throw{code:"http"};
+const j=await r.json();cache.set(ck,j);return j}
+const img=(p,s)=>IMG+s+p;
+const yr=f=>(f.release_date||"").slice(0,4);
+const ST=new Set("il lo la le i gli un una di a the of and e".split(" "));
+const ini=s=>{const w=String(s).replace(/[:.,'-]/g," ").split(/\s+/).filter(Boolean),b=w.filter(x=>!ST.has(x.toLowerCase())),u=b.length?b:w;if(!u.length)return"?";return(u.length>1?u[0][0]+u[u.length-1][0]:u[0].slice(0,2)).toUpperCase()};
+const isDir=p=>p.role==="Regista",rc=p=>isDir(p)?"var(--dir)":"var(--act)";
+const setMsg=t=>{$("msg").textContent=t||""};
+const tags=a=>a.filter(Boolean).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
+const pa=(p,big)=>p.photo?`<img class="pa${isDir(p)?" dir":""}${big?" big":""}" src="${img(p.photo,big?"w185":"w92")}" alt="">`:`<b class="pa${isDir(p)?" dir":""}${big?" big":""}" style="background:${rc(p)}">${esc(ini(p.name))}</b>`;
+const ch=p=>`<button class="chip" data-p="${p.id}">${pa(p)}${esc(p.name)}</button>`;
+const fc=f=>`<button class="chip" data-f="${f.id}">${f.poster_path?`<img class="po" src="${img(f.poster_path,"w92")}" alt="">`:""}${esc(f.title)}${yr(f)?" ("+yr(f)+")":""}</button>`;
+const poster=(path,t,big)=>path?`<img class="fa${big?" big":""}" src="${img(path,big?"w185":"w92")}" alt="">`:`<span class="fa${big?" big":""}">${esc(ini(t))}</span>`;
+const cut=(s,n)=>s&&s.length>n?s.slice(0,n).replace(/\s+\S*$/,"")+"…":(s||"");
+
+function showErr(e){
+const c=e&&e.code;
+if(c==="key"){KEY="";store.del("cl_tmdb_key");$("keybox").hidden=false;setMsg("La chiave non risulta valida: controlla di averla copiata per intero.")}
+else if(c==="rate")setMsg("Troppe richieste in poco tempo: riprova tra qualche secondo.");
+else if(c==="http")setMsg("Il database non ha risposto correttamente. Riprova.");
+else setMsg("Connessione non riuscita. Controlla internet e riprova.")}
+
+async function loadFilm(id){
+const my=++tok;setMsg("Carico il film…");
+try{
+const[d,c]=await Promise.all([api("/movie/"+id),api("/movie/"+id+"/credits")]);
+const seen=new Set(),people=[];
+const add=(x,role)=>{if(seen.has(x.id)||people.length>=6)return;seen.add(x.id);people.push({id:x.id,name:x.name,role,photo:x.profile_path,char:x.character})};
+(c.crew||[]).filter(x=>x.job==="Director").slice(0,2).forEach(x=>add(x,"Regista"));
+(c.cast||[]).forEach(x=>add(x,"Attore"));
+const cr=await Promise.all(people.map(p=>api("/person/"+p.id+"/movie_credits").catch(()=>null)));
+if(my!==tok)return;
+const known={},L=new Map();
+people.forEach((p,i)=>{const m=new Map(),cc=cr[i];
+if(cc)[...(cc.cast||[]),...(cc.crew||[]).filter(x=>x.job==="Director")].forEach(f=>{if(f.id===d.id||!f.release_date||m.has(f.id))return;m.set(f.id,f)});
+known[p.id]=[...m.values()].sort((a,b)=>(b.vote_count||0)-(a.vote_count||0)).slice(0,12);
+known[p.id].slice(0,10).forEach(f=>{const e=L.get(f.id)||{f,who:[]};e.who.push(p.id);L.set(f.id,e)})});
+const rt=d.runtime?Math.floor(d.runtime/60)+"h "+(d.runtime%60)+"min":"";
+cur={id:d.id,title:d.title,year:yr(d),runtime:rt,genres:(d.genres||[]).map(g=>g.name),overview:d.overview,poster:d.poster_path,people,known,links:[...L.values()]};
+sel=null;$("q").value=d.title;setMsg("");R();
+}catch(e){if(my===tok)showErr(e)}}
+
+const lay=(a,r)=>[CX+r*Math.cos(a),CY+r*Math.sin(a)];
+function lab(p,txt,off,bold){const dx=p[0]-CX,dy=p[1]-CY,m=Math.abs(dx)<30;
+return `<text x="${p[0]+(m?0:dx>0?off:-off)}" y="${p[1]+(m?(dy>0?off+16:-off):6)}" text-anchor="${m?"middle":dx>0?"start":"end"}"${bold?' font-weight="700"':""}>${esc(cut(txt,26))}</text>`}
+function pn(p,q){const r=p.id===sel?31:26,id="cp"+p.id;
+const inner=p.photo?`<clipPath id="${id}"><circle cx="${q[0]}" cy="${q[1]}" r="${r}"/></clipPath><image href="${img(p.photo,"w185")}" x="${q[0]-r}" y="${q[1]-r}" width="${2*r}" height="${2*r}" preserveAspectRatio="xMidYMin slice" clip-path="url(#${id})"/>`:`<text class="in" x="${q[0]}" y="${q[1]+5}" text-anchor="middle">${esc(ini(p.name))}</text>`;
+return `<g data-p="${p.id}" style="cursor:pointer"><circle cx="${q[0]}" cy="${q[1]}" r="${r}" fill="${rc(p)}"/>${inner}<circle cx="${q[0]}" cy="${q[1]}" r="${r}" fill="none" stroke="${p.id===sel?"var(--fg)":rc(p)}" stroke-width="4"/></g>`}
+function fn(f,q,k,go){const w=17*k,h=25*k,id="cf"+(go?f.id:"c");
+const inner=f.poster_path?`<clipPath id="${id}"><rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6"/></clipPath><image href="${img(f.poster_path,"w185")}" x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${id})"/>`:`<text class="in f" x="${q[0]}" y="${q[1]+5}" text-anchor="middle">${esc(ini(f.title))}</text>`;
+return `<g ${go?`data-f="${f.id}" style="cursor:pointer"`:""}><rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="var(--film)"/>${inner}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="none" stroke="var(--card)" stroke-width="3"/></g>`}
+const sortedLinks=()=>[...cur.links].sort((a,b)=>((b.who.includes(sel)?1:0)-(a.who.includes(sel)?1:0))||b.who.length-a.who.length||(b.f.vote_count||0)-(a.f.vote_count||0));
+
+function R(){
+if(!cur)return;
+const P=cur.people,n=P.length,L=sortedLinks(),Og=L.slice(0,12),pp={},fp={},c=[CX,CY];let s="";
+P.forEach((p,i)=>pp[p.id]=lay(-PI/2+i*2*PI/n,125));
+Og.forEach((o,j)=>fp[o.f.id]=lay(-PI/2+(j+.5)*2*PI/Og.length,258));
+const ln=(a,b,on)=>`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${sel&&on?"var(--hl)":"var(--edge)"}" stroke-width="${sel&&on?4.5:1.6}" opacity="${sel&&!on?.2:1}"/>`;
+P.forEach(p=>s+=ln(c,pp[p.id],p.id===sel));
+Og.forEach(o=>o.who.forEach(id=>s+=ln(pp[id],fp[o.f.id],id===sel)));
+P.forEach(p=>s+=pn(p,pp[p.id])+lab(pp[p.id],p.name,36,p.id===sel));
+Og.forEach(o=>s+=fn(o.f,fp[o.f.id],1,1)+lab(fp[o.f.id],o.f.title,28));
+s+=fn({title:cur.title,poster_path:cur.poster},c,1.7,0)+`<text x="${CX}" y="${CY+72}" text-anchor="middle" font-weight="700" font-size="19">${esc(cut(cur.title,34))}${cur.year?" ("+esc(cur.year)+")":""}</text>`;
+$("g").innerHTML=s;
+const dirs=P.filter(isDir),cast=P.filter(p=>!isDir(p));
+let i=`<section class="card"><div class="hd">${poster(cur.poster,cur.title,1)}<div><h2>${esc(cur.title)}</h2>${tags([cur.year,cur.runtime,...cur.genres])}</div></div>`+
+(cur.overview?`<p class="ov">${esc(cut(cur.overview,320))}</p>`:"")+
+`<div class="k">Regia</div>${dirs.map(ch).join("")}<div class="k">Cast principale</div>${cast.map(ch).join("")}`+
+`<div class="k">Collegamenti</div>${tags([cur.links.length+" film collegati"])}</section>`;
+const p=P.find(x=>x.id===sel);
+if(p){const kn=cur.known[p.id]||[];
+i=`<section class="card p"><div class="hd">${pa(p,1)}<div><h2>${esc(p.name)}</h2>${tags([isDir(p)?"Regista":"Attore o attrice",p.char?"Interpreta "+p.char:""])}</div></div><div id="bio" class="ov"></div>`+
+`<div class="k">Altri film di ${esc(p.name)}</div><div>${kn.slice(0,10).map(fc).join("")||"Nessun altro film trovato."}</div></section>`+i}
+$("info").innerHTML=i;
+$("p").innerHTML=`<h2>Film collegati a ${esc(cur.title)}</h2>${L.length>12?`<p class="sub">Nel grafo compaiono i 12 più collegati: qui sotto ne vedi fino a 24.</p>`:""}<ul>`+L.slice(0,24).map(o=>`<li>${poster(o.f.poster_path,o.f.title)}<div><button class="l" data-f="${o.f.id}">${esc(o.f.title)}${yr(o.f)?" ("+yr(o.f)+")":""}</button><div>${o.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}</div></div></li>`).join("")+"</ul>";
+if(p)bio(p)}
+
+async function bio(p){
+try{let d=await api("/person/"+p.id);if(!d.biography)d=await api("/person/"+p.id,{language:"en-US"});
+if(sel!==p.id)return;const el=$("bio");if(!el)return;
+let born="";if(d.birthday){const t=new Date(d.birthday);born="Nato/a il "+(isNaN(t)?d.birthday:t.toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"}))+(d.place_of_birth?", "+d.place_of_birth:"")}
+const b=cut((d.biography||"").trim(),320);
+el.innerHTML=[born&&`<div>${esc(born)}</div>`,b&&`<div style="margin-top:6px">${esc(b)}</div>`].filter(Boolean).join("")}catch(e){}}
+
+async function cerca(){
+const v=$("q").value.trim();if(!v)return;
+if(!KEY){$("keybox").hidden=false;setMsg("Inserisci prima la chiave per cercare.");return}
+const b=$("go");b.disabled=true;setMsg("Cerco…");
+try{const r=await api("/search/movie",{query:v,include_adult:"false"}),L=r.results||[];
+if(!L.length){setMsg("Nessun film trovato per «"+v+"».");$("res").innerHTML="";return}
+$("res").innerHTML=L.length>1?`<div class="k">Intendevi un altro film?</div><div>${L.slice(1,6).map(fc).join("")}</div>`:"";
+await loadFilm(L[0].id)}catch(e){showErr(e)}finally{b.disabled=false}}
+
+document.addEventListener("click",e=>{
+const f=e.target.closest("[data-f]"),p=e.target.closest("[data-p]");
+if(f){$("res").innerHTML="";loadFilm(Number(f.dataset.f))}
+else if(p){const id=Number(p.dataset.p);sel=sel===id?null:id;R()}});
+$("go").addEventListener("click",cerca);
+$("q").addEventListener("keydown",e=>{if(e.key==="Enter")cerca()});
+function saveKey(){const v=$("k").value.trim();if(!v)return;KEY=v;store.set("cl_tmdb_key",v);$("k").value="";$("keybox").hidden=true;cache.clear();setMsg("");loadFilm(cur?cur.id:DEFAULT_ID)}
+$("ks").addEventListener("click",saveKey);
+$("k").addEventListener("keydown",e=>{if(e.key==="Enter")saveKey()});
+$("chg").addEventListener("click",()=>{$("keybox").hidden=false;$("k").focus()});
+if(KEY)loadFilm(DEFAULT_ID);else $("keybox").hidden=false;
+</script>
+</body>
+</html>
