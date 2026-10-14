@@ -4,14 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CineLegami</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:dark;--bg:#0d1512;--card:#15211d;--fg:#f3efdc;--mut:#9fb2a8;--bd:#2a3b34;--film:#BC4B51;--film-t:#E8858A;--dir:#5B8E7D;--dir-t:#93cbb8;--act:#F4A259;--hl:#8CB369;--acc:#F4E285;--edge:#3f564b}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45}
 main{max-width:900px;margin:0 auto;padding:22px 16px 40px}
-h1{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-size:2.2rem;letter-spacing:-.01em;margin:0 0 4px}
+h1{font-family:Cinzel,"Iowan Old Style","Palatino Linotype",Georgia,serif;font-weight:800;font-size:3rem;letter-spacing:.07em;text-align:center;color:var(--acc);text-shadow:0 0 22px rgba(244,226,133,.28);margin:6px 0 4px}
 h2{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-size:1.2rem;margin:26px 0 6px}
-p.sub{margin:0 0 16px;color:var(--mut)}
+p.sub{margin:0 0 18px;color:var(--mut);text-align:center}
+h2+p.sub,#p p.sub{text-align:left}
 a{color:var(--dir-t)}
 input{flex:1;min-width:0;width:100%;font:inherit;padding:13px 16px;border:2px solid var(--bd);border-radius:999px;background:var(--card);color:var(--fg)}
 input:focus-visible,button:focus-visible{outline:3px solid var(--dir);outline-offset:2px}
@@ -49,7 +52,7 @@ g[tabindex]:focus-visible{outline:3px solid var(--acc);outline-offset:4px;border
 .n.tap{filter:drop-shadow(0 0 8px var(--acc))}
 @media(max-width:700px){
 main{padding:16px 12px 32px}
-h1{font-size:1.8rem}
+h1{font-size:2.1rem;letter-spacing:.05em}
 .box{overflow:hidden}
 svg{min-width:0}
 svg .ttl{display:none}
@@ -97,7 +100,7 @@ button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);backgro
 <body>
 <main>
 <h1>CineLegami</h1>
-<p class="sub">Scegli un film e guarda come è legato ad altri film attraverso registi e attori.</p>
+<p class="sub">Scopri i collegamenti tra i film</p>
 <section id="keybox" class="card" hidden>
 <h2 style="margin-top:0">Collega il database dei film</h2>
 <p class="ov">Per cercare film veri serve una chiave gratuita di TMDB. Registrati su <a href="https://www.themoviedb.org/signup" target="_blank" rel="noopener">themoviedb.org</a>, poi in <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">Impostazioni, API</a> richiedi la chiave (uso personale) e incollala qui. Vanno bene sia la "API Key" sia il "API Read Access Token". Resta salvata solo nel tuo browser.</p>
