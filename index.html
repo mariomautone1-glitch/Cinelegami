@@ -155,6 +155,8 @@ body.dlgopen{overflow:hidden}
 .sug .fa{width:30px;height:44px;font-size:.7rem}
 .sug .pa{width:34px;height:34px;margin:0;flex:none}
 .sug .st{font-weight:600;line-height:1.25}
+.pc{position:relative}
+.rk{position:absolute;top:6px;left:6px;z-index:1;min-width:26px;height:26px;padding:0 6px;display:grid;place-items:center;border-radius:13px;background:rgba(10,17,15,.82);border:1px solid var(--acc);color:var(--acc);font-size:.8rem;font-weight:700}
 .wh{margin-top:2px}
 .wr{margin-top:8px}
 .wl{display:block;color:var(--mut);font-size:.8rem;margin-bottom:2px}
@@ -179,9 +181,9 @@ body.dlgopen{overflow:hidden}
 <section id="home" hidden>
 <h2>Al cinema adesso</h2><div id="now" class="rail"></div>
 <h2>In arrivo</h2><div id="soon" class="rail"></div>
-<h2>Più popolari su Netflix</h2><div id="nf" class="rail"></div>
-<h2>Più popolari su Prime Video</h2><div id="pv" class="rail"></div>
-<h2>Più popolari su Disney+</h2><div id="dp" class="rail"></div>
+<h2>Più visti su Netflix</h2><div id="nf" class="rail"></div>
+<h2>Più visti su Prime Video</h2><div id="pv" class="rail"></div>
+<h2>Più visti su Disney+</h2><div id="dp" class="rail"></div>
 </section>
 <div id="film" hidden>
 <button id="back" class="link" type="button">← Novità al cinema</button>
@@ -306,7 +308,7 @@ function centre(key){closeDlg();if(key[0]==="p")loadPerson(Number(key.slice(1)))
 
 const show=v=>{$("home").hidden=v!=="home";$("film").hidden=v!=="film"};
 const fmtD=d=>{const t=new Date(d+"T00:00:00");return isNaN(t)?d:t.toLocaleDateString("it-IT",{day:"numeric",month:"short"})};
-const pc=(f,soon)=>`<button class="pc" data-w="${f.k}"><img src="${img(f.poster_path,"w342")}" alt="" loading="lazy"><span class="pt">${ckm(f.k)}${esc(f.title)}</span><span class="pd">${soon?(f.release_date?"dal "+esc(fmtD(f.release_date)):""):kindOf(f)+(f.vote_average>0?" · ★ "+f.vote_average.toFixed(1):"")}</span></button>`;
+const pc=(f,soon,rk)=>`<button class="pc" data-w="${f.k}">${rk?`<span class="rk">${rk}</span>`:""}<img src="${img(f.poster_path,"w342")}" alt="" loading="lazy"><span class="pt">${ckm(f.k)}${esc(f.title)}</span><span class="pd">${soon?(f.release_date?"dal "+esc(fmtD(f.release_date)):""):kindOf(f)+(f.vote_average>0?" · ★ "+f.vote_average.toFixed(1):"")}</span></button>`;
 async function loadHome(){
 setMsg("Carico le novità…");
 try{const[n0,u0]=await Promise.all([api("/movie/now_playing",{region:"IT"}),api("/movie/upcoming",{region:"IT"})]);
@@ -327,7 +329,7 @@ const q={watch_region:"IT",with_watch_providers:String(id),with_watch_monetizati
 const[m,t]=await Promise.all([api("/discover/movie",q),api("/discover/tv",q)]);
 return[...(m.results||[]).map(x=>nw(x,"movie")),...(t.results||[]).map(x=>nw(x,"tv"))].filter(f=>f.poster_path).sort((a,b)=>b.pop-a.pop).slice(0,20)}
 function loadPlatforms(){PLAT.forEach(([el,id])=>{
-railFor(id).then(L=>{$(el).innerHTML=L.map(f=>pc(f,false)).join("")||'<p class="sub">Nessun titolo trovato.</p>'})
+railFor(id).then(L=>{$(el).innerHTML=L.map((f,i)=>pc(f,false,i+1)).join("")||'<p class="sub">Nessun titolo trovato.</p>'})
 .catch(()=>{$(el).innerHTML='<p class="sub">Non disponibile al momento.</p>'})})}
 // Dove vederlo: cinema in Italia e servizi di streaming (dati JustWatch tramite TMDB)
 let THEA=null;
