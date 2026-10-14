@@ -24,8 +24,13 @@ svg{width:100%;min-width:760px;height:auto;display:block}
 svg text{fill:var(--fg);font-size:17px;paint-order:stroke;stroke:#0a110f;stroke-width:5px;stroke-linejoin:round;pointer-events:none}
 svg text.in{fill:#14251f;stroke:none;font-size:14px;font-weight:700}
 svg text.in.f{fill:#fff}
-.n{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .15s,opacity .2s}
-.n:hover{transform:scale(1.08)}
+.n{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .2s}
+.n[data-p]:hover,.n[data-p]:focus-visible{transform:scale(2.6)}
+.n[data-f]:hover,.n[data-f]:focus-visible{transform:scale(2.2)}
+.n:hover,.n:focus-visible{opacity:1!important}
+.lb{transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .2s}
+.n:hover + .lb,.n:focus-visible + .lb{transform:translate(var(--sx,0px),var(--sy,0px));opacity:1}
+@media(prefers-reduced-motion:reduce){.n,.lb{transition:none}}
 .n.on{filter:drop-shadow(0 0 9px var(--hl))}
 .n.ctr{cursor:default;filter:drop-shadow(0 0 18px rgba(244,226,133,.38))}
 .n.ctr:hover{transform:none}
@@ -56,6 +61,13 @@ li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px sol
 .chip .po{width:22px;height:32px;border-radius:4px;object-fit:cover;margin:2px 8px 2px 2px}
 .chip:not(:has(.pa)):not(:has(.po)){padding-left:12px}
 button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.rail{display:flex;align-items:flex-start;gap:14px;overflow-x:auto;padding:6px 2px 14px;scroll-snap-type:x proximity;scrollbar-color:var(--bd) transparent}
+.pc{flex:none;width:132px;background:none;border:0;padding:0;text-align:left;color:var(--fg);font:inherit;cursor:pointer;scroll-snap-align:start}
+.pc img,.pc .ph{display:block;width:132px;height:198px;border-radius:8px;object-fit:cover;background:var(--card);border:1px solid var(--bd);transition:transform .2s,box-shadow .2s}
+.pc:hover img,.pc:focus-visible img{transform:translateY(-5px);box-shadow:0 10px 24px rgba(0,0,0,.55),0 0 0 2px var(--acc)}
+.pt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:8px;font-size:.85rem;font-weight:600;line-height:1.3}
+.pd{display:block;color:var(--mut);font-size:.78rem;margin-top:2px}
+@media(prefers-reduced-motion:reduce){.pc img{transition:none}}
 .note{margin-top:28px;font-size:.82rem;color:var(--mut)}
 .link{font:inherit;font-size:.82rem;color:var(--dir-t);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
 </style>
@@ -72,10 +84,17 @@ button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);backgro
 <div class="row"><input id="q" placeholder="Scrivi il titolo di un film" autocomplete="off" aria-label="Titolo del film"><button id="go" class="go" type="button">Cerca</button></div>
 <p id="msg" role="status" aria-live="polite"></p>
 <div id="res"></div>
+<section id="home" hidden>
+<h2>Al cinema adesso</h2><div id="now" class="rail"></div>
+<h2>In arrivo</h2><div id="soon" class="rail"></div>
+</section>
+<div id="film" hidden>
+<button id="back" class="link" type="button">← Novità al cinema</button>
 <div class="box"><svg id="g" viewBox="0 0 980 660" role="img" aria-label="Grafo dei collegamenti"></svg></div>
 <div class="leg"><span><i style="border-radius:3px;background:var(--film)"></i>Film</span><span><i style="border-radius:50%;background:var(--dir)"></i>Regista</span><span><i style="border-radius:50%;background:var(--act)"></i>Attore o attrice</span><span>Più grande = più persone in comune</span><span>Tocca un nome per vedere altri suoi film, tocca un film per aprirlo</span></div>
 <div id="info"></div>
 <div id="p"></div>
+</div>
 <p class="note">Dati e immagini: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. <button id="chg" class="link" type="button">Cambia chiave</button></p>
 </main>
 <script>
@@ -85,7 +104,7 @@ const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},se
 // Indirizzo del servizio che tiene nascosta la chiave (vedi cloudflare-worker.js). Se è vuoto, la pagina chiede a ogni visitatore la sua chiave TMDB.
 const PROXY="https://cinelegami.mariomautone1.workers.dev";
 const API="https://api.themoviedb.org/3",IMG="https://image.tmdb.org/t/p/",DEFAULT_ID=27205;
-let KEY=(store.get("cl_tmdb_key")||"").trim(),cur=null,sel=null,tok=0;
+let aT=0,KEY=(store.get("cl_tmdb_key")||"").trim(),cur=null,sel=null,tok=0;
 const cache=new Map();
 async function api(path,params){
 const u=new URL((PROXY?PROXY.replace(/\/$/,""):API)+path);u.searchParams.set("language","it-IT");
@@ -136,17 +155,33 @@ known[p.id]=[...m.values()].sort((a,b)=>(b.vote_count||0)-(a.vote_count||0)).sli
 known[p.id].slice(0,10).forEach(f=>{const e=L.get(f.id)||{f,who:[]};e.who.push(p.id);L.set(f.id,e)})});
 const rt=d.runtime?Math.floor(d.runtime/60)+"h "+(d.runtime%60)+"min":"";
 cur={id:d.id,title:d.title,year:yr(d),runtime:rt,genres:(d.genres||[]).map(g=>g.name),overview:d.overview,poster:d.poster_path,people,known,links:[...L.values()]};
-sel=null;$("q").value=d.title;setMsg("");R(true);
+sel=null;$("q").value=d.title;setMsg("");show("film");R(true);
 }catch(e){if(my===tok)showErr(e)}}
 
+const show=v=>{$("home").hidden=v!=="home";$("film").hidden=v!=="film"};
+const fmtD=d=>{const t=new Date(d+"T00:00:00");return isNaN(t)?d:t.toLocaleDateString("it-IT",{day:"numeric",month:"short"})};
+const pc=(f,soon)=>`<button class="pc" data-f="${f.id}"><img src="${img(f.poster_path,"w342")}" alt="" loading="lazy"><span class="pt">${esc(f.title)}</span><span class="pd">${soon?(f.release_date?"dal "+esc(fmtD(f.release_date)):""):(f.vote_average>0?"★ "+f.vote_average.toFixed(1):"")}</span></button>`;
+async function loadHome(){
+setMsg("Carico le novità…");
+try{const[n,u]=await Promise.all([api("/movie/now_playing",{region:"IT"}),api("/movie/upcoming",{region:"IT"})]);
+const today=new Date().toISOString().slice(0,10);
+const now=(n.results||[]).filter(f=>f.poster_path).sort((a,b)=>(b.release_date||"").localeCompare(a.release_date||"")).slice(0,20);
+const ids=new Set(now.map(f=>f.id));
+const soon=(u.results||[]).filter(f=>f.poster_path&&!ids.has(f.id)&&(f.release_date||"")>=today).sort((a,b)=>(a.release_date||"").localeCompare(b.release_date||"")).slice(0,20);
+$("now").innerHTML=now.map(f=>pc(f,false)).join("")||"<p class=\"sub\">Nessun film trovato.</p>";
+$("soon").innerHTML=soon.map(f=>pc(f,true)).join("")||"<p class=\"sub\">Nessuna uscita in programma trovata.</p>";
+setMsg("");
+}catch(e){if(e&&e.code==="key"){showErr(e);return}
+if(!cur){setMsg("");loadFilm(DEFAULT_ID)}else setMsg("Le novità non sono disponibili al momento.")}}
 const lay=(a,r)=>[CX+r*Math.cos(a),CY+r*Math.sin(a)];
-function lab(p,txt,off,bold,dim){const dx=p[0]-CX,dy=p[1]-CY,m=Math.abs(dx)<30;
-return `<text x="${p[0]+(m?0:dx>0?off:-off)}" y="${p[1]+(m?(dy>0?off+16:-off):6)}" text-anchor="${m?"middle":dx>0?"start":"end"}"${bold?' font-weight="700"':""}${dim?' opacity=".4"':""}>${esc(cut(txt,26))}</text>`}
+function lab(p,txt,off,bold,dim,ex,ey){const dx=p[0]-CX,dy=p[1]-CY,m=Math.abs(dx)<30;
+const sx=m?0:(dx>0?1:-1)*Math.max(0,Math.round((ex||0)+10-off)),sy=m?(dy>0?1:-1)*Math.max(0,Math.round((ey||0)+8-off)):0;
+return `<text class="lb" style="--sx:${sx}px;--sy:${sy}px" x="${p[0]+(m?0:dx>0?off:-off)}" y="${p[1]+(m?(dy>0?off+16:-off):6)}" text-anchor="${m?"middle":dx>0?"start":"end"}"${bold?' font-weight="700"':""}${dim?' opacity=".4"':""}>${esc(cut(txt,26))}</text>`}
 function pn(p,q,i){const r=p.id===sel?31:26,id="cp"+p.id;
-const inner=p.photo?`<clipPath id="${id}"><circle cx="${q[0]}" cy="${q[1]}" r="${r}"/></clipPath><image href="${img(p.photo,"w185")}" x="${q[0]-r}" y="${q[1]-r}" width="${2*r}" height="${2*r}" preserveAspectRatio="xMidYMin slice" clip-path="url(#${id})"/>`:`<text class="in" x="${q[0]}" y="${q[1]+5}" text-anchor="middle">${esc(ini(p.name))}</text>`;
+const inner=p.photo?`<clipPath id="${id}"><circle cx="${q[0]}" cy="${q[1]}" r="${r}"/></clipPath><image href="${img(p.photo,"h632")}" x="${q[0]-r}" y="${q[1]-r}" width="${2*r}" height="${2*r}" preserveAspectRatio="xMidYMin slice" clip-path="url(#${id})"/>`:`<text class="in" x="${q[0]}" y="${q[1]+5}" text-anchor="middle">${esc(ini(p.name))}</text>`;
 return `<g class="n${p.id===sel?" on":""}" style="--i:${i}" data-p="${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)}, ${isDir(p)?"regista":"attore o attrice"}"><title>${esc(p.name)}${p.char?" nel ruolo di "+esc(p.char):""}</title><circle cx="${q[0]}" cy="${q[1]}" r="${r}" fill="${rc(p)}"/>${inner}<circle cx="${q[0]}" cy="${q[1]}" r="${r}" fill="none" stroke="${p.id===sel?"var(--fg)":rc(p)}" stroke-width="4"/></g>`}
 function fn(f,q,k,go,i,x){x=x||{};const w=17*k,h=25*k,id="cf"+(go?f.id:"c");
-const inner=f.poster_path?`<clipPath id="${id}"><rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6"/></clipPath><image href="${img(f.poster_path,"w185")}" x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${id})"/>`:`<text class="in f" x="${q[0]}" y="${q[1]+5}" text-anchor="middle">${esc(ini(f.title))}</text>`;
+const inner=f.poster_path?`<clipPath id="${id}"><rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6"/></clipPath><image href="${img(f.poster_path,"w342")}" x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${id})"/>`:`<text class="in f" x="${q[0]}" y="${q[1]+5}" text-anchor="middle">${esc(ini(f.title))}</text>`;
 return `<g class="n${go?"":" ctr"}${x.on?" on":""}" style="--i:${i}${x.dim?";opacity:.35":""}" ${go?`data-f="${f.id}" tabindex="0" role="button" aria-label="${esc(f.title)}"`:""}><title>${esc(f.title)}${yr(f)?" ("+yr(f)+")":""}${x.names?", in comune con "+esc(x.names):""}</title><rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="var(--film)"/>${inner}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="none" stroke="${x.on?"var(--hl)":"#0a110f"}" stroke-width="3"/></g>`}
 const sortedLinks=()=>[...cur.links].sort((a,b)=>((b.who.includes(sel)?1:0)-(a.who.includes(sel)?1:0))||b.who.length-a.who.length||(b.f.vote_count||0)-(a.f.vote_count||0));
 const DEFS=`<defs><radialGradient id="gl"><stop offset="0" stop-color="#F4E285" stop-opacity=".2"/><stop offset=".55" stop-color="#F4A259" stop-opacity=".06"/><stop offset="1" stop-color="#F4A259" stop-opacity="0"/></radialGradient></defs><circle cx="${CX}" cy="${CY}" r="330" fill="url(#gl)"/><circle cx="${CX}" cy="${CY}" r="125" fill="none" stroke="#2a3b34" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/><circle cx="${CX}" cy="${CY}" r="258" fill="none" stroke="#2a3b34" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/>`;
@@ -161,11 +196,12 @@ P.forEach((p,i)=>pp[p.id]=lay(a0+i*2*PI/n,125));
 Og.forEach((o,j)=>fp[o.f.id]=lay(-PI/2+(j+.5)*2*PI/Og.length,258));
 P.forEach(p=>s+=eg(c,pp[p.id],p.id===sel,k++,0));
 Og.forEach(o=>o.who.forEach(id=>s+=eg(pp[id],fp[o.f.id],id===sel,k++,.22)));
-P.forEach((p,i)=>s+=pn(p,pp[p.id],i)+lab(pp[p.id],p.name,36,p.id===sel));
+P.forEach((p,i)=>{const rr=p.id===sel?31:26;s+='<g class="u">'+pn(p,pp[p.id],i)+lab(pp[p.id],p.name,36,p.id===sel,false,rr*2.6,rr*2.6)+'</g>'});
 Og.forEach((o,j)=>{const on=!!sel&&o.who.includes(sel),kk=Math.min(1.6,1+.2*(o.who.length-1)),names=o.who.map(id=>(P.find(x=>x.id===id)||{}).name).filter(Boolean).join(", ");
-s+=fn(o.f,fp[o.f.id],kk,1,P.length+j,{on,dim:!!sel&&!on,names})+lab(fp[o.f.id],o.f.title,Math.round(12+25*kk),false,!!sel&&!on)});
+s+='<g class="u">'+fn(o.f,fp[o.f.id],kk,1,P.length+j,{on,dim:!!sel&&!on,names})+lab(fp[o.f.id],o.f.title,Math.round(12+25*kk),false,!!sel&&!on,17*kk*2.2,25*kk*2.2)+'</g>'});
 s+=fn({title:cur.title,poster_path:cur.poster},c,1.7,0,0)+`<text x="28" y="46" font-weight="700" font-size="27">${esc(cut(cur.title,32))}</text>${cur.year?`<text x="28" y="72" font-size="18" style="fill:var(--mut)">${esc(cur.year)}</text>`:""}`;
 $("g").setAttribute("class",first?"a":"");
+clearTimeout(aT);if(first)aT=setTimeout(()=>$("g").setAttribute("class",""),2300);
 $("g").innerHTML=s;
 const dirs=P.filter(isDir),cast=P.filter(p=>!isDir(p));
 let i=`<section class="card"><div class="hd">${poster(cur.poster,cur.title,1)}<div><h2>${esc(cur.title)}</h2>${tags([cur.year,cur.runtime,...cur.genres])}</div></div>`+
@@ -200,16 +236,21 @@ document.addEventListener("click",e=>{
 const f=e.target.closest("[data-f]"),p=e.target.closest("[data-p]");
 if(f){$("res").innerHTML="";loadFilm(Number(f.dataset.f))}
 else if(p){const id=Number(p.dataset.p);sel=sel===id?null:id;R()}});
+$("g").addEventListener("pointerover",e=>{const n=e.target.closest&&e.target.closest(".n");if(!n||n.classList.contains("ctr"))return;
+if($("g").getAttribute("class"))$("g").setAttribute("class","");
+const u=n.parentNode;if(u&&u.classList&&u.classList.contains("u")&&u.parentNode.lastElementChild!==u)u.parentNode.appendChild(u)});
 $("g").addEventListener("keydown",e=>{const t=e.target.closest&&e.target.closest("[data-f],[data-p]");
 if(t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();const pid=t.dataset.p;t.dispatchEvent(new MouseEvent("click",{bubbles:true}));
 if(pid){const nn=$("g").querySelector('[data-p="'+pid+'"]');if(nn)nn.focus()}}});
+$("back").addEventListener("click",()=>{show("home");if(!$("now").innerHTML)loadHome()});
 $("go").addEventListener("click",cerca);
 $("q").addEventListener("keydown",e=>{if(e.key==="Enter")cerca()});
-function saveKey(){const v=$("k").value.trim();if(!v)return;KEY=v;store.set("cl_tmdb_key",v);$("k").value="";$("keybox").hidden=true;cache.clear();setMsg("");loadFilm(cur?cur.id:DEFAULT_ID)}
+function saveKey(){const v=$("k").value.trim();if(!v)return;KEY=v;store.set("cl_tmdb_key",v);$("k").value="";$("keybox").hidden=true;cache.clear();setMsg("");if(cur)loadFilm(cur.id);else{show("home");loadHome()}}
 $("ks").addEventListener("click",saveKey);
 $("k").addEventListener("keydown",e=>{if(e.key==="Enter")saveKey()});
 $("chg").addEventListener("click",()=>{$("keybox").hidden=false;$("k").focus()});
-if(PROXY){$("chg").style.display="none";loadFilm(DEFAULT_ID)}else if(KEY)loadFilm(DEFAULT_ID);else $("keybox").hidden=false;
+if(PROXY)$("chg").style.display="none";
+if(PROXY||KEY){show("home");loadHome()}else $("keybox").hidden=false;
 </script>
 </body>
 </html>
