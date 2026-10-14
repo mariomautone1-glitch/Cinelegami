@@ -25,8 +25,10 @@ svg text{fill:var(--fg);font-size:17px;paint-order:stroke;stroke:#0a110f;stroke-
 svg text.in{fill:#14251f;stroke:none;font-size:14px;font-weight:700}
 svg text.in.f{fill:#fff}
 .n{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .2s}
-.n[data-p]:hover,.n[data-p]:focus-visible{transform:scale(2.6)}
-.n[data-f]:hover,.n[data-f]:focus-visible{transform:scale(2.2)}
+.n[data-p]:focus-visible{transform:scale(2.6)}
+.n[data-f]:focus-visible{transform:scale(2.2)}
+@media(hover:hover){.n[data-p]:hover{transform:scale(2.6)}
+.n[data-f]:hover{transform:scale(2.2)}}
 .n:hover,.n:focus-visible{opacity:1!important}
 .lb{transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .2s}
 .n:hover + .lb,.n:focus-visible + .lb{transform:translate(var(--sx,0px),var(--sy,0px));opacity:1}
@@ -43,6 +45,23 @@ g[tabindex]:focus-visible{outline:3px solid var(--acc);outline-offset:4px;border
 @keyframes flow{from{stroke-dashoffset:.07}to{stroke-dashoffset:-1}}
 @keyframes pop{from{opacity:0;transform:scale(.6)}}
 @keyframes draw{from{stroke-dashoffset:1}}}
+.cap{margin:10px 2px 0;font-size:1rem}
+.n.tap{filter:drop-shadow(0 0 8px var(--acc))}
+@media(max-width:700px){
+main{padding:16px 12px 32px}
+h1{font-size:1.8rem}
+.box{overflow:hidden}
+svg{min-width:0}
+svg .ttl{display:none}
+svg .lb{display:none}
+.n[data-p]{transform:scale(1.3)}
+.n[data-f]{transform:scale(1.2)}
+.n.ctr{transform:scale(1.1)}
+.leg{gap:8px 14px;font-size:.8rem}
+.pc{width:118px}.pc img,.pc .ph{width:118px;height:177px}
+li{gap:10px}
+.go{padding:0 18px}
+}
 .leg{display:flex;gap:18px;flex-wrap:wrap;align-items:center;font-size:.85rem;color:var(--mut);margin-top:10px}
 .leg i{display:inline-block;width:14px;height:14px;margin-right:6px;vertical-align:-2px}
 .card{background:var(--card);border:1px solid var(--bd);border-left:6px solid var(--film);border-radius:16px;padding:16px;margin-top:18px}
@@ -94,6 +113,7 @@ button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);backgro
 <div id="film" hidden>
 <button id="back" class="link" type="button">← Novità al cinema</button>
 <div class="box"><svg id="g" viewBox="0 0 980 660" role="img" aria-label="Grafo dei collegamenti"></svg></div>
+<p id="cap" class="cap" hidden></p>
 <div class="leg"><span><i style="border-radius:3px;background:var(--film)"></i>Film (rettangolo con pellicola)</span><span><i style="background:var(--dir);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)"></i>Regista (esagono con ciak)</span><span><i style="border-radius:50%;background:var(--act)"></i>Attore o attrice (cerchio con stella della Walk of Fame)</span><span>Più grande = più persone in comune</span><span>Tocca un nome per vedere altri suoi film, tocca un film per aprirlo</span></div>
 <div id="info"></div>
 <div id="p"></div>
@@ -101,6 +121,7 @@ button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);backgro
 <p class="note">Dati e immagini: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. <button id="chg" class="link" type="button">Cambia chiave</button></p>
 </main>
 <script>
+const MOB=()=>window.matchMedia&&matchMedia("(max-width:700px)").matches;
 const $=i=>document.getElementById(i),PI=Math.PI,CX=490,CY=330;
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
@@ -177,9 +198,9 @@ setMsg("");
 }catch(e){if(e&&e.code==="key"){showErr(e);return}
 if(!cur){setMsg("");loadFilm(DEFAULT_ID)}else setMsg("Le novità non sono disponibili al momento.")}}
 const lay=(a,r)=>[CX+r*Math.cos(a),CY+r*Math.sin(a)];
-function lab(p,txt,off,bold,dim,ex,ey){const dx=p[0]-CX,dy=p[1]-CY,m=Math.abs(dx)<30;
+function lab(p,txt,off,bold,dim,ex,ey,sl){const dx=p[0]-CX,dy=p[1]-CY,m=Math.abs(dx)<30;
 const sx=m?0:(dx>0?1:-1)*Math.max(0,Math.round((ex||0)+10-off)),sy=m?(dy>0?1:-1)*Math.max(0,Math.round((ey||0)+8-off)):0;
-return `<text class="lb" style="--sx:${sx}px;--sy:${sy}px" x="${p[0]+(m?0:dx>0?off:-off)}" y="${p[1]+(m?(dy>0?off+16:-off):6)}" text-anchor="${m?"middle":dx>0?"start":"end"}"${bold?' font-weight="700"':""}${dim?' opacity=".4"':""}>${esc(cut(txt,26))}</text>`}
+return `<text class="lb${sl?" sel":""}" style="--sx:${sx}px;--sy:${sy}px" x="${p[0]+(m?0:dx>0?off:-off)}" y="${p[1]+(m?(dy>0?off+16:-off):6)}" text-anchor="${m?"middle":dx>0?"start":"end"}"${bold?' font-weight="700"':""}${dim?' opacity=".4"':""}>${esc(cut(txt,26))}</text>`}
 const IC={dir:`<rect x="-6" y="-1" width="12" height="7.5" rx="1" fill="#0a110f"/><g transform="rotate(-15 -6 -2)"><rect x="-6" y="-5.5" width="12" height="3.5" rx="1" fill="#0a110f"/><path d="M-2.5 -5.5l-1.5 3.5M1.5 -5.5l-1.5 3.5M5.5 -5.5l-1.5 3.5" stroke="var(--dir)" stroke-width="1.3"/></g>`, act:`<polygon points="0.00,-14.00 4.11,-5.66 13.31,-4.33 6.66,2.16 8.23,11.33 0.00,7.00 -8.23,11.33 -6.66,2.16 -13.31,-4.33 -4.11,-5.66" fill="#0a110f" stroke="#0a110f" stroke-width="2" stroke-linejoin="round"/><polygon points="0.00,-11.20 3.29,-4.53 10.65,-3.46 5.33,1.73 6.58,9.06 0.00,5.60 -6.58,9.06 -5.33,1.73 -10.65,-3.46 -3.29,-4.53" fill="var(--act)"/><polygon points="0.00,-7.20 2.12,-2.91 6.85,-2.22 3.42,1.11 4.23,5.82 0.00,3.60 -4.23,5.82 -3.42,1.11 -6.85,-2.22 -2.12,-2.91" fill="#0a110f"/>`, film:`<rect x="-6" y="-5.5" width="12" height="11" rx="1.500" fill="#0a110f"/><path d="M-4.500 -3.500h1.500M-4.500 -0.700h1.500M-4.500 2.100h1.500M3 -3.500h1.500M3 -0.700h1.500M3 2.100h1.500" stroke="var(--film)" stroke-width="1.500"/><rect x="-1.800" y="-3.500" width="3.600" height="7" fill="var(--film)"/>`};
 const bdg=(x,y,c,t,r)=>`<g class="bd" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(r/12).toFixed(2)})">${t==="act"?"":`<circle r="12" fill="var(--${c})" stroke="#0a110f" stroke-width="2"/>`}${IC[t].replace(/var\(--(\w+)\)/g,(m,n)=>n===c?`var(--${c})`:m)}</g>`;
 const hx=(x,y,R)=>[0,1,2,3,4,5].map(k=>(x+R*Math.cos(PI/6+k*PI/3)).toFixed(1)+","+(y+R*Math.sin(PI/6+k*PI/3)).toFixed(1)).join(" ");
@@ -187,10 +208,10 @@ function pn(p,q,i){const d=isDir(p),r=p.id===sel?31:26,id="cp"+p.id,R=d?r*1.18:r
 const shp=(at)=>d?`<polygon points="${hx(q[0],q[1],R)}" ${at}/>`:`<circle cx="${q[0]}" cy="${q[1]}" r="${r}" ${at}/>`;
 const inner=p.photo?`<clipPath id="${id}">${shp("")}</clipPath><image href="${img(p.photo,"h632")}" x="${q[0]-R}" y="${q[1]-R}" width="${2*R}" height="${2*R}" preserveAspectRatio="xMidYMin slice" clip-path="url(#${id})"/>`:`<text class="in" x="${q[0]}" y="${q[1]+5}" text-anchor="middle">${esc(ini(p.name))}</text>`;
 const badge=bdg(q[0]+R*.82,q[1]-R*.82,d?"dir":"act",d?"dir":"act",12);
-return `<g class="n${p.id===sel?" on":""}" style="--i:${i}" data-p="${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)}, ${d?"regista":"attore o attrice"}"><title>${esc(p.name)}${d?" (regista)":""}${p.char?" nel ruolo di "+esc(p.char):""}</title>${shp(`fill="${rc(p)}"`)}${inner}${shp(`fill="none" stroke="${p.id===sel?"var(--fg)":rc(p)}" stroke-width="4" stroke-linejoin="round"`)}${badge}</g>`}
+return `<g class="n${p.id===sel?" on":""}" style="--i:${i}" data-p="${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)}, ${d?"regista":"attore o attrice"}"><title>${esc(p.name)}${d?" (regista)":""}${p.char?" nel ruolo di "+esc(p.char):""}</title><circle cx="${q[0]}" cy="${q[1]}" r="${r+9}" fill="transparent"/>${shp(`fill="${rc(p)}"`)}${inner}${shp(`fill="none" stroke="${p.id===sel?"var(--fg)":rc(p)}" stroke-width="4" stroke-linejoin="round"`)}${badge}</g>`}
 function fn(f,q,k,go,i,x){x=x||{};const w=17*k,h=25*k,id="cf"+(go?f.id:"c");
 const inner=f.poster_path?`<clipPath id="${id}"><rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6"/></clipPath><image href="${img(f.poster_path,"w342")}" x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${id})"/>`:`<text class="in f" x="${q[0]}" y="${q[1]+5}" text-anchor="middle">${esc(ini(f.title))}</text>`;
-return `<g class="n${go?"":" ctr"}${x.on?" on":""}" style="--i:${i}${x.dim?";opacity:.35":""}" ${go?`data-f="${f.id}" tabindex="0" role="button" aria-label="${esc(f.title)}"`:""}><title>${esc(f.title)}${yr(f)?" ("+yr(f)+")":""}${x.names?", in comune con "+esc(x.names):""}</title><rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="var(--film)"/>${inner}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="none" stroke="${x.on?"var(--hl)":"#0a110f"}" stroke-width="3"/>${bdg(q[0]+w*.9,q[1]-h*.9,"film","film",go?10:12)}</g>`}
+return `<g class="n${go?"":" ctr"}${x.on?" on":""}" style="--i:${i}${x.dim?";opacity:.35":""}" ${go?`data-f="${f.id}" tabindex="0" role="button" aria-label="${esc(f.title)}"`:""}><title>${esc(f.title)}${yr(f)?" ("+yr(f)+")":""}${x.names?", in comune con "+esc(x.names):""}</title>${go?`<rect x="${q[0]-w-8}" y="${q[1]-h-8}" width="${2*w+16}" height="${2*h+16}" fill="transparent"/>`:""}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="var(--film)"/>${inner}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="none" stroke="${x.on?"var(--hl)":"#0a110f"}" stroke-width="3"/>${bdg(q[0]+w*.9,q[1]-h*.9,"film","film",go?10:12)}</g>`}
 const sortedLinks=()=>[...cur.links].sort((a,b)=>((b.who.includes(sel)?1:0)-(a.who.includes(sel)?1:0))||b.who.length-a.who.length||(b.f.vote_count||0)-(a.f.vote_count||0));
 const DEFS=`<defs><radialGradient id="gl"><stop offset="0" stop-color="#F4E285" stop-opacity=".2"/><stop offset=".55" stop-color="#F4A259" stop-opacity=".06"/><stop offset="1" stop-color="#F4A259" stop-opacity="0"/></radialGradient></defs><circle cx="${CX}" cy="${CY}" r="330" fill="url(#gl)"/><circle cx="${CX}" cy="${CY}" r="125" fill="none" stroke="#2a3b34" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/><circle cx="${CX}" cy="${CY}" r="258" fill="none" stroke="#2a3b34" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/>`;
 const eg=(a,b,on,i,bend)=>{const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,qx=mx+(CX-mx)*bend,qy=my+(CY-my)*bend,d=`M${a[0]} ${a[1]}Q${qx} ${qy} ${b[0]} ${b[1]}`,hi=sel&&on;
@@ -204,11 +225,11 @@ P.forEach((p,i)=>pp[p.id]=lay(a0+i*2*PI/n,125));
 Og.forEach((o,j)=>fp[o.f.id]=lay(-PI/2+(j+.5)*2*PI/Og.length,258));
 P.forEach(p=>s+=eg(c,pp[p.id],p.id===sel,k++,0));
 Og.forEach(o=>o.who.forEach(id=>s+=eg(pp[id],fp[o.f.id],id===sel,k++,.22)));
-P.forEach((p,i)=>{const rr=p.id===sel?31:26;s+='<g class="u">'+pn(p,pp[p.id],i)+lab(pp[p.id],p.name,36,p.id===sel,false,rr*2.6,rr*2.6)+'</g>'});
+P.forEach((p,i)=>{const rr=p.id===sel?31:26;s+='<g class="u">'+pn(p,pp[p.id],i)+lab(pp[p.id],p.name,36,p.id===sel,false,rr*2.6,rr*2.6,p.id===sel)+'</g>'});
 Og.forEach((o,j)=>{const on=!!sel&&o.who.includes(sel),kk=Math.min(1.6,1+.2*(o.who.length-1)),names=o.who.map(id=>(P.find(x=>x.id===id)||{}).name).filter(Boolean).join(", ");
-s+='<g class="u">'+fn(o.f,fp[o.f.id],kk,1,P.length+j,{on,dim:!!sel&&!on,names})+lab(fp[o.f.id],o.f.title,Math.round(12+25*kk),false,!!sel&&!on,17*kk*2.2,25*kk*2.2)+'</g>'});
-s+=fn({title:cur.title,poster_path:cur.poster},c,1.7,0,0)+`<text x="28" y="46" font-weight="700" font-size="27">${esc(cut(cur.title,32))}</text>${cur.year?`<text x="28" y="72" font-size="18" style="fill:var(--mut)">${esc(cur.year)}</text>`:""}`;
-$("g").setAttribute("class",first?"a":"");
+s+='<g class="u">'+fn(o.f,fp[o.f.id],kk,1,P.length+j,{on,dim:!!sel&&!on,names})+lab(fp[o.f.id],o.f.title,Math.round(12+25*kk),false,!!sel&&!on,17*kk*2.2,25*kk*2.2,on)+'</g>'});
+s+=fn({title:cur.title,poster_path:cur.poster},c,1.7,0,0)+`<text class="ttl" x="28" y="46" font-weight="700" font-size="27">${esc(cut(cur.title,32))}</text>${cur.year?`<text class="ttl" x="28" y="72" font-size="18" style="fill:var(--mut)">${esc(cur.year)}</text>`:""}`;
+$("g").setAttribute("class",first?"a":"");$("g").setAttribute("viewBox",MOB()?"180 20 620 620":"0 0 980 660");$("cap").hidden=true;{const sp=cur.people.find(x=>x.id===sel);if(sp&&MOB()){$("cap").innerHTML=`<b>${esc(sp.name)}</b> (${isDir(sp)?"regista":"attore o attrice"}). Le linee verdi portano ai suoi film.`;$("cap").hidden=false}}
 clearTimeout(aT);if(first)aT=setTimeout(()=>$("g").setAttribute("class",""),2300);
 $("g").innerHTML=s;
 const dirs=P.filter(isDir),cast=P.filter(p=>!isDir(p));
@@ -242,7 +263,11 @@ await loadFilm(L[0].id)}catch(e){showErr(e)}finally{b.disabled=false}}
 
 document.addEventListener("click",e=>{
 const f=e.target.closest("[data-f]"),p=e.target.closest("[data-p]");
-if(f){$("res").innerHTML="";loadFilm(Number(f.dataset.f))}
+if(f&&MOB()&&f.closest("#g")&&!f.classList.contains("ctr")){const id=Number(f.dataset.f),o=sortedLinks().find(x=>x.f.id===id);
+$("g").querySelectorAll(".tap").forEach(x=>{x.classList.remove("tap");if(x.nextElementSibling&&!x.nextElementSibling.classList.contains("keep"))x.nextElementSibling.classList.remove("sel")});
+const lb=f.nextElementSibling;f.classList.add("tap");if(lb&&lb.classList)lb.classList.add("sel");
+if(o){$("cap").innerHTML=`<b>${esc(o.f.title)}</b>${yr(o.f)?" ("+yr(o.f)+")":""} <button class="l" data-f="${id}" type="button">Apri questo film →</button>`;$("cap").hidden=false}}
+else if(f){$("res").innerHTML="";loadFilm(Number(f.dataset.f))}
 else if(p){const id=Number(p.dataset.p);sel=sel===id?null:id;R()}});
 $("g").addEventListener("pointerover",e=>{const n=e.target.closest&&e.target.closest(".n");if(!n||n.classList.contains("ctr"))return;
 if($("g").getAttribute("class"))$("g").setAttribute("class","");
