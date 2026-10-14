@@ -37,9 +37,9 @@ svg text.in{fill:#14251f;stroke:none;font-size:14px;font-weight:700}
 svg text.in.f{fill:#fff}
 .n{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .2s}
 .n[data-p]:focus-visible{transform:scale(2.6)}
-.n[data-f]:focus-visible{transform:scale(2.2)}
+.n[data-w]:focus-visible{transform:scale(2.2)}
 @media(hover:hover){.n[data-p]:hover{transform:scale(2.6)}
-.n[data-f]:hover{transform:scale(2.2)}}
+.n[data-w]:hover{transform:scale(2.2)}}
 .n:hover,.n:focus-visible{opacity:1!important}
 .lb{transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .2s}
 .n:hover + .lb,.n:focus-visible + .lb{transform:translate(var(--sx,0px),var(--sy,0px));opacity:1}
@@ -66,7 +66,7 @@ svg{min-width:0}
 svg .ttl{display:none}
 svg .lb{display:none}
 .n[data-p]{transform:scale(1.3)}
-.n[data-f]{transform:scale(1.2)}
+.n[data-w]{transform:scale(1.2)}
 .n.ctr{transform:scale(1.1)}
 .leg{gap:8px 14px;font-size:.8rem}
 .pc{width:118px}.pc img,.pc .ph{width:118px;height:177px}
@@ -103,6 +103,50 @@ button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);backgro
 @media(prefers-reduced-motion:reduce){.pc img{transition:none}}
 .note{margin-top:28px;font-size:.82rem;color:var(--mut)}
 .link{font:inherit;font-size:.82rem;color:var(--dir-t);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+.seg{display:flex;gap:8px;flex-wrap:wrap;margin:10px 2px 0}
+.seg button{font:inherit;font-size:.85rem;padding:5px 14px;border-radius:999px;border:1px solid var(--bd);background:var(--card);color:var(--mut);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--acc);color:#3b3510;border-color:var(--acc);font-weight:600}
+.kd{color:var(--mut);font-size:.78rem}
+.chip .kd{margin-left:5px}
+svg{touch-action:manipulation}
+.n.ctr[data-c]{cursor:pointer}
+body.dlgopen{overflow:hidden}
+.dlg{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px}
+.dlg[hidden]{display:none}
+.dbk{position:absolute;inset:0;background:rgba(5,9,8,.62);backdrop-filter:blur(2px)}
+.dcard{position:relative;width:min(700px,100%);max-height:min(88vh,100%);overflow:auto;background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+.dx{position:absolute;top:8px;right:10px;width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:var(--fg);font-size:1.5rem;line-height:1;cursor:pointer}
+.dx:hover{background:rgba(255,255,255,.16)}
+.dtop{display:flex;gap:18px;align-items:flex-start;padding-right:30px}
+.dposter{flex:none;width:140px;aspect-ratio:2/3;border-radius:10px;object-fit:cover;background:#0a110f;border:1px solid var(--bd)}
+.dposter.ph{display:grid;place-items:center;font-size:1.6rem;font-weight:700;color:var(--fg)}
+.dcard h2{margin:0 0 4px;font-family:Cinzel,"Iowan Old Style",Georgia,serif;font-size:1.5rem}
+.dbio{white-space:pre-line;line-height:1.55}
+.dgo{margin-top:18px;padding:12px 22px}
+@media(prefers-reduced-motion:no-preference){
+.dbk{animation:fade .25s}
+.dcard.grow{animation:grow .34s cubic-bezier(.2,.8,.2,1)}
+@keyframes fade{from{opacity:0}}
+@keyframes grow{from{opacity:0;transform:scale(.12)}}
+@keyframes sheet{from{opacity:0;transform:translateY(45%)}}}
+@media(max-width:700px){
+.dlg{place-items:end center;padding:0}
+.dcard{width:100%;max-height:80vh;border-radius:18px 18px 0 0;padding:18px 16px}
+@media(prefers-reduced-motion:no-preference){.dcard.grow{animation:sheet .3s ease-out}}
+.dposter{width:96px}
+.dcard h2{font-size:1.25rem}
+}
+.seenbtn{margin-left:auto;border-color:var(--hl)!important;color:var(--hl)!important}
+.seenbtn b{font-weight:700}
+.ck{color:var(--hl);font-weight:700;margin-right:4px}
+.dact{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.dact .dgo{margin-top:0}
+.go.alt{background:transparent;border:2px solid var(--hl);color:var(--hl)}
+.go.alt.on{background:var(--hl);color:#14251f}
+.sl li{align-items:center}
+.sl .fa{width:36px;height:52px}
+.rm{flex:none;margin-left:auto;width:34px;height:34px;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:var(--mut);font-size:1rem;cursor:pointer}
+.rm:hover{background:rgba(255,255,255,.18);color:var(--fg)}
 </style>
 </head>
 <body>
@@ -114,7 +158,8 @@ button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);backgro
 <p class="ov">Per cercare film veri serve una chiave gratuita di TMDB. Registrati su <a href="https://www.themoviedb.org/signup" target="_blank" rel="noopener">themoviedb.org</a>, poi in <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">Impostazioni, API</a> richiedi la chiave (uso personale) e incollala qui. Vanno bene sia la "API Key" sia il "API Read Access Token". Resta salvata solo nel tuo browser.</p>
 <div class="row" style="margin-top:12px"><input id="k" type="password" placeholder="Incolla qui la chiave" autocomplete="off" aria-label="Chiave TMDB"><button id="ks" class="go" type="button">Salva</button></div>
 </section>
-<div class="row"><input id="q" placeholder="Scrivi il titolo di un film" autocomplete="off" aria-label="Titolo del film"><button id="go" class="go" type="button">Cerca</button></div>
+<div class="row"><input id="q" placeholder="Cerca un film, una serie, un anime o un attore" autocomplete="off" aria-label="Cosa vuoi cercare"><button id="go" class="go" type="button">Cerca</button></div>
+<div id="seg" class="seg" role="group" aria-label="Cosa cercare"><button type="button" data-fl="all" aria-pressed="true">Tutto</button><button type="button" data-fl="movie" aria-pressed="false">Film</button><button type="button" data-fl="tv" aria-pressed="false">Serie TV</button><button type="button" data-fl="anime" aria-pressed="false">Anime</button><button type="button" data-fl="person" aria-pressed="false">Attori e registi</button><button type="button" id="seenbtn" class="seenbtn" aria-label="Apri l'elenco dei titoli visti">✓ Visti <b id="seenn">0</b></button></div>
 <p id="msg" role="status" aria-live="polite"></p>
 <div id="res"></div>
 <section id="home" hidden>
@@ -124,12 +169,12 @@ button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);backgro
 <div id="film" hidden>
 <button id="back" class="link" type="button">← Novità al cinema</button>
 <div class="box"><svg id="g" viewBox="0 0 980 660" role="img" aria-label="Grafo dei collegamenti"></svg></div>
-<p id="cap" class="cap" hidden></p>
 <div id="info"></div>
 <div id="p"></div>
 </div>
 <p class="note">Dati e immagini: TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. <button id="chg" class="link" type="button">Cambia chiave</button></p>
 </main>
+<div id="dlg" class="dlg" hidden><div class="dbk"></div><div class="dcard" role="dialog" aria-modal="true" aria-labelledby="dt"><button class="dx" type="button" aria-label="Chiudi">×</button><div id="dbody"></div></div></div>
 <script>
 const MOB=()=>window.matchMedia&&matchMedia("(max-width:700px)").matches;
 const $=i=>document.getElementById(i),PI=Math.PI,CX=490,CY=330;
@@ -161,7 +206,19 @@ const setMsg=t=>{$("msg").textContent=t||""};
 const tags=a=>a.filter(Boolean).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
 const pa=(p,big)=>p.photo?`<img class="pa${isDir(p)?" dir":""}${big?" big":""}" src="${img(p.photo,big?"w185":"w92")}" alt="">`:`<b class="pa${isDir(p)?" dir":""}${big?" big":""}" style="background:${rc(p)}">${esc(ini(p.name))}</b>`;
 const ch=p=>`<button class="chip" data-p="${p.id}">${pa(p)}${esc(p.name)}</button>`;
-const fc=f=>`<button class="chip" data-f="${f.id}">${f.poster_path?`<img class="po" src="${img(f.poster_path,"w92")}" alt="">`:""}${esc(f.title)}${yr(f)?" ("+yr(f)+")":""}</button>`;
+const kindOf=w=>w.anime?"Anime":w.mt==="tv"?"Serie TV":"Film";
+const nw=(x,mt)=>{mt=mt||x.media_type||"movie";const g=x.genre_ids||(x.genres||[]).map(a=>a.id);
+return{k:(mt==="tv"?"t":"m")+x.id,id:x.id,mt,title:x.title||x.name||"",release_date:x.release_date||x.first_air_date||"",poster_path:x.poster_path,vote_count:x.vote_count||0,pop:x.popularity||0,vote_average:x.vote_average||0,anime:g.includes(16)&&x.original_language==="ja"}};
+const wkey=k=>({mt:k[0]==="t"?"tv":"movie",id:Number(k.slice(1))});
+let SEEN=[];try{SEEN=JSON.parse(store.get("cl_seen")||"[]")}catch(e){}if(!Array.isArray(SEEN))SEEN=[];
+const isSeen=k=>SEEN.some(x=>x.k===k);
+const ckm=k=>isSeen(k)?'<span class="ck" title="Visto">✓</span>':"";
+function updSeen(){const n=$("seenn");if(n)n.textContent=SEEN.length}
+function toggleSeen(w){const i=SEEN.findIndex(x=>x.k===w.k);
+if(i>=0)SEEN.splice(i,1);else SEEN.unshift({k:w.k,t:w.title,y:yr(w),p:w.poster_path||"",a:w.anime?1:0,d:Date.now()});
+if(SEEN.length>2000)SEEN.length=2000;
+store.set("cl_seen",JSON.stringify(SEEN));updSeen();if(cur&&!$("film").hidden)R()}
+const fc=f=>`<button class="chip" data-w="${f.k}">${ckm(f.k)}${f.poster_path?`<img class="po" src="${img(f.poster_path,"w92")}" alt="">`:""}${esc(f.title)}${yr(f)?" ("+yr(f)+")":""} <span class="kd">· ${kindOf(f)}</span></button>`;
 const poster=(path,t,big)=>path?`<img class="fa${big?" big":""}" src="${img(path,big?"w185":"w92")}" alt="">`:`<span class="fa${big?" big":""}">${esc(ini(t))}</span>`;
 const cut=(s,n)=>s&&s.length>n?s.slice(0,n).replace(/\s+\S*$/,"")+"…":(s||"");
 
@@ -172,56 +229,96 @@ else if(c==="rate")setMsg("Troppe richieste in poco tempo: riprova tra qualche s
 else if(c==="http")setMsg("Il database non ha risposto correttamente. Riprova.");
 else setMsg("Connessione non riuscita. Controlla internet e riprova.")}
 
-async function loadFilm(id){
-const my=++tok;setMsg("Carico il film…");
+const SKIPG=[10767,10763,10764];
+function pworks(cc,skipK){const m=new Map();
+const add=(x,mt)=>{const w=nw(x,mt);if(w.k===skipK||!w.release_date||m.has(w.k))return;m.set(w.k,w)};
+(cc.cast||[]).forEach(x=>{if((x.genre_ids||[]).some(i=>SKIPG.includes(i))||/\b(self|himself|herself|themselves)\b/i.test(x.character||""))return;add(x,x.media_type)});
+(cc.crew||[]).filter(x=>x.job==="Director"||x.job==="Creator").forEach(x=>{if((x.genre_ids||[]).some(i=>SKIPG.includes(i)))return;add(x,x.media_type)});
+return[...m.values()].sort((a,b)=>b.vote_count-a.vote_count)}
+const pl=x=>({id:x.id,name:x.name,profile_path:x.profile_path});
+async function credOf(w){
+if(w.mt==="tv"){const[d,c]=await Promise.all([api("/tv/"+w.id),api("/tv/"+w.id+"/aggregate_credits")]);
+return{dirs:(d.created_by||[]).map(pl),cast:(c.cast||[]).map(x=>({...pl(x),character:(x.roles&&x.roles[0]&&x.roles[0].character)||""}))}}
+const c=await api("/movie/"+w.id+"/credits");
+return{dirs:(c.crew||[]).filter(x=>x.job==="Director").map(pl),cast:(c.cast||[]).map(x=>({...pl(x),character:x.character}))}}
+
+async function loadWork(mt,id){
+const my=++tok;setMsg(mt==="tv"?"Carico la serie…":"Carico il film…");closeDlg();
 try{
-const[d,c]=await Promise.all([api("/movie/"+id),api("/movie/"+id+"/credits")]);
-const seen=new Set(),people=[];
+const[d,c]=await Promise.all([api((mt==="tv"?"/tv/":"/movie/")+id),credOf({mt,id})]);
+const W=nw(d,mt),seen=new Set(),people=[];
 const add=(x,role)=>{if(seen.has(x.id)||people.length>=6)return;seen.add(x.id);people.push({id:x.id,name:x.name,role,photo:x.profile_path,char:x.character})};
-(c.crew||[]).filter(x=>x.job==="Director").slice(0,2).forEach(x=>add(x,"Regista"));
-(c.cast||[]).forEach(x=>add(x,"Attore"));
-const cr=await Promise.all(people.map(p=>api("/person/"+p.id+"/movie_credits").catch(()=>null)));
+c.dirs.slice(0,2).forEach(x=>add(x,"Regista"));
+c.cast.forEach(x=>add(x,"Attore"));
+const cr=await Promise.all(people.map(p=>api("/person/"+p.id+"/combined_credits").catch(()=>null)));
 if(my!==tok)return;
 const known={},L=new Map();
-people.forEach((p,i)=>{const m=new Map(),cc=cr[i];
-if(cc)[...(cc.cast||[]),...(cc.crew||[]).filter(x=>x.job==="Director")].forEach(f=>{if(f.id===d.id||!f.release_date||m.has(f.id))return;m.set(f.id,f)});
-known[p.id]=[...m.values()].sort((a,b)=>(b.vote_count||0)-(a.vote_count||0)).slice(0,12);
-known[p.id].slice(0,10).forEach(f=>{const e=L.get(f.id)||{f,who:[]};e.who.push(p.id);L.set(f.id,e)})});
-const rt=d.runtime?Math.floor(d.runtime/60)+"h "+(d.runtime%60)+"min":"";
-cur={id:d.id,title:d.title,year:yr(d),runtime:rt,genres:(d.genres||[]).map(g=>g.name),overview:d.overview,poster:d.poster_path,people,known,links:[...L.values()]};
-sel=null;$("q").value=d.title;setMsg("");show("film");R(true);
+people.forEach((p,i)=>{known[p.id]=cr[i]?pworks(cr[i],W.k).slice(0,12):[];
+known[p.id].slice(0,10).forEach(f=>{const e=L.get(f.k)||{f,who:[]};e.who.push(p.id);L.set(f.k,e)})});
+const rt=mt==="tv"?((d.number_of_seasons?d.number_of_seasons+(d.number_of_seasons>1?" stagioni":" stagione"):"")):(d.runtime?Math.floor(d.runtime/60)+"h "+(d.runtime%60)+"min":"");
+cur={kind:"work",id:d.id,w:W,title:W.title,year:yr(W),runtime:rt,genres:(d.genres||[]).map(g=>g.name),overview:d.overview,poster:d.poster_path,people,known,links:[...L.values()]};
+sel=null;$("q").value=W.title;setMsg("");show("film");R(true);
 }catch(e){if(my===tok)showErr(e)}}
+
+const DEPT={Acting:"Attore o attrice",Directing:"Regista",Writing:"Sceneggiatura",Production:"Produzione"};
+async function loadPerson(id){
+const my=++tok;setMsg("Carico la scheda…");closeDlg();
+try{
+const[d,cc]=await Promise.all([api("/person/"+id),api("/person/"+id+"/combined_credits")]);
+const works=pworks(cc,null),top=works.slice(0,6);
+const cr=await Promise.all(top.map(w=>credOf(w).catch(()=>null)));
+if(my!==tok)return;
+const cnt=new Map();
+top.forEach((w,i)=>{const c=cr[i];if(!c)return;
+[...c.dirs.map(x=>[x,"Regista"]),...c.cast.slice(0,12).map(x=>[x,"Attore"])].forEach(([x,role],j)=>{
+if(x.id===id)return;const e=cnt.get(x.id)||{x,n:0,rank:0,role,ws:new Set()};
+e.n++;e.rank+=j;if(role==="Regista")e.role="Regista";e.ws.add(w.k);cnt.set(x.id,e)})});
+const col=[...cnt.values()].sort((a,b)=>b.n-a.n||a.rank-b.rank).slice(0,6);
+const people=col.map(e=>({id:e.x.id,name:e.x.name,role:e.role,photo:e.x.profile_path,char:e.x.character||""}));
+const L=new Map();
+works.slice(0,12).forEach(w=>{const who=col.filter(e=>e.ws.has(w.k)).map(e=>e.x.id);L.set(w.k,{f:w,who:who.length?who:[id]})});
+const person={id,name:d.name,role:d.known_for_department==="Directing"?"Regista":"Attore",photo:d.profile_path};
+cur={kind:"person",id,w:null,title:d.name,year:DEPT[d.known_for_department]||"Persona",runtime:"",genres:[],overview:"",poster:d.profile_path,person,people,known:{[id]:works},links:[...L.values()]};
+sel=null;$("q").value=d.name;setMsg("");show("film");R(true);
+}catch(e){if(my===tok)showErr(e)}}
+async function ensureKnown(p){const my=cur;
+try{const cc=await api("/person/"+p.id+"/combined_credits");if(cur!==my)return;cur.known[p.id]=pworks(cc,cur.kind==="work"?cur.w.k:null).slice(0,12)}
+catch(e){if(cur!==my)return;cur.known[p.id]=[]}
+if(cur===my&&sel===p.id)R()}
+function centre(key){closeDlg();if(key[0]==="p")loadPerson(Number(key.slice(1)));else{const w=wkey(key);loadWork(w.mt,w.id)}}
 
 const show=v=>{$("home").hidden=v!=="home";$("film").hidden=v!=="film"};
 const fmtD=d=>{const t=new Date(d+"T00:00:00");return isNaN(t)?d:t.toLocaleDateString("it-IT",{day:"numeric",month:"short"})};
-const pc=(f,soon)=>`<button class="pc" data-f="${f.id}"><img src="${img(f.poster_path,"w342")}" alt="" loading="lazy"><span class="pt">${esc(f.title)}</span><span class="pd">${soon?(f.release_date?"dal "+esc(fmtD(f.release_date)):""):(f.vote_average>0?"★ "+f.vote_average.toFixed(1):"")}</span></button>`;
+const pc=(f,soon)=>`<button class="pc" data-w="${f.k}"><img src="${img(f.poster_path,"w342")}" alt="" loading="lazy"><span class="pt">${ckm(f.k)}${esc(f.title)}</span><span class="pd">${soon?(f.release_date?"dal "+esc(fmtD(f.release_date)):""):(f.vote_average>0?"★ "+f.vote_average.toFixed(1):"")}</span></button>`;
 async function loadHome(){
 setMsg("Carico le novità…");
-try{const[n,u]=await Promise.all([api("/movie/now_playing",{region:"IT"}),api("/movie/upcoming",{region:"IT"})]);
+try{const[n0,u0]=await Promise.all([api("/movie/now_playing",{region:"IT"}),api("/movie/upcoming",{region:"IT"})]);
+const n={results:(n0.results||[]).map(x=>nw(x,"movie"))},u={results:(u0.results||[]).map(x=>nw(x,"movie"))};
 const today=new Date().toISOString().slice(0,10);
 const now=(n.results||[]).filter(f=>f.poster_path).sort((a,b)=>(b.release_date||"").localeCompare(a.release_date||"")).slice(0,20);
-const ids=new Set(now.map(f=>f.id));
-const soon=(u.results||[]).filter(f=>f.poster_path&&!ids.has(f.id)&&(f.release_date||"")>=today).sort((a,b)=>(a.release_date||"").localeCompare(b.release_date||"")).slice(0,20);
+const ids=new Set(now.map(f=>f.k));
+const soon=(u.results||[]).filter(f=>f.poster_path&&!ids.has(f.k)&&(f.release_date||"")>=today).sort((a,b)=>(a.release_date||"").localeCompare(b.release_date||"")).slice(0,20);
 $("now").innerHTML=now.map(f=>pc(f,false)).join("")||"<p class=\"sub\">Nessun film trovato.</p>";
 $("soon").innerHTML=soon.map(f=>pc(f,true)).join("")||"<p class=\"sub\">Nessuna uscita in programma trovata.</p>";
 setMsg("");
 }catch(e){if(e&&e.code==="key"){showErr(e);return}
-if(!cur){setMsg("");loadFilm(DEFAULT_ID)}else setMsg("Le novità non sono disponibili al momento.")}}
+if(!cur){setMsg("");loadWork("movie",DEFAULT_ID)}else setMsg("Le novità non sono disponibili al momento.")}}
 const lay=(a,r)=>[CX+r*Math.cos(a),CY+r*Math.sin(a)];
 function lab(p,txt,off,bold,dim,ex,ey,sl){const dx=p[0]-CX,dy=p[1]-CY,m=Math.abs(dx)<30;
 const sx=m?0:(dx>0?1:-1)*Math.max(0,Math.round((ex||0)+10-off)),sy=m?(dy>0?1:-1)*Math.max(0,Math.round((ey||0)+8-off)):0;
 return `<text class="lb${sl?" sel":""}" style="--sx:${sx}px;--sy:${sy}px" x="${p[0]+(m?0:dx>0?off:-off)}" y="${p[1]+(m?(dy>0?off+16:-off):6)}" text-anchor="${m?"middle":dx>0?"start":"end"}"${bold?' font-weight="700"':""}${dim?' opacity=".4"':""}>${esc(cut(txt,26))}</text>`}
-const IC={dir:`<rect x="-6" y="-1" width="12" height="7.5" rx="1" fill="#0a110f"/><g transform="rotate(-15 -6 -2)"><rect x="-6" y="-5.5" width="12" height="3.5" rx="1" fill="#0a110f"/><path d="M-2.5 -5.5l-1.5 3.5M1.5 -5.5l-1.5 3.5M5.5 -5.5l-1.5 3.5" stroke="var(--dir)" stroke-width="1.3"/></g>`, act:`<polygon points="0.00,-14.00 4.11,-5.66 13.31,-4.33 6.66,2.16 8.23,11.33 0.00,7.00 -8.23,11.33 -6.66,2.16 -13.31,-4.33 -4.11,-5.66" fill="#0a110f" stroke="#0a110f" stroke-width="2" stroke-linejoin="round"/><polygon points="0.00,-11.20 3.29,-4.53 10.65,-3.46 5.33,1.73 6.58,9.06 0.00,5.60 -6.58,9.06 -5.33,1.73 -10.65,-3.46 -3.29,-4.53" fill="var(--act)"/><polygon points="0.00,-7.20 2.12,-2.91 6.85,-2.22 3.42,1.11 4.23,5.82 0.00,3.60 -4.23,5.82 -3.42,1.11 -6.85,-2.22 -2.12,-2.91" fill="#0a110f"/>`, film:`<rect x="-6" y="-5.5" width="12" height="11" rx="1.500" fill="#0a110f"/><path d="M-4.500 -3.500h1.500M-4.500 -0.700h1.500M-4.500 2.100h1.500M3 -3.500h1.500M3 -0.700h1.500M3 2.100h1.500" stroke="var(--film)" stroke-width="1.500"/><rect x="-1.800" y="-3.500" width="3.600" height="7" fill="var(--film)"/>`};
+const IC={tv:`<rect x="-6.5" y="-3" width="13" height="9.5" rx="1.600" fill="#0a110f"/><path d="M-3.200 -6.300l3.200 2.800 3.200 -2.800" stroke="#0a110f" stroke-width="1.400" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="-4.600" y="-1.400" width="9.200" height="6.300" rx=".9" fill="var(--film)"/>`,anime:`<path d="M0 -7.500L1.900 -1.900L7.500 0L1.900 1.900L0 7.500L-1.900 1.900L-7.500 0L-1.900 -1.900Z" fill="#0a110f"/><circle cx="5.600" cy="-5.600" r="1.400" fill="#0a110f"/>`,dir:`<rect x="-6" y="-1" width="12" height="7.5" rx="1" fill="#0a110f"/><g transform="rotate(-15 -6 -2)"><rect x="-6" y="-5.5" width="12" height="3.5" rx="1" fill="#0a110f"/><path d="M-2.5 -5.5l-1.5 3.5M1.5 -5.5l-1.5 3.5M5.5 -5.5l-1.5 3.5" stroke="var(--dir)" stroke-width="1.3"/></g>`, act:`<polygon points="0.00,-14.00 4.11,-5.66 13.31,-4.33 6.66,2.16 8.23,11.33 0.00,7.00 -8.23,11.33 -6.66,2.16 -13.31,-4.33 -4.11,-5.66" fill="#0a110f" stroke="#0a110f" stroke-width="2" stroke-linejoin="round"/><polygon points="0.00,-11.20 3.29,-4.53 10.65,-3.46 5.33,1.73 6.58,9.06 0.00,5.60 -6.58,9.06 -5.33,1.73 -10.65,-3.46 -3.29,-4.53" fill="var(--act)"/><polygon points="0.00,-7.20 2.12,-2.91 6.85,-2.22 3.42,1.11 4.23,5.82 0.00,3.60 -4.23,5.82 -3.42,1.11 -6.85,-2.22 -2.12,-2.91" fill="#0a110f"/>`, film:`<rect x="-6" y="-5.5" width="12" height="11" rx="1.500" fill="#0a110f"/><path d="M-4.500 -3.500h1.500M-4.500 -0.700h1.500M-4.500 2.100h1.500M3 -3.500h1.500M3 -0.700h1.500M3 2.100h1.500" stroke="var(--film)" stroke-width="1.500"/><rect x="-1.800" y="-3.500" width="3.600" height="7" fill="var(--film)"/>`};
 const bdg=(x,y,c,t,r)=>`<g class="bd" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(r/12).toFixed(2)})">${t==="act"?"":`<circle r="12" fill="var(--${c})" stroke="#0a110f" stroke-width="2"/>`}${IC[t].replace(/var\(--(\w+)\)/g,(m,n)=>n===c?`var(--${c})`:m)}</g>`;
 const hx=(x,y,R)=>[0,1,2,3,4,5].map(k=>(x+R*Math.cos(PI/6+k*PI/3)).toFixed(1)+","+(y+R*Math.sin(PI/6+k*PI/3)).toFixed(1)).join(" ");
-function pn(p,q,i){const d=isDir(p),r=p.id===sel?31:26,id="cp"+p.id,R=d?r*1.18:r;
+function pn(p,q,i,ctr){const d=isDir(p),r=ctr?42:(p.id===sel?31:26),id="cp"+(ctr?"c":p.id),R=d?r*1.18:r;
 const shp=(at)=>d?`<polygon points="${hx(q[0],q[1],R)}" ${at}/>`:`<circle cx="${q[0]}" cy="${q[1]}" r="${r}" ${at}/>`;
 const inner=p.photo?`<clipPath id="${id}">${shp("")}</clipPath><image href="${img(p.photo,"h632")}" x="${q[0]-R}" y="${q[1]-R}" width="${2*R}" height="${2*R}" preserveAspectRatio="xMidYMin slice" clip-path="url(#${id})"/>`:`<text class="in" x="${q[0]}" y="${q[1]+5}" text-anchor="middle">${esc(ini(p.name))}</text>`;
 const badge=bdg(q[0]+R*.82,q[1]-R*.82,d?"dir":"act",d?"dir":"act",12);
-return `<g class="n${p.id===sel?" on":""}" style="--i:${i}" data-p="${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)}, ${d?"regista":"attore o attrice"}"><title>${esc(p.name)}${d?" (regista)":""}${p.char?" nel ruolo di "+esc(p.char):""}</title><circle cx="${q[0]}" cy="${q[1]}" r="${r+9}" fill="transparent"/>${shp(`fill="${rc(p)}"`)}${inner}${shp(`fill="none" stroke="${p.id===sel?"var(--fg)":rc(p)}" stroke-width="4" stroke-linejoin="round"`)}${badge}</g>`}
-function fn(f,q,k,go,i,x){x=x||{};const w=17*k,h=25*k,id="cf"+(go?f.id:"c");
+return `<g class="n${ctr?" ctr":""}${p.id===sel&&!ctr?" on":""}" style="--i:${i}" ${ctr?'data-c="1"':`data-p="${p.id}"`} tabindex="0" role="button" aria-label="${esc(p.name)}, ${d?"regista":"attore o attrice"}"><title>${esc(p.name)}${d?" (regista)":""}${p.char?" nel ruolo di "+esc(p.char):""}</title><circle cx="${q[0]}" cy="${q[1]}" r="${r+9}" fill="transparent"/>${shp(`fill="${rc(p)}"`)}${inner}${shp(`fill="none" stroke="${p.id===sel&&!ctr?"var(--fg)":rc(p)}" stroke-width="4" stroke-linejoin="round"`)}${badge}</g>`}
+function fn(f,q,k,go,i,x){x=x||{};const w=17*k,h=25*k,id="cf"+(go?f.k:"c");
 const inner=f.poster_path?`<clipPath id="${id}"><rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6"/></clipPath><image href="${img(f.poster_path,"w342")}" x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${id})"/>`:`<text class="in f" x="${q[0]}" y="${q[1]+5}" text-anchor="middle">${esc(ini(f.title))}</text>`;
-return `<g class="n${go?"":" ctr"}${x.on?" on":""}" style="--i:${i}${x.dim?";opacity:.35":""}" ${go?`data-f="${f.id}" tabindex="0" role="button" aria-label="${esc(f.title)}"`:""}><title>${esc(f.title)}${yr(f)?" ("+yr(f)+")":""}${x.names?", in comune con "+esc(x.names):""}</title>${go?`<rect x="${q[0]-w-8}" y="${q[1]-h-8}" width="${2*w+16}" height="${2*h+16}" fill="transparent"/>`:""}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="var(--film)"/>${inner}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="none" stroke="${x.on?"var(--hl)":"#0a110f"}" stroke-width="3"/>${bdg(q[0]+w*.9,q[1]-h*.9,"film","film",go?10:12)}</g>`}
+const bd=f.anime?["acc","anime"]:f.mt==="tv"?["film","tv"]:["film","film"];
+return `<g class="n${go?"":" ctr"}${x.on?" on":""}" style="--i:${i}${x.dim?";opacity:.35":""}" ${go?`data-w="${f.k}"`:'data-c="1"'} tabindex="0" role="button" aria-label="${esc(f.title)}, ${kindOf(f).toLowerCase()}"><title>${esc(f.title)}${yr(f)?" ("+yr(f)+")":""} · ${kindOf(f)}${x.names?", in comune con "+esc(x.names):""}</title>${go?`<rect x="${q[0]-w-8}" y="${q[1]-h-8}" width="${2*w+16}" height="${2*h+16}" fill="transparent"/>`:""}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="var(--film)"/>${inner}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="none" stroke="${x.on?"var(--hl)":"#0a110f"}" stroke-width="3"/>${bdg(q[0]+w*.9,q[1]-h*.9,bd[0],bd[1],go?10:12)}${isSeen(f.k)?`<g class="bd" transform="translate(${(q[0]+w*.9).toFixed(1)} ${(q[1]+h*.9).toFixed(1)}) scale(${go?.83:1})"><circle r="12" fill="var(--hl)" stroke="#0a110f" stroke-width="2"/><path d="M-5 0.500l3.500 3.500 6.500-7.500" stroke="#0a110f" stroke-width="2.600" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`:""}</g>`}
 const sortedLinks=()=>[...cur.links].sort((a,b)=>((b.who.includes(sel)?1:0)-(a.who.includes(sel)?1:0))||b.who.length-a.who.length||(b.f.vote_count||0)-(a.f.vote_count||0));
 const DEFS=`<defs><radialGradient id="gl"><stop offset="0" stop-color="#F4E285" stop-opacity=".2"/><stop offset=".55" stop-color="#F4A259" stop-opacity=".06"/><stop offset="1" stop-color="#F4A259" stop-opacity="0"/></radialGradient></defs><circle cx="${CX}" cy="${CY}" r="330" fill="url(#gl)"/><circle cx="${CX}" cy="${CY}" r="125" fill="none" stroke="#2a3b34" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/><circle cx="${CX}" cy="${CY}" r="258" fill="none" stroke="#2a3b34" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/>`;
 const eg=(a,b,on,i,bend)=>{const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,qx=mx+(CX-mx)*bend,qy=my+(CY-my)*bend,d=`M${a[0]} ${a[1]}Q${qx} ${qy} ${b[0]} ${b[1]}`,hi=sel&&on;
@@ -229,66 +326,153 @@ return `<path class="e" pathLength="1" style="--i:${i}" d="${d}" fill="none" str
 
 function R(first){
 if(!cur)return;
-const P=cur.people,n=P.length,L=sortedLinks(),Og=L.slice(0,12),pp={},fp={},c=[CX,CY];let s=DEFS,k=0;
+const P=cur.people,n=P.length,L=sortedLinks(),Og=L.slice(0,12),pp={},fp={},c=[CX,CY],isP=cur.kind==="person";let s=DEFS,k=0;
 const a0=-PI/2;
 P.forEach((p,i)=>pp[p.id]=lay(a0+i*2*PI/n,125));
-Og.forEach((o,j)=>fp[o.f.id]=lay(-PI/2+(j+.5)*2*PI/Og.length,258));
+if(isP)pp[cur.id]=c;
+Og.forEach((o,j)=>fp[o.f.k]=lay(-PI/2+(j+.5)*2*PI/Og.length,258));
 P.forEach(p=>s+=eg(c,pp[p.id],p.id===sel,k++,0));
-Og.forEach(o=>o.who.forEach(id=>s+=eg(pp[id],fp[o.f.id],id===sel,k++,.22)));
+Og.forEach(o=>o.who.forEach(id=>{if(pp[id])s+=eg(pp[id],fp[o.f.k],id===sel,k++,id===cur.id&&isP?0:.22)}));
 P.forEach((p,i)=>{const rr=p.id===sel?31:26;s+='<g class="u">'+pn(p,pp[p.id],i)+lab(pp[p.id],p.name,36,p.id===sel,false,rr*2.6,rr*2.6,p.id===sel)+'</g>'});
 Og.forEach((o,j)=>{const on=!!sel&&o.who.includes(sel),kk=Math.min(1.6,1+.2*(o.who.length-1)),names=o.who.map(id=>(P.find(x=>x.id===id)||{}).name).filter(Boolean).join(", ");
-s+='<g class="u">'+fn(o.f,fp[o.f.id],kk,1,P.length+j,{on,dim:!!sel&&!on,names})+lab(fp[o.f.id],o.f.title,Math.round(12+25*kk),false,!!sel&&!on,17*kk*2.2,25*kk*2.2,on)+'</g>'});
-s+=fn({title:cur.title,poster_path:cur.poster},c,1.7,0,0)+`<text class="ttl" x="28" y="46" font-weight="700" font-size="27">${esc(cut(cur.title,32))}</text>${cur.year?`<text class="ttl" x="28" y="72" font-size="18" style="fill:var(--mut)">${esc(cur.year)}</text>`:""}`;
-$("g").setAttribute("class",first?"a":"");$("g").setAttribute("viewBox",MOB()?"180 20 620 620":"0 0 980 660");$("cap").hidden=true;{const sp=cur.people.find(x=>x.id===sel);if(sp&&MOB()){$("cap").innerHTML=`<b>${esc(sp.name)}</b> (${isDir(sp)?"regista":"attore o attrice"}). Le linee verdi portano ai suoi film.`;$("cap").hidden=false}}
+s+='<g class="u">'+fn(o.f,fp[o.f.k],kk,1,P.length+j,{on,dim:!!sel&&!on,names})+lab(fp[o.f.k],o.f.title,Math.round(12+25*kk),false,!!sel&&!on,17*kk*2.2,25*kk*2.2,on)+'</g>'});
+s+=(isP?pn(cur.person,c,0,1):fn(Object.assign({},cur.w,{poster_path:cur.poster}),c,1.7,0,0))+`<text class="ttl" x="28" y="46" font-weight="700" font-size="27">${esc(cut(cur.title,32))}</text>${cur.year?`<text class="ttl" x="28" y="72" font-size="18" style="fill:var(--mut)">${esc(cur.year)}</text>`:""}`;
+$("g").setAttribute("class",first?"a":"");$("g").setAttribute("viewBox",MOB()?"180 20 620 620":"0 0 980 660");
 clearTimeout(aT);if(first)aT=setTimeout(()=>$("g").setAttribute("class",""),2300);
 $("g").innerHTML=s;
 const dirs=P.filter(isDir),cast=P.filter(p=>!isDir(p));
-let i=`<section class="card"><div class="hd">${poster(cur.poster,cur.title,1)}<div><h2>${esc(cur.title)}</h2>${tags([cur.year,cur.runtime,...cur.genres])}</div></div>`+
+let i;
+if(!isP){
+i=`<section class="card"><div class="hd">${poster(cur.poster,cur.title,1)}<div><h2>${esc(cur.title)}</h2>${tags([kindOf(cur.w),cur.year,cur.runtime,...cur.genres])}</div></div>`+
 (cur.overview?`<p class="ov">${esc(cut(cur.overview,320))}</p>`:"")+
-`<div class="k">Regia</div>${dirs.map(ch).join("")}<div class="k">Cast principale</div>${cast.map(ch).join("")}`+
-`<div class="k">Collegamenti</div>${tags([cur.links.length+" film collegati"])}</section>`;
+`<div class="k">${cur.w.mt==="tv"?"Creata da":"Regia"}</div>${dirs.map(ch).join("")||'<span class="kd">non indicata</span>'}<div class="k">Cast principale</div>${cast.map(ch).join("")}`+
+`<div class="k">Collegamenti</div>${tags([cur.links.length+" opere collegate"])}<div class="dact"><button class="go alt${isSeen(cur.w.k)?" on":""}" type="button" data-seenc="1">${isSeen(cur.w.k)?"✓ Visto":"Segna come visto"}</button></div></section>`}
+else{
+const kn=cur.known[cur.id]||[];
+i=`<section class="card p"><div class="hd">${pa(cur.person,1)}<div><h2>${esc(cur.title)}</h2>${tags([cur.year])}</div></div>${sel?"":'<div id="bio" class="ov"></div>'}`+
+`<div class="k">Collaboratori frequenti</div>${P.map(ch).join("")||'<span class="kd">nessuno trovato</span>'}<div class="k">Opere principali</div><div>${kn.slice(0,10).map(fc).join("")}</div></section>`}
 const p=P.find(x=>x.id===sel);
-if(p){const kn=cur.known[p.id]||[];
+if(p){const kn=cur.known[p.id];
 i=`<section class="card p"><div class="hd">${pa(p,1)}<div><h2>${esc(p.name)}</h2>${tags([isDir(p)?"Regista":"Attore o attrice",p.char?"Interpreta "+p.char:""])}</div></div><div id="bio" class="ov"></div>`+
-`<div class="k">Altri film di ${esc(p.name)}</div><div>${kn.slice(0,10).map(fc).join("")||"Nessun altro film trovato."}</div></section>`+i}
+`<div class="k">Altre opere di ${esc(p.name)}</div><div>${kn?(kn.slice(0,10).map(fc).join("")||"Nessun'altra opera trovata."):"Carico…"}</div></section>`+i;
+if(!kn)ensureKnown(p)}
 $("info").innerHTML=i;
-$("p").innerHTML=`<h2>Film collegati a ${esc(cur.title)}</h2><ul>`+L.slice(0,24).map(o=>`<li>${poster(o.f.poster_path,o.f.title)}<div><button class="l" data-f="${o.f.id}">${esc(o.f.title)}${yr(o.f)?" ("+yr(o.f)+")":""}</button><div>${o.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}</div></div></li>`).join("")+"</ul>";
-if(p)bio(p)}
+$("p").innerHTML=`<h2>${isP?"Opere di ":"Collegamenti di "}${esc(cur.title)}</h2><ul>`+L.slice(0,24).map(o=>`<li>${poster(o.f.poster_path,o.f.title)}<div><button class="l" data-w="${o.f.k}">${esc(o.f.title)}${yr(o.f)?" ("+yr(o.f)+")":""}</button> <span class="kd">${kindOf(o.f)}</span><div>${o.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}</div></div></li>`).join("")+"</ul>";
+if(p)bio(p);else if(isP)bio(cur.person)}
 
-async function bio(p){
+let bioId=0;
+async function bio(p){bioId=p.id;
 try{let d=await api("/person/"+p.id);if(!d.biography)d=await api("/person/"+p.id,{language:"en-US"});
-if(sel!==p.id)return;const el=$("bio");if(!el)return;
+if(bioId!==p.id)return;const el=$("bio");if(!el)return;
 let born="";if(d.birthday){const t=new Date(d.birthday);born="Nato/a il "+(isNaN(t)?d.birthday:t.toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"}))+(d.place_of_birth?", "+d.place_of_birth:"")}
 const b=cut((d.biography||"").trim(),320);
 el.innerHTML=[born&&`<div>${esc(born)}</div>`,b&&`<div style="margin-top:6px">${esc(b)}</div>`].filter(Boolean).join("")}catch(e){}}
 
+let FILT="all",lastQ="";
+const pe=x=>({t:"p",id:x.id,name:x.name,photo:x.profile_path,dept:x.known_for_department}),we=(x,mt)=>({t:"w",w:nw(x,mt)});
+const sc=e=>e.t==="p"?`<button class="chip" data-sp="${e.id}">${pa({photo:e.photo,name:e.name,role:""})}${esc(e.name)} <span class="kd">· ${DEPT[e.dept]||"Persona"}</span></button>`:fc(e.w);
 async function cerca(){
 const v=$("q").value.trim();if(!v)return;
 if(!KEY&&!PROXY){$("keybox").hidden=false;setMsg("Inserisci prima la chiave per cercare.");return}
-const b=$("go");b.disabled=true;setMsg("Cerco…");
-try{const r=await api("/search/movie",{query:v,include_adult:"false"}),L=r.results||[];
-if(!L.length){setMsg("Nessun film trovato per «"+v+"».");$("res").innerHTML="";return}
-$("res").innerHTML=L.length>1?`<div class="k">Intendevi un altro film?</div><div>${L.slice(1,6).map(fc).join("")}</div>`:"";
-await loadFilm(L[0].id)}catch(e){showErr(e)}finally{b.disabled=false}}
+lastQ=v;const btn=$("go");btn.disabled=true;setMsg("Cerco…");
+try{const q={query:v,include_adult:"false"};let L=[];
+if(FILT==="all"){const r=await api("/search/multi",q);L=(r.results||[]).filter(x=>x.media_type==="movie"||x.media_type==="tv"||x.media_type==="person").map(x=>x.media_type==="person"?pe(x):we(x,x.media_type))}
+else if(FILT==="movie"){const r=await api("/search/movie",q);L=(r.results||[]).map(x=>we(x,"movie")).filter(e=>!e.w.anime)}
+else if(FILT==="tv"){const r=await api("/search/tv",q);L=(r.results||[]).map(x=>we(x,"tv")).filter(e=>!e.w.anime)}
+else if(FILT==="anime"){const[a,b]=await Promise.all([api("/search/tv",q),api("/search/movie",q)]);
+L=[...(a.results||[]).map(x=>we(x,"tv")),...(b.results||[]).map(x=>we(x,"movie"))].filter(e=>e.w.anime).sort((x,y)=>y.w.pop-x.w.pop)}
+else{const r=await api("/search/person",q);L=(r.results||[]).map(pe)}
+if(!L.length){setMsg("Nessun risultato per «"+v+"».");$("res").innerHTML="";return}
+$("res").innerHTML=L.length>1?`<div class="k">Intendevi altro?</div><div>${L.slice(1,7).map(sc).join("")}</div>`:"";
+const e=L[0];if(e.t==="p")await loadPerson(e.id);else await loadWork(e.w.mt,e.w.id)}
+catch(e){showErr(e)}finally{btn.disabled=false}}
 
 document.addEventListener("click",e=>{
-const f=e.target.closest("[data-f]"),p=e.target.closest("[data-p]");
-if(f&&MOB()&&f.closest("#g")&&!f.classList.contains("ctr")){const id=Number(f.dataset.f),o=sortedLinks().find(x=>x.f.id===id);
-$("g").querySelectorAll(".tap").forEach(x=>{x.classList.remove("tap");if(x.nextElementSibling&&!x.nextElementSibling.classList.contains("keep"))x.nextElementSibling.classList.remove("sel")});
-const lb=f.nextElementSibling;f.classList.add("tap");if(lb&&lb.classList)lb.classList.add("sel");
-if(o){$("cap").innerHTML=`<b>${esc(o.f.title)}</b>${yr(o.f)?" ("+yr(o.f)+")":""} <button class="l" data-f="${id}" type="button">Apri questo film →</button>`;$("cap").hidden=false}}
-else if(f){$("res").innerHTML="";loadFilm(Number(f.dataset.f))}
+if(e.target.closest("#g")||e.target.closest("#dlg"))return;
+const f=e.target.closest("[data-w]"),p=e.target.closest("[data-p]"),sp=e.target.closest("[data-sp]");
+if(e.target.closest("[data-seenc]")){if(cur&&cur.w)toggleSeen(Object.assign({},cur.w,{poster_path:cur.poster}));return}
+if(f){$("res").innerHTML="";centre(f.dataset.w)}
+else if(sp){$("res").innerHTML="";centre("p"+sp.dataset.sp)}
 else if(p){const id=Number(p.dataset.p);sel=sel===id?null:id;R()}});
 $("g").addEventListener("pointerover",e=>{const n=e.target.closest&&e.target.closest(".n");if(!n||n.classList.contains("ctr"))return;
 if($("g").getAttribute("class"))$("g").setAttribute("class","");
 const u=n.parentNode;if(u&&u.classList&&u.classList.contains("u")&&u.parentNode.lastElementChild!==u)u.parentNode.appendChild(u)});
-$("g").addEventListener("keydown",e=>{const t=e.target.closest&&e.target.closest("[data-f],[data-p]");
-if(t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();const pid=t.dataset.p;t.dispatchEvent(new MouseEvent("click",{bubbles:true}));
-if(pid){const nn=$("g").querySelector('[data-p="'+pid+'"]');if(nn)nn.focus()}}});
+// un tocco: finestra con i dettagli; due tocchi ravvicinati: porta al centro
+const DBL=300;let lastK="",lastT=0,tmr=0;
+$("g").addEventListener("click",e=>{
+const n=e.target.closest("[data-w],[data-p],[data-c]");if(!n)return;
+const key=n.dataset.w||(n.dataset.p?"p"+n.dataset.p:"c"),now=Date.now(),pt={x:e.clientX||innerWidth/2,y:e.clientY||innerHeight/2};
+if(key===lastK&&now-lastT<DBL){clearTimeout(tmr);lastK="";$("g").querySelectorAll(".tap").forEach(x=>x.classList.remove("tap"));if(key==="c")openDetail("c",pt);else centre(key);return}
+lastK=key;lastT=now;n.classList.add("tap");clearTimeout(tmr);
+tmr=setTimeout(()=>{lastK="";$("g").querySelectorAll(".tap").forEach(x=>x.classList.remove("tap"));openDetail(key,pt)},DBL)});
+$("g").addEventListener("keydown",e=>{const t=e.target.closest&&e.target.closest("[data-w],[data-p],[data-c]");
+if(t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();t.dispatchEvent(new MouseEvent("click",{bubbles:true}))}});
+
+// ---- finestra dei dettagli ----
+let dTok=0,lastFocus=null,dW=null;
+function closeDlg(){const d=$("dlg");if(d.hidden)return;d.hidden=true;document.body.classList.remove("dlgopen");dTok++;
+try{if(lastFocus&&lastFocus.focus)lastFocus.focus()}catch(e){}}
+function openDlg(html,pt,keep){const d=$("dlg"),cd=d.querySelector(".dcard"),was=!d.hidden;
+$("dbody").innerHTML=html;d.hidden=false;document.body.classList.add("dlgopen");
+if(!was){cd.classList.remove("grow");const r=cd.getBoundingClientRect();
+if(pt)cd.style.transformOrigin=(pt.x-r.left)+"px "+(pt.y-r.top)+"px";
+void cd.offsetWidth;cd.classList.add("grow");d.querySelector(".dx").focus()}
+if(!keep)cd.scrollTop=0}
+const dpc=(x,role)=>`<button class="chip" data-d="p${x.id}">${pa({photo:x.profile_path,name:x.name,role})}${esc(x.name)}</button>`;
+const dwc=w=>`<button class="chip" data-d="${w.k}">${ckm(w.k)}${w.poster_path?`<img class="po" src="${img(w.poster_path,"w92")}" alt="">`:""}${esc(w.title)}${yr(w)?" ("+yr(w)+")":""} <span class="kd">· ${kindOf(w)}</span></button>`;
+const fmtLong=s=>{const t=new Date(s+"T00:00:00");return isNaN(t)?s:t.toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"})};
+async function openDetail(key,pt,keep){
+if(!keep)lastFocus=document.activeElement;
+const my=++dTok;if(key==="c")key=cur.kind==="person"?"p"+cur.id:cur.w.k;
+openDlg('<p class="ov">Carico…</p>',pt);
+try{
+if(key[0]==="p"){const pid=Number(key.slice(1));
+if(cur.people.some(x=>x.id===pid)&&sel!==pid){sel=pid;R()}
+const[d0,cc]=await Promise.all([api("/person/"+pid),api("/person/"+pid+"/combined_credits")]);
+let d=d0;if(!d0.biography){const en=await api("/person/"+pid,{language:"en-US"});d=Object.assign({},d0,{biography:en.biography||""})}
+if(my!==dTok)return;
+const lines=[d.birthday&&("Nato/a il "+fmtLong(d.birthday)+(d.place_of_birth?", "+d.place_of_birth:"")),d.deathday&&("Morto/a il "+fmtLong(d.deathday))].filter(Boolean);
+const wk=pworks(cc,null).slice(0,10),here=cur.kind==="person"&&cur.id===pid;
+openDlg(`<div class="dtop">${d.profile_path?`<img class="dposter" src="${img(d.profile_path,"w342")}" alt="">`:`<span class="dposter ph">${esc(ini(d.name))}</span>`}<div><h2 id="dt">${esc(d.name)}</h2>${tags([DEPT[d.known_for_department]||"Persona"])}${lines.map(l=>`<p class="ov">${esc(l)}</p>`).join("")}</div></div>`+
+`<p class="ov dbio">${esc(d.biography||"Nessuna biografia disponibile.")}</p>`+
+`<div class="k">Conosciuto per</div><div>${wk.map(dwc).join("")||'<span class="kd">nessuna opera trovata</span>'}</div>`+
+(here?"":`<button class="go dgo" type="button" data-go="p${pid}">Porta al centro del grafo</button>`))}
+else{const{mt,id}=wkey(key),base=(mt==="tv"?"/tv/":"/movie/")+id;
+const[d0,c]=await Promise.all([api(base),credOf({mt,id})]);
+let d=d0;if(!d0.overview){const en=await api(base,{language:"en-US"});d=Object.assign({},d0,{overview:en.overview||""})}
+if(my!==dTok)return;
+const W=nw(d,mt);dW=W;const here=cur.kind==="work"&&cur.w.k===key,o=cur.links.find(x=>x.f.k===key);
+const len=mt==="tv"?[d.number_of_seasons?d.number_of_seasons+(d.number_of_seasons>1?" stagioni":" stagione"):"",d.number_of_episodes?d.number_of_episodes+" episodi":""].filter(Boolean).join(" · "):(d.runtime?Math.floor(d.runtime/60)+"h "+(d.runtime%60)+"min":"");
+const rate=d.vote_average>0?"★ "+d.vote_average.toFixed(1)+" ("+d.vote_count+" voti)":"";
+const com=o?o.who.map(i=>(cur.people.find(x=>x.id===i)||{}).name).filter(Boolean).join(", "):"";
+openDlg(`<div class="dtop">${d.poster_path?`<img class="dposter" src="${img(d.poster_path,"w342")}" alt="">`:`<span class="dposter ph">${esc(ini(W.title))}</span>`}<div><h2 id="dt">${esc(W.title)}</h2>${tags([kindOf(W),yr(W),len,...(d.genres||[]).map(g=>g.name)])}${rate?`<p class="ov">${esc(rate)}</p>`:""}${d.tagline?`<p class="ov"><i>${esc(d.tagline)}</i></p>`:""}</div></div>`+
+`<p class="ov dbio">${esc(d.overview||"Trama non disponibile.")}</p>`+
+(com?`<p class="ov"><b>In comune con:</b> ${esc(com)}</p>`:"")+
+`<div class="k">${mt==="tv"?"Creata da":"Regia"}</div><div>${c.dirs.slice(0,3).map(x=>dpc(x,"Regista")).join("")||'<span class="kd">non indicata</span>'}</div><div class="k">Cast</div><div>${c.cast.slice(0,10).map(x=>dpc(x,"Attore")).join("")}</div>`+
+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Porta al centro del grafo</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button></div>`)}
+}catch(e){if(my===dTok){closeDlg();showErr(e)}}}
+const kindK=x=>x.a?"Anime":x[0]==="t"?"Serie TV":"Film";
+function openSeen(pt,keep){if(!keep)lastFocus=document.activeElement;dTok++;
+const n=SEEN.length,c={f:0,t:0,a:0};SEEN.forEach(x=>{if(x.a)c.a++;else if(x.k[0]==="t")c.t++;else c.f++});
+const fmtS=t=>new Date(t).toLocaleDateString("it-IT",{day:"numeric",month:"short",year:"numeric"});
+openDlg(`<h2 id="dt">Titoli visti</h2>`+(n?`<p class="ov">${[c.f&&c.f+(c.f>1?" film":" film"),c.t&&c.t+(c.t>1?" serie TV":" serie TV"),c.a&&c.a+(c.a>1?" anime":" anime")].filter(Boolean).join(" · ")}</p><ul class="sl">${SEEN.map(x=>`<li>${poster(x.p,x.t)}<div><button class="l" data-d="${x.k}">${esc(x.t)}${x.y?" ("+x.y+")":""}</button><div class="kd">${kindK(x)} · segnato il ${fmtS(x.d)}</div></div><button class="rm" type="button" data-unseen="${x.k}" aria-label="Togli ${esc(x.t)} dai visti">✕</button></li>`).join("")}</ul>`:`<p class="ov">Non hai ancora segnato nessun titolo. Apri un film, una serie o un anime e premi «Segna come visto»: lo ritroverai qui e nel grafo con una spunta verde.</p>`)+`<p class="kd" style="margin-top:14px">L'elenco è salvato solo su questo dispositivo, nel browser o nell'app che stai usando.</p>`,pt,keep)}
+$("seenbtn").addEventListener("click",e=>openSeen({x:e.clientX||innerWidth/2,y:e.clientY||innerHeight/2}));
+updSeen();
+$("dlg").addEventListener("click",e=>{
+const sn=e.target.closest("[data-seen]");if(sn&&dW){toggleSeen(dW);const on=isSeen(dW.k);sn.classList.toggle("on",on);sn.textContent=on?"✓ Visto":"Segna come visto";return}
+const un=e.target.closest("[data-unseen]");if(un){const i=SEEN.findIndex(x=>x.k===un.dataset.unseen);if(i>=0){SEEN.splice(i,1);store.set("cl_seen",JSON.stringify(SEEN));updSeen();if(cur&&!$("film").hidden)R();openSeen(null,true)}return}
+if(e.target.closest(".dx")||e.target.classList.contains("dbk")){closeDlg();return}
+const g=e.target.closest("[data-go]");if(g){centre(g.dataset.go);return}
+const d=e.target.closest("[data-d]");if(d)openDetail(d.dataset.d,{x:e.clientX,y:e.clientY},true)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDlg()});
+$("seg").addEventListener("click",e=>{const b=e.target.closest("[data-fl]");if(!b)return;FILT=b.dataset.fl;
+$("seg").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+$("q").placeholder={all:"Cerca un film, una serie, un anime o un attore",movie:"Cerca un film",tv:"Cerca una serie TV",anime:"Cerca un anime",person:"Cerca un attore o un regista"}[FILT];
+if($("q").value.trim()&&$("q").value.trim()===lastQ)cerca()});
 $("back").addEventListener("click",()=>{show("home");if(!$("now").innerHTML)loadHome()});
 $("go").addEventListener("click",cerca);
 $("q").addEventListener("keydown",e=>{if(e.key==="Enter")cerca()});
-function saveKey(){const v=$("k").value.trim();if(!v)return;KEY=v;store.set("cl_tmdb_key",v);$("k").value="";$("keybox").hidden=true;cache.clear();setMsg("");if(cur)loadFilm(cur.id);else{show("home");loadHome()}}
+function saveKey(){const v=$("k").value.trim();if(!v)return;KEY=v;store.set("cl_tmdb_key",v);$("k").value="";$("keybox").hidden=true;cache.clear();setMsg("");if(cur)centre(cur.kind==="person"?"p"+cur.id:cur.w.k);else{show("home");loadHome()}}
 $("ks").addEventListener("click",saveKey);
 $("k").addEventListener("keydown",e=>{if(e.key==="Enter")saveKey()});
 $("chg").addEventListener("click",()=>{$("keybox").hidden=false;$("k").focus()});
