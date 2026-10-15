@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0d1512">
+<meta name="theme-color" content="#0d0d0e">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -13,14 +13,15 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>CineLegami</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&display=swap" rel="stylesheet">
+
 <style>
-:root{color-scheme:dark;--bg:#0d1512;--card:#15211d;--fg:#f3efdc;--mut:#9fb2a8;--bd:#2a3b34;--film:#BC4B51;--film-t:#E8858A;--dir:#5B8E7D;--dir-t:#93cbb8;--act:#F4A259;--hl:#8CB369;--acc:#F4E285;--edge:#3f564b}
+:root{color-scheme:dark;--bg:#0d0d0e;--card:#18181b;--fg:#f2eadf;--mut:#a69f94;--bd:#2d2c30;--film:#57a689;--film-t:#8fd0b6;--dir:#9473c4;--dir-t:#bfa6e6;--act:#eeac3a;--hl:#4ea0cd;--acc:#f2b447;--edge:#4a4850;--red:#e85737}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45}
 main{max-width:900px;margin:0 auto;padding:max(22px,env(safe-area-inset-top)) 16px max(40px,env(safe-area-inset-bottom))}
-h1{font-family:Cinzel,"Iowan Old Style","Palatino Linotype",Georgia,serif;font-weight:800;font-size:3rem;letter-spacing:.07em;text-align:center;color:var(--acc);text-shadow:0 0 22px rgba(244,226,133,.28);margin:6px 0 4px}
-h2{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-size:1.2rem;margin:26px 0 6px}
+h1{margin:6px 0 4px;text-align:center;line-height:0}
+.logo{width:min(78vw,360px);height:auto}
+h2{font-weight:800;font-size:1.2rem;margin:26px 0 6px}
 p.sub{margin:0 0 18px;color:var(--mut);text-align:center}
 h2+p.sub,#p p.sub{text-align:left}
 a{color:var(--dir-t)}
@@ -30,10 +31,10 @@ input:focus-visible,button:focus-visible{outline:3px solid var(--dir);outline-of
 .go{font:inherit;font-weight:600;padding:0 22px;border:0;border-radius:999px;background:var(--film);color:#fff;cursor:pointer}
 .go:disabled{opacity:.6;cursor:wait}
 #msg{color:var(--mut);min-height:1.4em;font-size:.9rem;margin:6px 4px 0}
-.box{border:1px solid var(--bd);border-radius:16px;margin-top:12px;overflow-x:auto;background:#0a110f}
+.box{border:1px solid var(--bd);border-radius:16px;margin-top:12px;overflow-x:auto;background:#09090a}
 svg{width:100%;min-width:760px;height:auto;display:block}
-svg text{fill:var(--fg);font-size:17px;paint-order:stroke;stroke:#0a110f;stroke-width:5px;stroke-linejoin:round;pointer-events:none}
-svg text.in{fill:#14251f;stroke:none;font-size:14px;font-weight:700}
+svg text{fill:var(--fg);font-size:17px;paint-order:stroke;stroke:#09090a;stroke-width:5px;stroke-linejoin:round;pointer-events:none}
+svg text.in{fill:#121014;stroke:none;font-size:14px;font-weight:700}
 svg text.in.f{fill:#fff}
 .n{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .2s}
 .n[data-p]:focus-visible{transform:scale(2.6)}
@@ -45,7 +46,7 @@ svg text.in.f{fill:#fff}
 .n:hover + .lb,.n:focus-visible + .lb{transform:translate(var(--sx,0px),var(--sy,0px));opacity:1}
 @media(prefers-reduced-motion:reduce){.n,.lb{transition:none}}
 .n.on{filter:drop-shadow(0 0 9px var(--hl))}
-.n.ctr{cursor:default;filter:drop-shadow(0 0 18px rgba(244,226,133,.38))}
+.n.ctr{cursor:default;filter:drop-shadow(0 0 18px rgba(242,180,71,.38))}
 .n.ctr:hover{transform:none}
 g[tabindex]:focus-visible{outline:3px solid var(--acc);outline-offset:4px;border-radius:8px}
 @media(prefers-reduced-motion:no-preference){
@@ -60,7 +61,7 @@ g[tabindex]:focus-visible{outline:3px solid var(--acc);outline-offset:4px;border
 .n.tap{filter:drop-shadow(0 0 8px var(--acc))}
 @media(max-width:700px){
 main{padding:max(16px,env(safe-area-inset-top)) 12px max(32px,env(safe-area-inset-bottom))}
-h1{font-size:2.1rem;letter-spacing:.05em}
+
 .box{overflow:hidden}
 svg{min-width:0}
 svg .ttl{display:none}
@@ -82,12 +83,12 @@ li{gap:10px}
 .hd h2{margin:0}
 .k{color:var(--mut);font-size:.82rem;margin:14px 0 2px}
 .ov{margin:10px 0 0;font-size:.92rem}
-.tag{display:inline-block;padding:2px 10px;border-radius:999px;background:var(--acc);color:#3b3510;font-size:.8rem;font-weight:600;margin:4px 6px 0 0}
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;background:var(--acc);color:#3a2806;font-size:.8rem;font-weight:600;margin:4px 6px 0 0}
 ul{list-style:none;margin:0;padding:0}
 li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)}
 .fa{flex:none;display:grid;place-items:center;width:40px;height:58px;border-radius:6px;color:#fff;background:var(--film);font-size:.8rem;font-weight:700;object-fit:cover}
 .fa.big{width:64px;height:94px;font-size:1rem}
-.pa{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;color:#14251f;font-size:.62rem;font-weight:700;margin-right:6px;object-fit:cover;object-position:top;border:2px solid var(--act)}
+.pa{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;color:#121014;font-size:.62rem;font-weight:700;margin-right:6px;object-fit:cover;object-position:top;border:2px solid var(--act)}
 .pa.dir{border-color:var(--dir);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);border-radius:0}
 .pa.big{width:68px;height:68px;font-size:1rem;margin:0;border-width:3px}
 .chip{display:inline-flex;align-items:center;margin:4px 8px 0 0;padding:2px 12px 2px 2px;border:1px solid var(--bd);border-radius:999px;background:var(--card);font:inherit;font-size:.85rem;color:var(--fg);cursor:pointer;text-align:left}
@@ -105,7 +106,7 @@ button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);backgro
 .link{font:inherit;font-size:.82rem;color:var(--dir-t);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
 .seg{display:flex;gap:8px;flex-wrap:wrap;margin:10px 2px 0}
 .seg button{font:inherit;font-size:.85rem;padding:5px 14px;border-radius:999px;border:1px solid var(--bd);background:var(--card);color:var(--mut);cursor:pointer}
-.seg button[aria-pressed="true"]{background:var(--acc);color:#3b3510;border-color:var(--acc);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--acc);color:#3a2806;border-color:var(--acc);font-weight:600}
 .kd{color:var(--mut);font-size:.78rem}
 .chip .kd{margin-left:5px}
 svg{touch-action:manipulation;-webkit-user-select:none;user-select:none}
@@ -118,9 +119,9 @@ body.dlgopen{overflow:hidden}
 .dx{position:absolute;top:8px;right:10px;width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:var(--fg);font-size:1.5rem;line-height:1;cursor:pointer}
 .dx:hover{background:rgba(255,255,255,.16)}
 .dtop{display:flex;gap:18px;align-items:flex-start;padding-right:30px}
-.dposter{flex:none;width:140px;aspect-ratio:2/3;border-radius:10px;object-fit:cover;background:#0a110f;border:1px solid var(--bd)}
+.dposter{flex:none;width:140px;aspect-ratio:2/3;border-radius:10px;object-fit:cover;background:#09090a;border:1px solid var(--bd)}
 .dposter.ph{display:grid;place-items:center;font-size:1.6rem;font-weight:700;color:var(--fg)}
-.dcard h2{margin:0 0 4px;font-family:Cinzel,"Iowan Old Style",Georgia,serif;font-size:1.5rem}
+.dcard h2{margin:0 0 4px;font-family:inherit;font-weight:800;font-size:1.5rem}
 .dbio{white-space:pre-line;line-height:1.55}
 .dgo{margin-top:18px;padding:12px 22px}
 @media(prefers-reduced-motion:no-preference){
@@ -142,7 +143,7 @@ body.dlgopen{overflow:hidden}
 .dact{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
 .dact .dgo{margin-top:0}
 .go.alt{background:transparent;border:2px solid var(--hl);color:var(--hl)}
-.go.alt.on{background:var(--hl);color:#14251f}
+.go.alt.on{background:var(--hl);color:#121014}
 .sl li{align-items:center}
 .sl .fa{width:36px;height:52px}
 .rm{flex:none;margin-left:auto;width:34px;height:34px;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:var(--mut);font-size:1rem;cursor:pointer}
@@ -167,7 +168,7 @@ body.dlgopen{overflow:hidden}
 </head>
 <body>
 <main>
-<h1>CineLegami</h1>
+<h1><img src="logo-scritta.png" alt="CineLegami" class="logo"></h1>
 <p class="sub">Scopri i collegamenti tra i film</p>
 <section id="keybox" class="card" hidden>
 <h2 style="margin-top:0">Collega il database dei film</h2>
@@ -353,8 +354,8 @@ const lay=(a,r)=>[CX+r*Math.cos(a),CY+r*Math.sin(a)];
 function lab(p,txt,off,bold,dim,ex,ey,sl){const dx=p[0]-CX,dy=p[1]-CY,m=Math.abs(dx)<30;
 const sx=m?0:(dx>0?1:-1)*Math.max(0,Math.round((ex||0)+10-off)),sy=m?(dy>0?1:-1)*Math.max(0,Math.round((ey||0)+8-off)):0;
 return `<text class="lb${sl?" sel":""}" style="--sx:${sx}px;--sy:${sy}px" x="${p[0]+(m?0:dx>0?off:-off)}" y="${p[1]+(m?(dy>0?off+16:-off):6)}" text-anchor="${m?"middle":dx>0?"start":"end"}"${bold?' font-weight="700"':""}${dim?' opacity=".4"':""}>${esc(cut(txt,26))}</text>`}
-const IC={tv:`<rect x="-6.5" y="-3" width="13" height="9.5" rx="1.600" fill="#0a110f"/><path d="M-3.200 -6.300l3.200 2.800 3.200 -2.800" stroke="#0a110f" stroke-width="1.400" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="-4.600" y="-1.400" width="9.200" height="6.300" rx=".9" fill="var(--film)"/>`,anime:`<path d="M0 -7.500L1.900 -1.900L7.500 0L1.900 1.900L0 7.500L-1.900 1.900L-7.500 0L-1.900 -1.900Z" fill="#0a110f"/><circle cx="5.600" cy="-5.600" r="1.400" fill="#0a110f"/>`,dir:`<rect x="-6" y="-1" width="12" height="7.5" rx="1" fill="#0a110f"/><g transform="rotate(-15 -6 -2)"><rect x="-6" y="-5.5" width="12" height="3.5" rx="1" fill="#0a110f"/><path d="M-2.5 -5.5l-1.5 3.5M1.5 -5.5l-1.5 3.5M5.5 -5.5l-1.5 3.5" stroke="var(--dir)" stroke-width="1.3"/></g>`, act:`<polygon points="0.00,-14.00 4.11,-5.66 13.31,-4.33 6.66,2.16 8.23,11.33 0.00,7.00 -8.23,11.33 -6.66,2.16 -13.31,-4.33 -4.11,-5.66" fill="#0a110f" stroke="#0a110f" stroke-width="2" stroke-linejoin="round"/><polygon points="0.00,-11.20 3.29,-4.53 10.65,-3.46 5.33,1.73 6.58,9.06 0.00,5.60 -6.58,9.06 -5.33,1.73 -10.65,-3.46 -3.29,-4.53" fill="var(--act)"/><polygon points="0.00,-7.20 2.12,-2.91 6.85,-2.22 3.42,1.11 4.23,5.82 0.00,3.60 -4.23,5.82 -3.42,1.11 -6.85,-2.22 -2.12,-2.91" fill="#0a110f"/>`, film:`<rect x="-6" y="-5.5" width="12" height="11" rx="1.500" fill="#0a110f"/><path d="M-4.500 -3.500h1.500M-4.500 -0.700h1.500M-4.500 2.100h1.500M3 -3.500h1.500M3 -0.700h1.500M3 2.100h1.500" stroke="var(--film)" stroke-width="1.500"/><rect x="-1.800" y="-3.500" width="3.600" height="7" fill="var(--film)"/>`};
-const bdg=(x,y,c,t,r)=>`<g class="bd" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(r/12).toFixed(2)})">${t==="act"?"":`<circle r="12" fill="var(--${c})" stroke="#0a110f" stroke-width="2"/>`}${IC[t].replace(/var\(--(\w+)\)/g,(m,n)=>n===c?`var(--${c})`:m)}</g>`;
+const IC={tv:`<rect x="-6.5" y="-3" width="13" height="9.5" rx="1.600" fill="#09090a"/><path d="M-3.200 -6.300l3.200 2.800 3.200 -2.800" stroke="#09090a" stroke-width="1.400" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="-4.600" y="-1.400" width="9.200" height="6.300" rx=".9" fill="var(--film)"/>`,anime:`<path d="M0 -7.500L1.900 -1.900L7.500 0L1.900 1.900L0 7.500L-1.900 1.900L-7.500 0L-1.900 -1.900Z" fill="#09090a"/><circle cx="5.600" cy="-5.600" r="1.400" fill="#09090a"/>`,dir:`<rect x="-6" y="-1" width="12" height="7.5" rx="1" fill="#09090a"/><g transform="rotate(-15 -6 -2)"><rect x="-6" y="-5.5" width="12" height="3.5" rx="1" fill="#09090a"/><path d="M-2.5 -5.5l-1.5 3.5M1.5 -5.5l-1.5 3.5M5.5 -5.5l-1.5 3.5" stroke="var(--dir)" stroke-width="1.3"/></g>`, act:`<polygon points="0.00,-14.00 4.11,-5.66 13.31,-4.33 6.66,2.16 8.23,11.33 0.00,7.00 -8.23,11.33 -6.66,2.16 -13.31,-4.33 -4.11,-5.66" fill="#09090a" stroke="#09090a" stroke-width="2" stroke-linejoin="round"/><polygon points="0.00,-11.20 3.29,-4.53 10.65,-3.46 5.33,1.73 6.58,9.06 0.00,5.60 -6.58,9.06 -5.33,1.73 -10.65,-3.46 -3.29,-4.53" fill="var(--act)"/><polygon points="0.00,-7.20 2.12,-2.91 6.85,-2.22 3.42,1.11 4.23,5.82 0.00,3.60 -4.23,5.82 -3.42,1.11 -6.85,-2.22 -2.12,-2.91" fill="#09090a"/>`, film:`<rect x="-6" y="-5.5" width="12" height="11" rx="1.500" fill="#09090a"/><path d="M-4.500 -3.500h1.500M-4.500 -0.700h1.500M-4.500 2.100h1.500M3 -3.500h1.500M3 -0.700h1.500M3 2.100h1.500" stroke="var(--film)" stroke-width="1.500"/><rect x="-1.800" y="-3.500" width="3.600" height="7" fill="var(--film)"/>`};
+const bdg=(x,y,c,t,r)=>`<g class="bd" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(r/12).toFixed(2)})">${t==="act"?"":`<circle r="12" fill="var(--${c})" stroke="#09090a" stroke-width="2"/>`}${IC[t].replace(/var\(--(\w+)\)/g,(m,n)=>n===c?`var(--${c})`:m)}</g>`;
 const hx=(x,y,R)=>[0,1,2,3,4,5].map(k=>(x+R*Math.cos(PI/6+k*PI/3)).toFixed(1)+","+(y+R*Math.sin(PI/6+k*PI/3)).toFixed(1)).join(" ");
 function pn(p,q,i,ctr,hi,dim){const d=isDir(p),r=ctr?42:(hi?31:26),id="cp"+(ctr?"c":p.id),R=d?r*1.18:r;
 const shp=(at)=>d?`<polygon points="${hx(q[0],q[1],R)}" ${at}/>`:`<circle cx="${q[0]}" cy="${q[1]}" r="${r}" ${at}/>`;
@@ -364,9 +365,9 @@ return `<g class="n${ctr?" ctr":""}${hi&&!ctr?" on":""}" style="--i:${i}${dim?";
 function fn(f,q,k,go,i,x){x=x||{};const w=17*k,h=25*k,id="cf"+(go?f.k:"c");
 const inner=f.poster_path?`<clipPath id="${id}"><rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6"/></clipPath><image href="${img(f.poster_path,"w342")}" x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${id})"/>`:`<text class="in f" x="${q[0]}" y="${q[1]+5}" text-anchor="middle">${esc(ini(f.title))}</text>`;
 const bd=f.anime?["acc","anime"]:f.mt==="tv"?["film","tv"]:["film","film"];
-return `<g class="n${go?"":" ctr"}${x.on?" on":""}" style="--i:${i}${x.dim?";opacity:.35":""}" ${go?`data-w="${f.k}"`:'data-c="1"'} tabindex="0" role="button" aria-label="${esc(f.title)}, ${kindOf(f).toLowerCase()}"><title>${esc(f.title)}${yr(f)?" ("+yr(f)+")":""} · ${kindOf(f)}${x.names?", in comune con "+esc(x.names):""}</title>${go?`<rect x="${q[0]-w-8}" y="${q[1]-h-8}" width="${2*w+16}" height="${2*h+16}" fill="transparent"/>`:""}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="var(--film)"/>${inner}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="none" stroke="${x.on?"var(--hl)":"#0a110f"}" stroke-width="3"/>${bdg(q[0]+w*.9,q[1]-h*.9,bd[0],bd[1],go?10:12)}${isSeen(f.k)?`<g class="bd" transform="translate(${(q[0]+w*.9).toFixed(1)} ${(q[1]+h*.9).toFixed(1)}) scale(${go?.83:1})"><circle r="12" fill="var(--hl)" stroke="#0a110f" stroke-width="2"/><path d="M-5 0.500l3.500 3.500 6.500-7.500" stroke="#0a110f" stroke-width="2.600" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`:""}</g>`}
+return `<g class="n${go?"":" ctr"}${x.on?" on":""}" style="--i:${i}${x.dim?";opacity:.35":""}" ${go?`data-w="${f.k}"`:'data-c="1"'} tabindex="0" role="button" aria-label="${esc(f.title)}, ${kindOf(f).toLowerCase()}"><title>${esc(f.title)}${yr(f)?" ("+yr(f)+")":""} · ${kindOf(f)}${x.names?", in comune con "+esc(x.names):""}</title>${go?`<rect x="${q[0]-w-8}" y="${q[1]-h-8}" width="${2*w+16}" height="${2*h+16}" fill="transparent"/>`:""}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="var(--film)"/>${inner}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="none" stroke="${x.on?"var(--hl)":"#09090a"}" stroke-width="3"/>${bdg(q[0]+w*.9,q[1]-h*.9,bd[0],bd[1],go?10:12)}${isSeen(f.k)?`<g class="bd" transform="translate(${(q[0]+w*.9).toFixed(1)} ${(q[1]+h*.9).toFixed(1)}) scale(${go?.83:1})"><circle r="12" fill="var(--hl)" stroke="#09090a" stroke-width="2"/><path d="M-5 0.500l3.500 3.500 6.500-7.500" stroke="#09090a" stroke-width="2.600" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`:""}</g>`}
 const sortedLinks=()=>[...cur.links].sort((a,b)=>b.who.length-a.who.length||(b.f.vote_count||0)-(a.f.vote_count||0));
-const DEFS=`<defs><radialGradient id="gl"><stop offset="0" stop-color="#F4E285" stop-opacity=".2"/><stop offset=".55" stop-color="#F4A259" stop-opacity=".06"/><stop offset="1" stop-color="#F4A259" stop-opacity="0"/></radialGradient></defs><circle cx="${CX}" cy="${CY}" r="330" fill="url(#gl)"/><circle cx="${CX}" cy="${CY}" r="125" fill="none" stroke="#2a3b34" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/><circle cx="${CX}" cy="${CY}" r="258" fill="none" stroke="#2a3b34" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/>`;
+const DEFS=`<defs><radialGradient id="gl"><stop offset="0" stop-color="#f2b447" stop-opacity=".2"/><stop offset=".55" stop-color="#eeac3a" stop-opacity=".06"/><stop offset="1" stop-color="#eeac3a" stop-opacity="0"/></radialGradient></defs><circle cx="${CX}" cy="${CY}" r="330" fill="url(#gl)"/><circle cx="${CX}" cy="${CY}" r="125" fill="none" stroke="#2d2c30" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/><circle cx="${CX}" cy="${CY}" r="258" fill="none" stroke="#2d2c30" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/>`;
 const eg=(a,b,on,i,bend)=>{const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,qx=mx+(CX-mx)*bend,qy=my+(CY-my)*bend,d=`M${a[0]} ${a[1]}Q${qx} ${qy} ${b[0]} ${b[1]}`,hi=hasSel&&on;
 return `<path class="e" pathLength="1" style="--i:${i}" d="${d}" fill="none" stroke="${hi?"var(--hl)":"var(--edge)"}" stroke-width="${hi?4:1.5}" stroke-linecap="round" opacity="${hasSel?(on?1:.18):.6}"/>`+(hasSel&&!on?"":`<path class="ef${hi?" on":""}" pathLength="1" style="--i:${i}" d="${d}" fill="none" stroke="${hi?"#fff":"var(--acc)"}" stroke-width="${hi?3:2.2}" stroke-linecap="round" opacity="${hi?.95:.8}"/>`)};
 
