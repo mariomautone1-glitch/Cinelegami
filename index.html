@@ -63,6 +63,13 @@ g[tabindex]:focus-visible{outline:3px solid var(--acc);outline-offset:4px;border
 @keyframes draw{from{stroke-dashoffset:1}}}
 .cap{margin:10px 2px 0;font-size:1rem}
 .n.tap{filter:drop-shadow(0 0 8px var(--acc))}
+.n[data-w],.n[data-p]{touch-action:none}
+#g.drag,#g.drag .n{cursor:grabbing}
+.u.dragging{filter:drop-shadow(0 8px 14px rgba(0,0,0,.6));pointer-events:none}
+.u.back{transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.dz{fill:rgba(242,180,71,0);stroke:var(--acc);stroke-width:2;stroke-dasharray:3 8;stroke-linecap:round;opacity:0;pointer-events:none;transition:opacity .2s,fill .2s,stroke-width .2s}
+#g.drag .dz{opacity:.55}
+#g.drop .dz{opacity:1;stroke-width:4;fill:rgba(242,180,71,.14)}
 .sg{cursor:pointer}.sg .sgb{fill:rgba(9,9,10,.9);stroke:var(--mut);stroke-width:1.6;transition:fill .15s,stroke .15s}
 .sg path{fill:none;stroke:var(--fg);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 .sg.on .sgb{fill:var(--hl);stroke:#09090a;stroke-width:2}.sg.on path{stroke:#09090a}
@@ -437,7 +444,7 @@ const bd=f.anime?["acc","anime"]:f.mt==="tv"?["film","tv"]:["film","film"];
 return `<g class="n${go?"":" ctr"}${x.on?" on":""}" style="--i:${i}${x.dim?";opacity:.3":""}" ${go?`data-w="${f.k}"`:'data-c="1"'} tabindex="0" role="button" aria-label="${esc(f.title)}, ${kindOf(f).toLowerCase()}"><title>${esc(f.title)}${yr(f)?" ("+yr(f)+")":""} · ${kindOf(f)}${x.names?", in comune con "+esc(x.names):""}</title>${go?`<rect x="${q[0]-w-8}" y="${q[1]-h-8}" width="${2*w+16}" height="${2*h+16}" fill="transparent"/>`:""}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="var(--film)"/>${inner}<rect x="${q[0]-w}" y="${q[1]-h}" width="${2*w}" height="${2*h}" rx="6" fill="none" stroke="${x.on?"var(--hl)":"#09090a"}" stroke-width="3"/>${bdg(q[0]+w*.9,q[1]-h*.9,bd[0],bd[1],go?10:12)}${isSeen(f.k)&&!go?`<g class="bd" transform="translate(${(q[0]+w*.9).toFixed(1)} ${(q[1]+h*.9).toFixed(1)}) scale(${go?.83:1})"><circle r="12" fill="var(--hl)" stroke="#09090a" stroke-width="2"/><path d="M-5 0.500l3.500 3.500 6.500-7.500" stroke="#09090a" stroke-width="2.600" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`:""}</g>`}
 const sortedLinks=()=>[...cur.links].sort((a,b)=>b.who.length-a.who.length||(b.f.vote_count||0)-(a.f.vote_count||0));
 const STARS=(()=>{let x=7,o="";const rn=()=>(x=(x*16807)%2147483647)/2147483647;for(let i=0;i<46;i++){const a=rn()*980,b=rn()*660,r=.7+rn()*1.3;o+=`<circle cx="${a.toFixed(0)}" cy="${b.toFixed(0)}" r="${r.toFixed(1)}" fill="#f2eadf" opacity="${(.1+rn()*.22).toFixed(2)}"/>`}return o})();
-const DEFS=`<defs><radialGradient id="gl"><stop offset="0" stop-color="#f2b447" stop-opacity=".22"/><stop offset=".5" stop-color="#eeac3a" stop-opacity=".06"/><stop offset="1" stop-color="#eeac3a" stop-opacity="0"/></radialGradient></defs>${STARS}<circle cx="${CX}" cy="${CY}" r="340" fill="url(#gl)"/><circle class="pulse" cx="${CX}" cy="${CY}" r="78" fill="none" stroke="#f2b447" stroke-opacity=".3" stroke-width="2"/><circle cx="${CX}" cy="${CY}" r="140" fill="none" stroke="#2d2c30" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/><circle cx="${CX}" cy="${CY}" r="262" fill="none" stroke="#2d2c30" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/>`;
+const DEFS=`<defs><radialGradient id="gl"><stop offset="0" stop-color="#f2b447" stop-opacity=".22"/><stop offset=".5" stop-color="#eeac3a" stop-opacity=".06"/><stop offset="1" stop-color="#eeac3a" stop-opacity="0"/></radialGradient></defs>${STARS}<circle cx="${CX}" cy="${CY}" r="340" fill="url(#gl)"/><circle class="dz" cx="${CX}" cy="${CY}" r="96"/><circle class="pulse" cx="${CX}" cy="${CY}" r="78" fill="none" stroke="#f2b447" stroke-opacity=".3" stroke-width="2"/><circle cx="${CX}" cy="${CY}" r="140" fill="none" stroke="#2d2c30" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/><circle cx="${CX}" cy="${CY}" r="262" fill="none" stroke="#2d2c30" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/>`;
 const eg=(a,b,on,i,bend,an)=>{const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,qx=mx+(CX-mx)*bend,qy=my+(CY-my)*bend,d=`M${a[0]} ${a[1]}Q${qx} ${qy} ${b[0]} ${b[1]}`,hi=hasSel&&on;
 return `<path class="e${an?" eb":""}" pathLength="1" style="--i:${i}" d="${d}" fill="none" stroke="${hi?"var(--hl)":"var(--edge)"}" stroke-width="${hi?4:1.5}" stroke-linecap="round" opacity="${hasSel?(on?1:.18):.6}"/>`+(hasSel&&!on?"":`<path class="ef${hi?" on":""}" pathLength="1" style="--i:${i}" d="${d}" fill="none" stroke="${hi?"#fff":"var(--acc)"}" stroke-width="${hi?3:2.2}" stroke-linecap="round" opacity="${hi?.95:.8}"/>`)};
 
@@ -476,7 +483,7 @@ names=it.o.who.map(id=>(P.find(x=>x.id===id)||{}).name).filter(Boolean).join(", 
 const st=it.bloom&&anim?` bl" style="--dx:${(pp[ps.id][0]-it.q[0]).toFixed(1)}px;--dy:${(pp[ps.id][1]-it.q[1]).toFixed(1)}px;--i:${it.j}`:"";
 s+=`<g class="u${st}">`+fn(f,it.q,kk,1,P.length+it.j,{on,dim:hasSel&&!on&&!it.bloom,names})+wlab(it.q,w,h,f.title,dim,on,it.ang)+sgBtn(f,it.q,w,h)+"</g>"});
 s+=(isP?pn(cur.person,c,0,1):fn(Object.assign({},cur.w,{poster_path:cur.poster}),c,2.1,0,0))+`<text class="ttl" x="28" y="46" font-weight="700" font-size="27">${esc(cut(cur.title,32))}</text>${cur.year?`<text class="ttl" x="28" y="72" font-size="18" style="fill:var(--mut)">${esc(cur.year)}</text>`:""}`;
-const hint=sel?(items.length?"Tocca un film per i dettagli · il segno in basso lo aggiunge a «I miei film»":"Nessun altro film collegato trovato"):(fsel?"Tocca ancora il film o fai doppio tocco per la scheda completa":"Tocca una persona: i suoi film compaiono attorno");
+const hint=sel?(items.length?"Tocca un film per i dettagli · il segno in basso lo aggiunge a «I miei film»":"Nessun altro film collegato trovato"):(fsel?"Tocca ancora il film o fai doppio tocco per la scheda completa":"Tocca una persona per vedere i suoi film · trascina un titolo al centro per farne il fulcro");
 s+=`<text class="hint" x="${MOB()?490:960}" y="${MOB()?634:648}" text-anchor="${MOB()?"middle":"end"}">${esc(hint)}</text>`;
 return s}
 function R(first){
@@ -557,10 +564,31 @@ else if(p){const id=Number(p.dataset.p);selF=null;sel=sel===id?null:id;R()}});
 $("g").addEventListener("pointerover",e=>{if(e.buttons)return;const n=e.target.closest&&e.target.closest(".n");if(!n||n.classList.contains("ctr"))return;
 if($("g").getAttribute("class"))$("g").setAttribute("class","");
 const u=n.parentNode;if(u&&u.classList&&u.classList.contains("u")&&u.parentNode.lastElementChild!==u)u.parentNode.appendChild(u)});
+// trascinare un film o una persona sul centro: diventa il fulcro del grafo
+let DR=null,dragUntil=0;const DROP_R=96;
+function svgPt(e){const g=$("g"),m=g.getScreenCTM();if(!m)return{x:CX,y:CY};const pt=g.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(m.inverse())}
+$("g").addEventListener("pointerdown",e=>{if(e.button>0||DR)return;if(e.target.closest("[data-sk]"))return;
+const n=e.target.closest(".n[data-w],.n[data-p]");if(!n||!n.parentNode)return;
+DR={n,u:n.parentNode,key:n.dataset.w||"p"+n.dataset.p,x0:e.clientX,y0:e.clientY,on:false,id:e.pointerId,st:svgPt(e)}});
+$("g").addEventListener("pointermove",e=>{if(!DR||e.pointerId!==DR.id)return;
+const dx=e.clientX-DR.x0,dy=e.clientY-DR.y0;
+if(!DR.on){if(dx*dx+dy*dy<64)return;DR.on=true;try{$("g").setPointerCapture(e.pointerId)}catch(err){}
+$("g").classList.add("drag");DR.u.classList.remove("back");DR.u.classList.add("dragging");if(DR.u.parentNode.lastElementChild!==DR.u)DR.u.parentNode.appendChild(DR.u)}
+const p=svgPt(e);DR.u.style.transform="translate("+(p.x-DR.st.x).toFixed(1)+"px,"+(p.y-DR.st.y).toFixed(1)+"px)";
+$("g").classList.toggle("drop",Math.hypot(p.x-CX,p.y-CY)<DROP_R)});
+function endDrag(e,cancel){if(!DR||(e&&e.pointerId!==DR.id))return;const d=DR;DR=null;const g=$("g");g.classList.remove("drag","drop");
+if(!d.on)return;dragUntil=Date.now()+400;
+try{g.releasePointerCapture(d.id)}catch(err){}
+const p=svgPt(e),hit=!cancel&&Math.hypot(p.x-CX,p.y-CY)<DROP_R;
+if(hit){lastK="";centre(d.key);return}
+d.u.classList.remove("dragging");d.u.classList.add("back");d.u.style.transform="";setTimeout(()=>d.u.classList.remove("back"),320)}
+$("g").addEventListener("pointerup",e=>endDrag(e,false));
+$("g").addEventListener("pointercancel",e=>endDrag(e,true));
+$("g").addEventListener("touchmove",e=>{if(DR&&e.cancelable)e.preventDefault()},{passive:false});
 // un tocco: evidenzia i collegamenti; due tocchi ravvicinati: finestra dei dettagli
 const DBL=300;let lastK="",lastT=0;
 $("g").addEventListener("click",e=>{
-e.stopPropagation();
+e.stopPropagation();if(Date.now()<dragUntil)return;
 const sgb=e.target.closest("[data-sk]");if(sgb){const w=GW.get(sgb.dataset.sk);if(w)toggleSeen(w);return}
 const n=e.target.closest("[data-w],[data-p],[data-c]");
 if(!n){if(sel||selF){sel=null;selF=null;R()}return}
