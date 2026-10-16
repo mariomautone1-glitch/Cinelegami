@@ -300,6 +300,11 @@ const add=(x,role)=>{const w=nw(x,x.media_type);if(!w.title)return;const e=m.get
 (cc.crew||[]).forEach(x=>{const r=JOBS[x.job];if(r)add(x,r)});
 return[...m.values()].sort((a,b)=>(b.w.release_date||"0").localeCompare(a.w.release_date||"0"))}
 const allRow=e=>`<button class="chip" data-d="${e.w.k}">${ckm(e.w.k)}${e.w.poster_path?`<img class="po" src="${img(e.w.poster_path,"w92")}" alt="">`:""}<b>${esc(e.w.title)}</b>${yr(e.w)?" ("+yr(e.w)+")":""} <span class="kd">· ${kindOf(e.w)}${e.roles.length?" · "+esc(cut(e.roles.slice(0,3).join(", "),48)):""}</span></button>`;
+const VOICE=/\((voice|voce)[^)]*\)/i;
+const vchip=(x,dlg)=>`<button class="chip" ${dlg?`data-d="p${x.id}"`:`data-sp="${x.id}"`}>${pa({photo:x.profile_path,name:x.name,role:""})}${esc(x.name)}${x.character?` <span class="kd">· ${esc(cut(x.character.replace(VOICE,"").replace(/\s+/g," ").trim(),30))}</span>`:""}</button>`;
+function fillVoice(id,w,ok,dlg){credOf(w).then(c=>{if(!ok())return;const el=$(id);if(!el)return;
+const v=c.cast.filter(x=>VOICE.test(x.character||"")).slice(0,14);
+el.innerHTML=v.length?`<div class="k">Doppiatori <span class="kd">(voci originali)</span></div><div>${v.map(x=>vchip(x,dlg)).join("")}</div>`:""}).catch(()=>{})}
 const simC=new Map();
 async function similarOf(w){if(simC.has(w.k))return simC.get(w.k);const b="/"+w.mt+"/"+w.id;let r=[];
 for(const e of["/recommendations","/similar"]){try{const d=await api(b+e);r=(d.results||[]).map(x=>nw(x,w.mt)).filter(x=>x.poster_path&&x.k!==w.k)}catch(err){r=[]}if(r.length>=4)break}
@@ -514,7 +519,7 @@ if(!isP){
 i=`<section class="card"><div class="hd">${poster(cur.poster,cur.title,1)}<div><h2>${esc(cur.title)}</h2>${tags([kindOf(cur.w),cur.year,cur.runtime,...cur.genres])}</div></div>`+
 (cur.overview?`<p class="ov">${esc(cut(cur.overview,320))}</p>`:"")+
 `<div class="k">${cur.w.mt==="tv"?"Creata da":"Regia"}</div>${dirs.map(ch).join("")||'<span class="kd">non indicata</span>'}<div class="k">Cast principale</div>${cast.map(ch).join("")}`+
-`<div class="k">Dove vederlo</div><div id="wh" class="wh">Carico…</div><div class="k">${simLab(cur.w)}</div><div id="sim">Carico…</div><div class="k">Collegamenti</div>${tags([cur.links.length+" opere collegate"])}<div class="dact"><button class="go alt${isSeen(cur.w.k)?" on":""}" type="button" data-seenc="1">${isSeen(cur.w.k)?"✓ Visto":"Segna come visto"}</button></div></section>`}
+`<div id="voc"></div><div class="k">Dove vederlo</div><div id="wh" class="wh">Carico…</div><div class="k">${simLab(cur.w)}</div><div id="sim">Carico…</div><div class="k">Collegamenti</div>${tags([cur.links.length+" opere collegate"])}<div class="dact"><button class="go alt${isSeen(cur.w.k)?" on":""}" type="button" data-seenc="1">${isSeen(cur.w.k)?"✓ Visto":"Segna come visto"}</button></div></section>`}
 else{
 const kn=cur.known[cur.id]||[];
 i=`<section class="card p"><div class="hd">${pa(cur.person,1)}<div><h2>${esc(cur.title)}</h2>${tags([cur.year])}</div></div>${sel?"":'<div id="bio" class="ov"></div>'}`+
@@ -526,7 +531,7 @@ i=`<section class="card p"><div class="hd">${pa(p,1)}<div><h2>${esc(p.name)}</h2
 if(!kn)ensureKnown(p)}
 if(fsel){i=`<section class="card"><div class="hd">${poster(fsel.f.poster_path,fsel.f.title,1)}<div><h2>${esc(fsel.f.title)}</h2>${tags([kindOf(fsel.f),yr(fsel.f)])}</div></div>${fsel.who.some(id=>P.find(x=>x.id===id))?`<div class="k">In comune con</div>${fsel.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}`:""}<div class="dact"><button class="go dgo" type="button" data-det="${fsel.f.k}">Dettagli</button><button class="go dgo alt" type="button" data-go="${fsel.f.k}">Scopri i legami</button><button class="go dgo alt${isSeen(fsel.f.k)?" on":""}" type="button" data-sk="${fsel.f.k}">${isSeen(fsel.f.k)?"✓ Visto":"Segna come visto"}</button></div></section>`+i}
 $("info").innerHTML=i;
-if(!isP&&$("wh")){const ck=cur;fillWhere("wh",cur.w,()=>cur===ck);fillSim("sim",cur.w,()=>cur===ck,false)}
+if(!isP&&$("wh")){const ck=cur;fillWhere("wh",cur.w,()=>cur===ck);fillVoice("voc",cur.w,()=>cur===ck,false);fillSim("sim",cur.w,()=>cur===ck,false)}
 $("p").innerHTML=`<h2>${isP?"Opere di ":"Collegamenti di "}${esc(cur.title)}</h2><ul>`+L.slice(0,24).map(o=>`<li>${poster(o.f.poster_path,o.f.title)}<div><button class="l" data-w="${o.f.k}">${esc(o.f.title)}${yr(o.f)?" ("+yr(o.f)+")":""}</button> <span class="kd">${kindOf(o.f)}</span><div>${o.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}</div></div></li>`).join("")+"</ul>";
 if(p)bio(p);else if(isP)bio(cur.person)}
 
@@ -658,7 +663,7 @@ openDlg(`<div class="dtop">${d.poster_path?`<img class="dposter" src="${img(d.po
 `<p class="ov dbio">${esc(d.overview||"Trama non disponibile.")}</p>`+`<div class="k">Dove vederlo</div><div id="whd" class="wh">Carico…</div>`+
 (com?`<p class="ov"><b>In comune con:</b> ${esc(com)}</p>`:"")+
 `<div class="k">${mt==="tv"?"Creata da":"Regia"}</div><div>${c.dirs.slice(0,3).map(x=>dpc(x,"Regista")).join("")||'<span class="kd">non indicata</span>'}</div><div class="k">Cast</div><div>${c.cast.slice(0,10).map(x=>dpc(x,"Attore")).join("")}</div>`+
-`<div class="k">${simLab(W)}</div><div id="simd">Carico…</div>`+`<div class="k">Community</div><div id="comm" class="comm">Carico…</div>`+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button></div>`);fillWhere("whd",W,()=>my===dTok);fillSim("simd",W,()=>my===dTok,true);if(typeof fillComm==="function")fillComm(W,()=>my===dTok)}
+`<div id="vocd"></div><div class="k">${simLab(W)}</div><div id="simd">Carico…</div>`+`<div class="k">Community</div><div id="comm" class="comm">Carico…</div>`+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button></div>`);fillWhere("whd",W,()=>my===dTok);fillSim("simd",W,()=>my===dTok,true);fillVoice("vocd",W,()=>my===dTok,true);if(typeof fillComm==="function")fillComm(W,()=>my===dTok)}
 }catch(e){if(my===dTok){closeDlg();showErr(e)}}}
 const kindK=x=>x.a?"Anime":x[0]==="t"?"Serie TV":"Film";
 function openSeen(pt,keep){if(!keep)lastFocus=document.activeElement;dTok++;
@@ -750,7 +755,7 @@ function uiAcc(){const pl=$("privl");if(pl)pl.hidden=!SB_ON;const b=$("accb");if
 function avt(n,a,s){s=s||28;return a&&/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(a)?`<img class="av" style="--s:${s}px" src="${a}" alt="">`:`<span class="av ph" style="--s:${s}px" aria-hidden="true">${esc(String(n||"?").slice(0,1).toUpperCase())}</span>`}
 function refreshViews(){if(!$("seenview").hidden)renderSeen();if(!$("profview").hidden){if(ME)renderProfile();else show("home")}}
 function authDlg(mode,msg){lastFocus=document.activeElement;const up=mode==="up";
-openDlg(`<h2 id="dt">${up?"Crea il tuo account":"Accedi"}</h2><div class="seg" style="margin:8px 0 0"><button type="button" data-at="in" aria-pressed="${!up}">Accedi</button><button type="button" data-at="up" aria-pressed="${up}">Registrati</button></div><p class="ov">${esc(msg||"Con un account puoi dare voti a Oscar, scrivere recensioni e ritrovare i tuoi film su ogni dispositivo.")}</p>`+
+openDlg(`<h2 id="dt">${up?"Crea il tuo account":"Accedi"}</h2><div class="seg" style="margin:8px 0 0"><button type="button" data-at="in" aria-pressed="${!up}">Accedi</button><button type="button" data-at="up" aria-pressed="${up}">Registrati</button></div><p class="ov">${esc(msg||"Con un account puoi dare voti, scrivere recensioni e ritrovare i tuoi film su ogni dispositivo.")}</p>`+
 `<form id="af" novalidate data-m="${mode}"><label class="fl">Email<input name="email" type="email" autocomplete="email" maxlength="254" required></label>`+
 (up?`<label class="fl">Nickname pubblico (3-20 caratteri: lettere, numeri, . _ -)<input name="nick" autocomplete="nickname" maxlength="20" required></label>`:"")+
 `<label class="fl">Password${up?" (almeno 8 caratteri)":""}<input name="pw" type="password" autocomplete="${up?"new-password":"current-password"}" maxlength="72" required></label>`+
@@ -828,7 +833,7 @@ const rated=Object.keys(MYR).filter(k=>isSeen(k)).length;
 el.innerHTML=`<button id="sback" class="link" type="button">← Torna alla home</button><h2 style="margin-top:10px">I miei film</h2>`+
 (n?`<p class="ov">${[c.f&&c.f+" film",c.t&&c.t+" serie TV",c.a&&c.a+" anime"].filter(Boolean).join(" · ")}${ME?` · ${rated} con il tuo voto`:""}</p><div class="svg">${SEEN.map(x=>{const r=MYR[x.k];return`<article class="svc"><button class="svp" type="button" data-d="${x.k}" aria-label="Dettagli di ${esc(x.t)}">${x.p?`<img src="${img(x.p,"w342")}" alt="" loading="lazy">`:`<span class="ph">${esc(ini(x.t))}</span>`}</button><div class="svb"><button class="l" type="button" data-d="${x.k}">${esc(x.t)}${x.y?" ("+esc(x.y)+")":""}</button><div class="kd">${kindS(x)}</div>${SB_ON?oscRW(x.k,r?r.rating:0):""}${r&&r.body?`<p class="svr">${esc(r.body)}</p>`:""}<div class="sva">${SB_ON?`<button class="link" type="button" data-d="${x.k}">${r&&r.body?"Modifica recensione":"Scrivi recensione"}</button>`:"<span></span>"}<button class="svx" type="button" data-unsee="${x.k}" aria-label="Togli ${esc(x.t)} dalla tua lista">✕</button></div></div></article>`}).join("")}</div>`
 :`<p class="ov">Non hai ancora segnato nessun titolo. Apri un film, una serie o un anime e premi «Segna come visto»: lo ritroverai qui.</p>`)+
-(SB_ON?(ME?`<p class="kd" style="margin-top:14px">La tua lista è salvata nel tuo account e sono privati. Voti e recensioni sono pubblici con il tuo nickname.</p>`:`<p class="kd" style="margin-top:14px">L'elenco è salvato solo su questo dispositivo. <button class="link" type="button" data-authopen>Accedi o registrati</button> per sincronizzarlo, dare voti a Oscar e scrivere recensioni.</p>`):`<p class="kd" style="margin-top:14px">L'elenco è salvato solo su questo dispositivo.</p>`)}
+(SB_ON?(ME?`<p class="kd" style="margin-top:14px">La tua lista è salvata nel tuo account e sono privati. Voti e recensioni sono pubblici con il tuo nickname.</p>`:`<p class="kd" style="margin-top:14px">L'elenco è salvato solo su questo dispositivo. <button class="link" type="button" data-authopen>Accedi o registrati</button> per sincronizzarlo, dare voti e scrivere recensioni.</p>`):`<p class="kd" style="margin-top:14px">L'elenco è salvato solo su questo dispositivo.</p>`)}
 function showSeenView(){lastFocus=document.activeElement;closeDlg();show("seen");$("res").innerHTML="";setMsg("");sugKill();renderSeen();window.scrollTo(0,0)}
 $("seenbtn").addEventListener("click",showSeenView);
 $("accb").addEventListener("click",()=>ME?showProfile():authDlg("in"));
