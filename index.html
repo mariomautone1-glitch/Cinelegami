@@ -175,6 +175,8 @@ body.dlgopen{overflow:hidden}
 .sug li:hover,.sug li[aria-selected="true"]{background:rgba(255,255,255,.09)}
 .sug .fa{width:30px;height:44px;font-size:.7rem}
 .sug .pa{width:34px;height:34px;margin:0;flex:none}
+.sug li.gh{cursor:default;padding:8px 8px 3px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.sug li.gh:hover{background:none}
 .sug .st{font-weight:600;line-height:1.25}
 .pc{position:relative}
 .rk{position:absolute;top:6px;left:6px;z-index:1;min-width:26px;height:26px;padding:0 6px;display:grid;place-items:center;border-radius:13px;background:rgba(10,17,15,.82);border:1px solid var(--acc);color:var(--acc);font-size:.8rem;font-weight:700}
@@ -187,6 +189,9 @@ body.dlgopen{overflow:hidden}
 .top{display:flex;justify-content:flex-end;min-height:30px}
 .accb{font:inherit;font-size:.85rem;max-width:60vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:5px 14px;border-radius:999px;border:1px solid var(--bd);background:var(--card);color:var(--fg);cursor:pointer}
 .accb[hidden]{display:none}
+.mark,.logo{transition:filter .2s,transform .2s}
+@media (hover:hover){main:has(.lg:hover,.mark:hover) .logo,main:has(.lg:hover,.mark:hover) .mark{filter:drop-shadow(0 0 10px rgba(242,180,71,.7)) drop-shadow(0 0 22px rgba(242,180,71,.35)) brightness(1.18);transform:scale(1.03)}}
+.lg:focus-visible .logo{filter:drop-shadow(0 0 10px rgba(242,180,71,.7))}
 .mark{cursor:pointer;display:none;width:min(44vw,190px);height:auto;margin:0 auto 4px}
 main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{display:block}
 .os{display:inline-flex;flex-direction:row-reverse;vertical-align:middle;gap:1px;--oh:26px}
@@ -242,16 +247,19 @@ main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{disp
 <p class="ov">Per cercare film veri serve una chiave gratuita di TMDB. Registrati su <a href="https://www.themoviedb.org/signup" target="_blank" rel="noopener">themoviedb.org</a>, poi in <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">Impostazioni, API</a> richiedi la chiave (uso personale) e incollala qui. Vanno bene sia la "API Key" sia il "API Read Access Token". Resta salvata solo nel tuo browser.</p>
 <div class="row" style="margin-top:12px"><input id="k" type="password" placeholder="Incolla qui la chiave" autocomplete="off" aria-label="Chiave TMDB"><button id="ks" class="go" type="button">Salva</button></div>
 </section>
-<div class="row"><div class="sw"><input id="q" placeholder="Cerca un film, una serie, un anime o un attore" autocomplete="off" aria-label="Cosa vuoi cercare" role="combobox" aria-expanded="false" aria-controls="sug" aria-autocomplete="list"><ul id="sug" class="sug" role="listbox" hidden></ul></div><button id="go" class="go" type="button">Cerca</button></div>
-<div id="seg" class="seg" role="group" aria-label="Cosa cercare"><button type="button" data-fl="all" aria-pressed="true">Tutto</button><button type="button" data-fl="movie" aria-pressed="false">Film</button><button type="button" data-fl="tv" aria-pressed="false">Serie TV</button><button type="button" data-fl="anime" aria-pressed="false">Anime</button><button type="button" data-fl="person" aria-pressed="false">Attori e registi</button><button type="button" id="seenbtn" class="seenbtn" aria-label="Apri I miei film">✓ I miei film <b id="seenn">0</b></button></div>
+<div class="row"><div class="sw"><input id="q" placeholder="Cerca un film, una serie, un anime, un attore o un regista" autocomplete="off" aria-label="Cosa vuoi cercare" role="combobox" aria-expanded="false" aria-controls="sug" aria-autocomplete="list"><ul id="sug" class="sug" role="listbox" hidden></ul></div><button id="go" class="go" type="button">Cerca</button></div>
+<div id="seg" class="seg" role="group" aria-label="Cosa mostrare nella pagina principale"><button type="button" data-fl="all" aria-pressed="true">Tutto</button><button type="button" data-fl="movie" aria-pressed="false">Film</button><button type="button" data-fl="tv" aria-pressed="false">Serie TV</button><button type="button" data-fl="anime" aria-pressed="false">Anime</button><button type="button" id="seenbtn" class="seenbtn" aria-label="Apri I miei film">✓ I miei film <b id="seenn">0</b></button></div>
 <p id="msg" role="status" aria-live="polite"></p>
 <div id="res"></div>
 <section id="home" hidden>
-<h2>Al cinema adesso</h2><div id="now" class="rail"></div>
-<h2>In arrivo</h2><div id="soon" class="rail"></div>
-<h2>Novità su Netflix</h2><div id="nf" class="rail"></div>
-<h2>Novità su Prime Video</h2><div id="pv" class="rail"></div>
-<h2>Novità su Disney+</h2><div id="dp" class="rail"></div>
+<div id="hs-now"><h2>Al cinema adesso</h2><div id="now" class="rail"></div></div>
+<div id="hs-soon"><h2>In arrivo</h2><div id="soon" class="rail"></div></div>
+<div id="hs-air"><h2>Serie TV del momento</h2><div id="air" class="rail"></div></div>
+<div id="hs-ani"><h2>Anime in onda</h2><div id="ani" class="rail"></div></div>
+<div id="hs-animov"><h2>Film anime recenti</h2><div id="animov" class="rail"></div></div>
+<div id="hs-nf"><h2>Novità su Netflix</h2><div id="nf" class="rail"></div></div>
+<div id="hs-pv"><h2>Novità su Prime Video</h2><div id="pv" class="rail"></div></div>
+<div id="hs-dp"><h2>Novità su Disney+</h2><div id="dp" class="rail"></div></div>
 </section>
 <section id="seenview" hidden></section>
 <section id="profview" hidden></section>
@@ -422,17 +430,33 @@ function centre(key){closeDlg();if(key[0]==="p")loadPerson(Number(key.slice(1)))
 const show=v=>{$("home").hidden=v!=="home";$("film").hidden=v!=="film";$("seenview").hidden=v!=="seen";$("profview").hidden=v!=="prof"};
 const fmtD=d=>{const t=new Date(d+"T00:00:00");return isNaN(t)?d:t.toLocaleDateString("it-IT",{day:"numeric",month:"short"})};
 const pc=(f,soon,rk)=>`<button class="pc" data-w="${f.k}">${rk?`<span class="rk">${rk}</span>`:""}<img src="${img(f.poster_path,"w342")}" alt="" loading="lazy"><span class="pt">${ckm(f.k)}${esc(f.title)}</span><span class="pd">${soon?(f.release_date?"dal "+esc(fmtD(f.release_date)):""):kindOf(f)+(f.vote_average>0?" · ★ "+f.vote_average.toFixed(1):"")}</span></button>`;
+const HM={};
+const HV={all:["now","soon","air","ani","nf","pv","dp"],movie:["now","soon","nf","pv","dp"],tv:["air","nf","pv","dp"],anime:["ani","animov","nf","pv","dp"]};
+const HALL=["now","soon","air","ani","animov","nf","pv","dp"],HRANK={nf:1,pv:1,dp:1};
+const hOk=f=>FILT==="all"||(FILT==="anime"?f.anime:FILT==="tv"?f.mt==="tv"&&!f.anime:f.mt==="movie"&&!f.anime);
+function renderHome(){for(const id of HALL){const box=$("hs-"+id);if(!box)continue;
+if(!HV[FILT].includes(id)){box.hidden=true;continue}
+const L=HM[id];
+if(L===undefined){box.hidden=false;$(id).innerHTML='<p class="sub">Carico…</p>';continue}
+if(L===null){box.hidden=false;$(id).innerHTML='<p class="sub">Non disponibile al momento.</p>';continue}
+const F=L.filter(hOk).slice(0,20);
+if(!F.length){box.hidden=true;continue}
+box.hidden=false;$(id).innerHTML=F.map((f,i)=>pc(f,id==="soon",HRANK[id]?i+1:0)).join("")}}
+function loadExtra(){const dd=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);
+const put=(id,p)=>p.then(r=>{HM[id]=(r.results||[]).map(x=>nw(x,id==="animov"?"movie":"tv")).filter(f=>f.poster_path);renderHome()}).catch(()=>{HM[id]=null;renderHome()});
+put("air",api("/trending/tv/week",{}).then(r=>({results:(r.results||[]).filter(x=>!(x.original_language==="ja"&&(x.genre_ids||[]).includes(16)))})));
+put("ani",api("/discover/tv",{with_genres:"16",with_original_language:"ja",sort_by:"popularity.desc","air_date.gte":dd(45),"air_date.lte":dd(0)}));
+put("animov",api("/discover/movie",{with_genres:"16",with_original_language:"ja",sort_by:"popularity.desc","primary_release_date.gte":dd(365),"primary_release_date.lte":dd(0)}))}
 async function loadHome(){
 setMsg("Carico le novità…");
 try{const[n0,u0]=await Promise.all([api("/movie/now_playing",{region:"IT"}),api("/movie/upcoming",{region:"IT"})]);
 const n={results:(n0.results||[]).map(x=>nw(x,"movie"))},u={results:(u0.results||[]).map(x=>nw(x,"movie"))};
 const today=new Date().toISOString().slice(0,10);
-const now=(n.results||[]).filter(f=>f.poster_path).sort((a,b)=>(b.release_date||"").localeCompare(a.release_date||"")).slice(0,20);
+const now=(n.results||[]).filter(f=>f.poster_path).sort((a,b)=>(b.release_date||"").localeCompare(a.release_date||"")).slice(0,40);
 const ids=new Set(now.map(f=>f.k));
-const soon=(u.results||[]).filter(f=>f.poster_path&&!ids.has(f.k)&&(f.release_date||"")>=today).sort((a,b)=>(a.release_date||"").localeCompare(b.release_date||"")).slice(0,20);
-$("now").innerHTML=now.map(f=>pc(f,false)).join("")||"<p class=\"sub\">Nessun film trovato.</p>";
-$("soon").innerHTML=soon.map(f=>pc(f,true)).join("")||"<p class=\"sub\">Nessuna uscita in programma trovata.</p>";
-setMsg("");loadPlatforms();
+const soon=(u.results||[]).filter(f=>f.poster_path&&!ids.has(f.k)&&(f.release_date||"")>=today).sort((a,b)=>(a.release_date||"").localeCompare(b.release_date||"")).slice(0,40);
+HM.now=now;HM.soon=soon;renderHome();
+setMsg("");loadPlatforms();loadExtra();
 }catch(e){if(e&&e.code==="key"){showErr(e);return}
 if(!cur){setMsg("");loadWork("movie",DEFAULT_ID)}else setMsg("Le novità non sono disponibili al momento.")}}
 // Più popolari per servizio: TMDB non pubblica le visualizzazioni, uso la popolarità tra i titoli disponibili in abbonamento in Italia
@@ -441,11 +465,10 @@ async function railFor(id){
 const dd=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);let out=[];
 for(const days of[100,365]){const base={watch_region:"IT",with_watch_providers:String(id),with_watch_monetization_types:"flatrate",sort_by:"popularity.desc"},to=dd(0),from=dd(days);
 const[m,t]=await Promise.all([api("/discover/movie",{...base,"primary_release_date.gte":from,"primary_release_date.lte":to}),api("/discover/tv",{...base,"first_air_date.gte":from,"first_air_date.lte":to})]);
-out=[...(m.results||[]).map(x=>nw(x,"movie")),...(t.results||[]).map(x=>nw(x,"tv"))].filter(f=>f.poster_path).sort((a,b)=>b.pop-a.pop).slice(0,20);if(out.length>=8)break}
+out=[...(m.results||[]).map(x=>nw(x,"movie")),...(t.results||[]).map(x=>nw(x,"tv"))].filter(f=>f.poster_path).sort((a,b)=>b.pop-a.pop).slice(0,40);if(out.length>=8)break}
 return out}
 function loadPlatforms(){PLAT.forEach(([el,id])=>{
-railFor(id).then(L=>{$(el).innerHTML=L.map((f,i)=>pc(f,false,i+1)).join("")||'<p class="sub">Nessun titolo trovato.</p>'})
-.catch(()=>{$(el).innerHTML='<p class="sub">Non disponibile al momento.</p>'})})}
+railFor(id).then(L=>{HM[el]=L;renderHome()}).catch(()=>{HM[el]=null;renderHome()})})}
 // Dove vederlo: cinema in Italia e servizi di streaming (dati JustWatch tramite TMDB)
 let THEA=null;
 function theatres(){if(!THEA){const today=new Date().toISOString().slice(0,10),g=(path,p)=>api(path,{region:"IT",page:String(p)}).catch(()=>({results:[]}));
@@ -575,14 +598,8 @@ let FILT="all",lastQ="";
 const pe=x=>({t:"p",id:x.id,name:x.name,photo:x.profile_path,dept:x.known_for_department}),we=(x,mt)=>({t:"w",w:nw(x,mt)});
 const sc=e=>e.t==="p"?`<button class="chip" data-sp="${e.id}">${pa({photo:e.photo,name:e.name,role:""})}${esc(e.name)} <span class="kd">· ${DEPT[e.dept]||"Persona"}</span></button>`:fc(e.w);
 async function fetchResults(v){
-const q={query:v,include_adult:"false"};let L=[];
-if(FILT==="all"){const r=await api("/search/multi",q);L=(r.results||[]).filter(x=>x.media_type==="movie"||x.media_type==="tv"||x.media_type==="person").map(x=>x.media_type==="person"?pe(x):we(x,x.media_type))}
-else if(FILT==="movie"){const r=await api("/search/movie",q);L=(r.results||[]).map(x=>we(x,"movie")).filter(e=>!e.w.anime)}
-else if(FILT==="tv"){const r=await api("/search/tv",q);L=(r.results||[]).map(x=>we(x,"tv")).filter(e=>!e.w.anime)}
-else if(FILT==="anime"){const[a,b]=await Promise.all([api("/search/tv",q),api("/search/movie",q)]);
-L=[...(a.results||[]).map(x=>we(x,"tv")),...(b.results||[]).map(x=>we(x,"movie"))].filter(e=>e.w.anime).sort((x,y)=>y.w.pop-x.w.pop)}
-else{const r=await api("/search/person",q);L=(r.results||[]).map(pe)}
-return L}
+const r=await api("/search/multi",{query:v,include_adult:"false"});
+return(r.results||[]).filter(x=>x.media_type==="movie"||x.media_type==="tv"||x.media_type==="person").map(x=>x.media_type==="person"?pe(x):we(x,x.media_type))}
 async function cerca(){
 const v=$("q").value.trim();if(!v)return;
 if(!KEY&&!PROXY){$("keybox").hidden=false;setMsg("Inserisci prima la chiave per cercare.");return}
@@ -710,26 +727,28 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDlg()});
 let sugT=0,sugN=0,sugL=[],sugI=-1;
 function sugHide(){$("sug").hidden=true;$("q").setAttribute("aria-expanded","false");sugI=-1}
 function sugKill(){clearTimeout(sugT);sugN++;sugHide()}
-function sugShow(L){sugL=L;sugI=-1;
-$("sug").innerHTML=L.map((e,i)=>`<li role="option" id="so${i}" data-si="${i}">${e.t==="p"?pa({photo:e.photo,name:e.name,role:""}):poster(e.w.poster_path,e.w.title)}<div><div class="st">${esc(e.t==="p"?e.name:e.w.title)}${e.t==="w"&&yr(e.w)?" ("+yr(e.w)+")":""}</div><div class="kd">${e.t==="p"?(DEPT[e.dept]||"Persona"):kindOf(e.w)}</div></div></li>`).join("");
-$("sug").hidden=!L.length;$("q").setAttribute("aria-expanded",String(!!L.length))}
-function sugMark(i){sugI=i;$("sug").querySelectorAll("li").forEach((x,j)=>x.setAttribute("aria-selected",j===i?"true":"false"));
-const el=$("sug").children[i];if(el)el.scrollIntoView({block:"nearest"});$("q").setAttribute("aria-activedescendant",i>=0?"so"+i:"")}
+const SUGG=[["Attori",e=>e.t==="p"&&e.dept!=="Directing"],["Registi",e=>e.t==="p"&&e.dept==="Directing"],["Film",e=>e.t==="w"&&e.w.mt==="movie"&&!e.w.anime],["Serie TV",e=>e.t==="w"&&e.w.mt==="tv"&&!e.w.anime],["Anime",e=>e.t==="w"&&e.w.anime]];
+function sugGroup(L){const out=[];for(const[lab,fn]of SUGG){const g=L.filter(fn).slice(0,3);if(g.length)out.push([lab,g])}return out}
+function sugShow(G){sugL=[];let h="";
+G.forEach(([lab,g])=>{h+=`<li class="gh" role="presentation">${lab}</li>`;g.forEach(e=>{const i=sugL.push(e)-1;
+h+=`<li role="option" id="so${i}" data-si="${i}">${e.t==="p"?pa({photo:e.photo,name:e.name,role:""}):poster(e.w.poster_path,e.w.title)}<div><div class="st">${esc(e.t==="p"?e.name:e.w.title)}${e.t==="w"&&yr(e.w)?" ("+yr(e.w)+")":""}</div><div class="kd">${e.t==="p"?(DEPT[e.dept]||"Persona"):kindOf(e.w)}</div></div></li>`})});
+sugI=-1;$("sug").innerHTML=h;$("sug").hidden=!sugL.length;$("q").setAttribute("aria-expanded",String(!!sugL.length))}
+function sugMark(i){sugI=i;$("sug").querySelectorAll("li[data-si]").forEach((x,j)=>x.setAttribute("aria-selected",j===i?"true":"false"));
+const el=$("sug").querySelectorAll("li[data-si]")[i];if(el)el.scrollIntoView({block:"nearest"});$("q").setAttribute("aria-activedescendant",i>=0?"so"+i:"")}
 function sugPick(i){const e=sugL[i];if(!e)return;sugKill();$("res").innerHTML="";$("q").blur();if(e.t==="p")loadPerson(e.id);else loadWork(e.w.mt,e.w.id)}
 $("q").addEventListener("input",()=>{clearTimeout(sugT);const v=$("q").value.trim();
 if(v.length<2||(!KEY&&!PROXY)){sugKill();return}
 sugT=setTimeout(async()=>{const my=++sugN;
-try{const L=(await fetchResults(v)).slice(0,7);if(my!==sugN||$("q").value.trim()!==v)return;sugShow(L)}catch(e){if(my===sugN)sugHide()}},250)});
+try{const L=sugGroup(await fetchResults(v));if(my!==sugN||$("q").value.trim()!==v)return;sugShow(L)}catch(e){if(my===sugN)sugHide()}},250)});
 $("q").addEventListener("keydown",e=>{const open=!$("sug").hidden;
 if(e.key==="ArrowDown"&&open){e.preventDefault();sugMark((sugI+1)%sugL.length)}
 else if(e.key==="ArrowUp"&&open){e.preventDefault();sugMark(sugI<=0?sugL.length-1:sugI-1)}
 else if(e.key==="Escape"&&open){sugKill()}
 else if(e.key==="Enter"&&open&&sugI>=0){e.preventDefault();e.stopImmediatePropagation();sugPick(sugI)}});
 $("sug").addEventListener("click",e=>{const li=e.target.closest("[data-si]");if(li)sugPick(Number(li.dataset.si))});
-$("seg").addEventListener("click",e=>{const b=e.target.closest("[data-fl]");if(!b)return;FILT=b.dataset.fl;sugKill();
-$("seg").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
-$("q").placeholder={all:"Cerca un film, una serie, un anime o un attore",movie:"Cerca un film",tv:"Cerca una serie TV",anime:"Cerca un anime",person:"Cerca un attore o un regista"}[FILT];
-if($("q").value.trim()&&$("q").value.trim()===lastQ)cerca()});
+$("seg").addEventListener("click",e=>{const b=e.target.closest("[data-fl]");if(!b)return;FILT=b.dataset.fl;
+$("seg").querySelectorAll("[data-fl]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+if($("home").hidden)goHome();else renderHome()});
 const goHome=()=>{closeDlg();show("home");if(!$("now").innerHTML)loadHome();window.scrollTo(0,0)};$("homebtn").addEventListener("click",goHome);document.querySelector(".mark").addEventListener("click",goHome);
 $("go").addEventListener("click",cerca);
 $("q").addEventListener("keydown",e=>{if(e.key==="Enter")cerca()});
