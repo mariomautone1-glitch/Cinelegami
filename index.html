@@ -11,7 +11,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="CineLegami">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://image.tmdb.org; connect-src 'self' https://cinelegami.mariomautone1.workers.dev https://api.themoviedb.org https://*.supabase.co; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://image.tmdb.org; connect-src 'self' https://cinelegami.mariomautone1.workers.dev https://api.themoviedb.org https://*.supabase.co https://www.wikidata.org https://it.wikipedia.org; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>CineLegami</title>
 
@@ -108,6 +108,7 @@ li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px sol
 .chip{display:inline-flex;align-items:center;margin:4px 8px 0 0;padding:2px 12px 2px 2px;border:1px solid var(--bd);border-radius:999px;background:var(--card);font:inherit;font-size:.85rem;color:var(--fg);cursor:pointer;text-align:left}
 #allw{margin-top:10px;max-height:46vh;overflow-y:auto}
 #allw .chip{display:flex;width:100%;margin:4px 0 0;border-radius:12px;text-align:left;padding-right:10px}
+.dub{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px;font-size:.9rem}.dub li{padding:6px 10px;border:1px solid var(--bd);border-radius:10px;background:var(--card)}.dub b{font-weight:600}
 .chip .po{width:22px;height:32px;border-radius:4px;object-fit:cover;margin:2px 8px 2px 2px}
 .chip:not(:has(.pa)):not(:has(.po)){padding-left:12px}
 button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);background:none;border:0;padding:0;cursor:pointer;text-align:left}
@@ -300,11 +301,32 @@ const add=(x,role)=>{const w=nw(x,x.media_type);if(!w.title)return;const e=m.get
 (cc.crew||[]).forEach(x=>{const r=JOBS[x.job];if(r)add(x,r)});
 return[...m.values()].sort((a,b)=>(b.w.release_date||"0").localeCompare(a.w.release_date||"0"))}
 const allRow=e=>`<button class="chip" data-d="${e.w.k}">${ckm(e.w.k)}${e.w.poster_path?`<img class="po" src="${img(e.w.poster_path,"w92")}" alt="">`:""}<b>${esc(e.w.title)}</b>${yr(e.w)?" ("+yr(e.w)+")":""} <span class="kd">· ${kindOf(e.w)}${e.roles.length?" · "+esc(cut(e.roles.slice(0,3).join(", "),48)):""}</span></button>`;
-const VOICE=/\((voice|voce)[^)]*\)/i;
-const vchip=(x,dlg)=>`<button class="chip" ${dlg?`data-d="p${x.id}"`:`data-sp="${x.id}"`}>${pa({photo:x.profile_path,name:x.name,role:""})}${esc(x.name)}${x.character?` <span class="kd">· ${esc(cut(x.character.replace(VOICE,"").replace(/\s+/g," ").trim(),30))}</span>`:""}</button>`;
-function fillVoice(id,w,ok,dlg){credOf(w).then(c=>{if(!ok())return;const el=$(id);if(!el)return;
-const v=c.cast.filter(x=>VOICE.test(x.character||"")).slice(0,14);
-el.innerHTML=v.length?`<div class="k">Doppiatori <span class="kd">(voci originali)</span></div><div>${v.map(x=>vchip(x,dlg)).join("")}</div>`:""}).catch(()=>{})}
+// Doppiatori italiani: dalla voce di Wikipedia in italiano (TMDB non li ha). Si arriva alla pagina tramite Wikidata.
+const WD="https://www.wikidata.org/w/api.php",WI="https://it.wikipedia.org/w/api.php",dubC=new Map();
+const wget=async u=>{const r=await fetch(u);if(!r.ok)throw new Error("http");return r.json()};
+function wikiClean(t){return String(t||"").replace(/<ref[^>]*\/>/gi,"").replace(/<ref[^>]*>[\s\S]*?<\/ref>/gi,"").replace(/<!--[\s\S]*?-->/g,"").replace(/\{\{[^{}]*\}\}/g,"")
+.replace(/\[\[(?:File|Immagine|Image|Categoria|Category):[^\]]*\]\]/gi,"").replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g,"$1").replace(/\[https?:\/\/\S+\s*([^\]]*)\]/g,"$1").replace(/'{2,}/g,"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").replace(/\s+/g," ").trim()}
+function parseDub(wt){const out=[];String(wt||"").split(/\r?\n/).forEach(line=>{if(!/^\s*[*:;#]/.test(line))return;
+const t=wikiClean(line.replace(/^\s*[*:;#]+\s*/,""));const m=t.match(/^(.{2,60}?)\s*(?::|\s[–—-]\s)\s*(.{2,140})$/);if(!m)return;
+const a=m[1].trim(),b=m[2].trim();if(!a||!b||/^(vedi|nota|note|titolo)/i.test(a))return;out.push({a,b})});return out.slice(0,30)}
+async function dubOf(w){if(dubC.has(w.k))return dubC.get(w.k);
+const prop=w.mt==="tv"?"P4983":"P4947";let res=null;
+try{const q=await wget(WD+"?action=query&list=search&format=json&origin=*&srsearch="+encodeURIComponent("haswbstatement:"+prop+"="+w.id));
+const qid=q.query&&q.query.search&&q.query.search[0]&&q.query.search[0].title;
+if(qid){const e=await wget(WD+"?action=wbgetentities&format=json&origin=*&props=sitelinks&sitefilter=itwiki&ids="+encodeURIComponent(qid));
+const t=e.entities&&e.entities[qid]&&e.entities[qid].sitelinks&&e.entities[qid].sitelinks.itwiki&&e.entities[qid].sitelinks.itwiki.title;
+if(t){const sc=await wget(WI+"?action=parse&format=json&origin=*&redirects=1&prop=sections&page="+encodeURIComponent(t));
+const secs=(sc.parse&&sc.parse.sections)||[];
+const sec=secs.find(x=>/^doppiatori/i.test(x.line.replace(/<[^>]+>/g,"")))||secs.find(x=>/doppiaggio|doppiatori/i.test(x.line.replace(/<[^>]+>/g,"")));
+if(sec){const tx=await wget(WI+"?action=parse&format=json&origin=*&redirects=1&prop=wikitext&section="+encodeURIComponent(sec.index)+"&page="+encodeURIComponent(t));
+res={title:t,list:parseDub(tx.parse&&tx.parse.wikitext&&tx.parse.wikitext["*"])}}
+else res={title:t,list:[]}}}}
+catch(err){res=undefined}
+if(res!==undefined)dubC.set(w.k,res);return res}
+function fillVoice(id,w,ok,dlg){dubOf(w).then(r=>{if(!ok())return;const el=$(id);if(!el)return;
+if(r===undefined){el.innerHTML="";return}
+const url=r?"https://it.wikipedia.org/wiki/"+encodeURIComponent(r.title.replace(/ /g,"_"))+"#Doppiatori_italiani":"";
+el.innerHTML=`<div class="k">Doppiatori italiani</div>`+(r&&r.list.length?`<ul class="dub">${r.list.map(x=>`<li><b>${esc(x.a)}</b> <span aria-hidden="true">→</span> ${esc(x.b)}</li>`).join("")}</ul><p class="kd">Fonte: <a href="${url}" target="_blank" rel="noopener noreferrer">Wikipedia</a> (licenza CC BY-SA)</p>`:'<p class="kd">Doppiatori italiani non trovati per questo titolo.</p>')}).catch(()=>{})}
 const simC=new Map();
 async function similarOf(w){if(simC.has(w.k))return simC.get(w.k);const b="/"+w.mt+"/"+w.id;let r=[];
 for(const e of["/recommendations","/similar"]){try{const d=await api(b+e);r=(d.results||[]).map(x=>nw(x,w.mt)).filter(x=>x.poster_path&&x.k!==w.k)}catch(err){r=[]}if(r.length>=4)break}
