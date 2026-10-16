@@ -106,6 +106,8 @@ li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px sol
 .pa.dir{border-color:var(--dir);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);border-radius:0}
 .pa.big{width:68px;height:68px;font-size:1rem;margin:0;border-width:3px}
 .chip{display:inline-flex;align-items:center;margin:4px 8px 0 0;padding:2px 12px 2px 2px;border:1px solid var(--bd);border-radius:999px;background:var(--card);font:inherit;font-size:.85rem;color:var(--fg);cursor:pointer;text-align:left}
+#allw{margin-top:10px;max-height:46vh;overflow-y:auto}
+#allw .chip{display:flex;width:100%;margin:4px 0 0;border-radius:12px;text-align:left;padding-right:10px}
 .chip .po{width:22px;height:32px;border-radius:4px;object-fit:cover;margin:2px 8px 2px 2px}
 .chip:not(:has(.pa)):not(:has(.po)){padding-left:12px}
 button.l{font:inherit;font-weight:600;font-size:1rem;color:var(--film-t);background:none;border:0;padding:0;cursor:pointer;text-align:left}
@@ -290,6 +292,14 @@ const setMsg=t=>{$("msg").textContent=t||""};
 const tags=a=>a.filter(Boolean).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
 const pa=(p,big)=>p.photo?`<img class="pa${isDir(p)?" dir":""}${big?" big":""}" src="${img(p.photo,big?"w185":"w92")}" alt="">`:`<b class="pa${isDir(p)?" dir":""}${big?" big":""}" style="background:${rc(p)}">${esc(ini(p.name))}</b>`;
 const ch=p=>`<button class="chip" data-p="${p.id}">${pa(p)}${esc(p.name)}</button>`;
+const JOBS={Director:"Regista",Writer:"Sceneggiatore",Screenplay:"Sceneggiatore",Story:"Soggetto",Producer:"Produttore","Executive Producer":"Produttore esecutivo",Creator:"Creatore","Original Music Composer":"Musiche",Novel:"Romanzo","Director of Photography":"Fotografia",Editor:"Montaggio"};
+let dAll=[];
+function allWorks(cc){const m=new Map();
+const add=(x,role)=>{const w=nw(x,x.media_type);if(!w.title)return;const e=m.get(w.k)||{w,roles:[]};if(role&&!e.roles.includes(role))e.roles.push(role);m.set(w.k,e)};
+(cc.cast||[]).forEach(x=>add(x,x.character?x.character.replace(/\s*\(.*?\)\s*/g," ").trim():"Attore"));
+(cc.crew||[]).forEach(x=>{const r=JOBS[x.job];if(r)add(x,r)});
+return[...m.values()].sort((a,b)=>(b.w.release_date||"0").localeCompare(a.w.release_date||"0"))}
+const allRow=e=>`<button class="chip" data-d="${e.w.k}">${ckm(e.w.k)}${e.w.poster_path?`<img class="po" src="${img(e.w.poster_path,"w92")}" alt="">`:""}<b>${esc(e.w.title)}</b>${yr(e.w)?" ("+yr(e.w)+")":""} <span class="kd">· ${kindOf(e.w)}${e.roles.length?" · "+esc(cut(e.roles.slice(0,3).join(", "),48)):""}</span></button>`;
 const simC=new Map();
 async function similarOf(w){if(simC.has(w.k))return simC.get(w.k);const b="/"+w.mt+"/"+w.id;let r=[];
 for(const e of["/recommendations","/similar"]){try{const d=await api(b+e);r=(d.results||[]).map(x=>nw(x,w.mt)).filter(x=>x.poster_path&&x.k!==w.k)}catch(err){r=[]}if(r.length>=4)break}
@@ -631,10 +641,10 @@ const[d0,cc]=await Promise.all([api("/person/"+pid),api("/person/"+pid+"/combine
 let d=d0;if(!d0.biography){const en=await api("/person/"+pid,{language:"en-US"});d=Object.assign({},d0,{biography:en.biography||""})}
 if(my!==dTok)return;
 const lines=[d.birthday&&("Nato/a il "+fmtLong(d.birthday)+(d.place_of_birth?", "+d.place_of_birth:"")),d.deathday&&("Morto/a il "+fmtLong(d.deathday))].filter(Boolean);
-const wk=pworks(cc,null).slice(0,10),here=!!cur&&cur.kind==="person"&&cur.id===pid;
+dAll=allWorks(cc);const wk=pworks(cc,null).slice(0,10),here=!!cur&&cur.kind==="person"&&cur.id===pid;
 openDlg(`<div class="dtop">${d.profile_path?`<img class="dposter" src="${img(d.profile_path,"w342")}" alt="">`:`<span class="dposter ph">${esc(ini(d.name))}</span>`}<div><h2 id="dt">${esc(d.name)}</h2>${tags([DEPT[d.known_for_department]||"Persona"])}${lines.map(l=>`<p class="ov">${esc(l)}</p>`).join("")}</div></div>`+
 `<p class="ov dbio">${esc(d.biography||"Nessuna biografia disponibile.")}</p>`+
-`<div class="k">Conosciuto per</div><div>${wk.map(dwc).join("")||'<span class="kd">nessuna opera trovata</span>'}</div>`+
+`<div class="k">Conosciuto per</div><div>${wk.map(dwc).join("")||'<span class="kd">nessuna opera trovata</span>'}</div>`+(dAll.length>wk.length?`<button class="go dgo alt" type="button" data-all="1" aria-expanded="false">Vedi tutti i lavori (${dAll.length})</button><div id="allw" hidden></div>`:"")+
 (here?"":`<button class="go dgo" type="button" data-go="p${pid}">Scopri i legami</button>`))}
 else{const{mt,id}=wkey(key),base=(mt==="tv"?"/tv/":"/movie/")+id;
 const[d0,c]=await Promise.all([api(base),credOf({mt,id})]);
@@ -657,6 +667,7 @@ const fmtS=t=>new Date(t).toLocaleDateString("it-IT",{day:"numeric",month:"short
 openDlg(`<h2 id="dt">Titoli visti</h2>`+(n?`<p class="ov">${[c.f&&c.f+(c.f>1?" film":" film"),c.t&&c.t+(c.t>1?" serie TV":" serie TV"),c.a&&c.a+(c.a>1?" anime":" anime")].filter(Boolean).join(" · ")}</p><ul class="sl">${SEEN.map(x=>`<li>${poster(x.p,x.t)}<div><button class="l" data-d="${x.k}">${esc(x.t)}${x.y?" ("+x.y+")":""}</button><div class="kd">${kindK(x)} · segnato il ${fmtS(x.d)}</div></div><button class="rm" type="button" data-unseen="${x.k}" aria-label="Togli ${esc(x.t)} dalla tua lista">✕</button></li>`).join("")}</ul>`:`<p class="ov">Non hai ancora segnato nessun titolo. Apri un film, una serie o un anime e premi «Segna come visto»: lo ritroverai qui e nel grafo con una spunta verde.</p>`)+`<p class="kd" style="margin-top:14px">L'elenco è salvato solo su questo dispositivo, nel browser o nell'app che stai usando.</p>`,pt,keep)}
 updSeen();
 $("dlg").addEventListener("click",e=>{
+const al=e.target.closest("[data-all]");if(al){const box=$("allw");if(box){const open=box.hidden;if(open&&!box.innerHTML)box.innerHTML=dAll.map(allRow).join("");box.hidden=!open;al.setAttribute("aria-expanded",open);al.textContent=open?"Nascondi i lavori":"Vedi tutti i lavori ("+dAll.length+")";if(open)box.scrollIntoView({block:"nearest"})}return}
 const sn=e.target.closest("[data-seen]");if(sn&&dW){toggleSeen(dW);const on=isSeen(dW.k);sn.classList.toggle("on",on);sn.textContent=on?"✓ Visto":"Segna come visto";return}
 const un=e.target.closest("[data-unseen]");if(un){const i=SEEN.findIndex(x=>x.k===un.dataset.unseen);if(i>=0){SEEN.splice(i,1);store.set("cl_seen",JSON.stringify(SEEN));updSeen();if(cur&&!$("film").hidden)R();openSeen(null,true)}return}
 if(e.target.closest(".dx")||e.target.classList.contains("dbk")){closeDlg();return}
