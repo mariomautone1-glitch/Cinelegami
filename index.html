@@ -309,7 +309,7 @@ function wikiClean(t){return String(t||"").replace(/<ref[^>]*\/>/gi,"").replace(
 .replace(/\[\[(?:File|Immagine|Image|Categoria|Category):[^\]]*\]\]/gi,"").replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g,"$1").replace(/\[https?:\/\/\S+\s*([^\]]*)\]/g,"$1").replace(/'{2,}/g,"").replace(/<[^>]+>/g,"").replace(/&nbsp;/g," ").replace(/\s+/g," ").trim()}
 function parseDubP(wt){const out=[];String(wt||"").split(/\r?\n/).forEach(line=>{if(!/^\s*\*/.test(line))return;
 const t=wikiClean(line.replace(/^\s*\*+\s*/,""));if(t.length<3)return;
-const m=t.match(/^(.{2,60}?)\s+(?:in|per|nei film|nel film)\s+(.{2,}?)\.?$/i);
+const m=t.match(/^(.{2,60}?)\s+(?:(?:in|per|ne|nei|nel|nello|nella|nelle|negli)\s+(?:film\s+|serie\s+)?|nell')(.{2,}?)\.?$/i);
 out.push(m?{n:m[1].trim(),w:m[2].trim()}:{n:t.replace(/[.;]$/,""),w:""})});return out.slice(0,10)}
 async function dubOfPerson(pid){const k="p"+pid;if(dubC.has(k))return dubC.get(k);let res=null;
 try{const q=await wget(WD+"?action=query&list=search&format=json&origin=*&srsearch="+encodeURIComponent("haswbstatement:P4985="+pid));

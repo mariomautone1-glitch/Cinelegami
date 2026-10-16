@@ -1,5 +1,5 @@
 // CineLegami: salva la pagina sul telefono così si apre subito; i dati dei film arrivano sempre dalla rete.
-const V = "cinelegami-v14";
+const V = "cinelegami-v15";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "logo-scritta.png", "logo-simbolo.png", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {
