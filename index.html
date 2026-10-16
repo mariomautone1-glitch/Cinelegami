@@ -21,7 +21,9 @@
 body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45}
 main{max-width:900px;margin:0 auto;padding:max(22px,env(safe-area-inset-top)) 16px max(40px,env(safe-area-inset-bottom))}
 h1{margin:6px 0 4px;text-align:center;line-height:0}
-.logo{width:min(78vw,360px);height:auto}
+.logo{width:min(78vw,360px);height:auto;display:block}
+.lg{background:none;border:0;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:12px}
+.lg:focus-visible{outline:2px solid var(--hl,#f2b447);outline-offset:4px}
 h2{font-weight:800;font-size:1.2rem;margin:26px 0 6px}
 p.sub{margin:0 0 18px;color:var(--mut);text-align:center}
 h2+p.sub,#p p.sub{text-align:left}
@@ -184,7 +186,7 @@ body.dlgopen{overflow:hidden}
 .top{display:flex;justify-content:flex-end;min-height:30px}
 .accb{font:inherit;font-size:.85rem;max-width:60vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:5px 14px;border-radius:999px;border:1px solid var(--bd);background:var(--card);color:var(--fg);cursor:pointer}
 .accb[hidden]{display:none}
-.mark{display:none;width:min(44vw,190px);height:auto;margin:0 auto 4px}
+.mark{cursor:pointer;display:none;width:min(44vw,190px);height:auto;margin:0 auto 4px}
 main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{display:block}
 .os{display:inline-flex;flex-direction:row-reverse;vertical-align:middle;gap:1px;--oh:26px}
 .os.big{--oh:36px;gap:3px}.os.sm{--oh:15px}
@@ -231,7 +233,7 @@ main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{disp
 <main>
 <div class="top"><button id="accb" class="accb" type="button" hidden>Accedi</button></div>
 <img src="logo-simbolo.png" alt="" class="mark" width="400" height="366">
-<h1><img src="logo-scritta.png" alt="CineLegami" class="logo"></h1>
+<h1><button id="homebtn" class="lg" type="button" aria-label="CineLegami: torna alla home"><img src="logo-scritta.png" alt="" class="logo"></button></h1>
 <p class="sub">Scopri i collegamenti tra i film</p>
 <section id="keybox" class="card" hidden>
 <h2 style="margin-top:0">Collega il database dei film</h2>
@@ -252,7 +254,6 @@ main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{disp
 <section id="seenview" hidden></section>
 <section id="profview" hidden></section>
 <div id="film" hidden>
-<button id="back" class="link" type="button">← Novità al cinema</button>
 <div class="box"><svg id="g" viewBox="0 0 980 660" role="img" aria-label="Grafo dei collegamenti"></svg></div>
 <div id="info"></div>
 <div id="p"></div>
@@ -727,7 +728,7 @@ $("seg").addEventListener("click",e=>{const b=e.target.closest("[data-fl]");if(!
 $("seg").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
 $("q").placeholder={all:"Cerca un film, una serie, un anime o un attore",movie:"Cerca un film",tv:"Cerca una serie TV",anime:"Cerca un anime",person:"Cerca un attore o un regista"}[FILT];
 if($("q").value.trim()&&$("q").value.trim()===lastQ)cerca()});
-$("back").addEventListener("click",()=>{show("home");if(!$("now").innerHTML)loadHome()});
+const goHome=()=>{closeDlg();show("home");if(!$("now").innerHTML)loadHome();window.scrollTo(0,0)};$("homebtn").addEventListener("click",goHome);document.querySelector(".mark").addEventListener("click",goHome);
 $("go").addEventListener("click",cerca);
 $("q").addEventListener("keydown",e=>{if(e.key==="Enter")cerca()});
 function saveKey(){const v=$("k").value.trim();if(!v)return;KEY=v;store.set("cl_tmdb_key",v);$("k").value="";$("keybox").hidden=true;cache.clear();setMsg("");if(cur)centre(cur.kind==="person"?"p"+cur.id:cur.w.k);else{show("home");loadHome()}}
@@ -855,7 +856,7 @@ catch(e){if(alive())el.innerHTML='<p class="kd">Recensioni non disponibili al mo
 const kindS=x=>x.a?"Anime":x.k[0]==="t"?"Serie TV":"Film";
 function renderSeen(){const el=$("seenview"),n=SEEN.length,c={f:0,t:0,a:0};SEEN.forEach(x=>{if(x.a)c.a++;else if(x.k[0]==="t")c.t++;else c.f++});
 const rated=Object.keys(MYR).filter(k=>isSeen(k)).length;
-el.innerHTML=`<button id="sback" class="link" type="button">← Torna alla home</button><h2 style="margin-top:10px">I miei film</h2>`+
+el.innerHTML=`<h2 style="margin-top:10px">I miei film</h2>`+
 (n?`<p class="ov">${[c.f&&c.f+" film",c.t&&c.t+" serie TV",c.a&&c.a+" anime"].filter(Boolean).join(" · ")}${ME?` · ${rated} con il tuo voto`:""}</p><div class="svg">${SEEN.map(x=>{const r=MYR[x.k];return`<article class="svc"><button class="svp" type="button" data-d="${x.k}" aria-label="Dettagli di ${esc(x.t)}">${x.p?`<img src="${img(x.p,"w342")}" alt="" loading="lazy">`:`<span class="ph">${esc(ini(x.t))}</span>`}</button><div class="svb"><button class="l" type="button" data-d="${x.k}">${esc(x.t)}${x.y?" ("+esc(x.y)+")":""}</button><div class="kd">${kindS(x)}</div>${SB_ON?oscRW(x.k,r?r.rating:0):""}${r&&r.body?`<p class="svr">${esc(r.body)}</p>`:""}<div class="sva">${SB_ON?`<button class="link" type="button" data-d="${x.k}">${r&&r.body?"Modifica recensione":"Scrivi recensione"}</button>`:"<span></span>"}<button class="svx" type="button" data-unsee="${x.k}" aria-label="Togli ${esc(x.t)} dalla tua lista">✕</button></div></div></article>`}).join("")}</div>`
 :`<p class="ov">Non hai ancora segnato nessun titolo. Apri un film, una serie o un anime e premi «Segna come visto»: lo ritroverai qui.</p>`)+
 (SB_ON?(ME?`<p class="kd" style="margin-top:14px">La tua lista è salvata nel tuo account e sono privati. Voti e recensioni sono pubblici con il tuo nickname.</p>`:`<p class="kd" style="margin-top:14px">L'elenco è salvato solo su questo dispositivo. <button class="link" type="button" data-authopen>Accedi o registrati</button> per sincronizzarlo, dare voti e scrivere recensioni.</p>`):`<p class="kd" style="margin-top:14px">L'elenco è salvato solo su questo dispositivo.</p>`)}
@@ -866,8 +867,7 @@ $("accb").addEventListener("click",()=>ME?showProfile():authDlg("in"));
 function showProfile(){lastFocus=document.activeElement;closeDlg();show("prof");$("res").innerHTML="";setMsg("");sugKill();renderProfile();window.scrollTo(0,0)}
 function renderProfile(){const el=$("profview");if(!ME){show("home");return}
 const L=Object.values(MYR).sort((a,b)=>String(b.updated_at||"").localeCompare(String(a.updated_at||""))),nv=L.length,nr=L.filter(x=>x.body).length,av=nv?(L.reduce((s,x)=>s+x.rating,0)/nv).toFixed(1).replace(".",","):"";
-el.innerHTML=`<button id="pback" class="link" type="button">← Torna alla home</button>
-<div class="phd">${avt(ME.nick,ME.avatar,88)}<div><h2 style="margin:0">${esc(ME.nick)}</h2><p class="kd" style="margin:2px 0 8px">${esc(ME.email)}</p><button class="go dgo alt" type="button" data-pavatar>${ME.avatar?"Cambia foto":"Aggiungi foto"}</button>${ME.avatar?' <button class="link" type="button" data-pavrm>Rimuovi foto</button>':""}<input id="avf" type="file" accept="image/*" hidden><p id="amsg2" class="err" role="alert"></p></div></div>
+el.innerHTML=`<div class="phd">${avt(ME.nick,ME.avatar,88)}<div><h2 style="margin:0">${esc(ME.nick)}</h2><p class="kd" style="margin:2px 0 8px">${esc(ME.email)}</p><button class="go dgo alt" type="button" data-pavatar>${ME.avatar?"Cambia foto":"Aggiungi foto"}</button>${ME.avatar?' <button class="link" type="button" data-pavrm>Rimuovi foto</button>':""}<input id="avf" type="file" accept="image/*" hidden><p id="amsg2" class="err" role="alert"></p></div></div>
 <form id="nf" novalidate><label class="fl">Nome utente (3-20 caratteri: lettere, numeri, . _ -)<input name="nick" value="${esc(ME.nick)}" maxlength="20" autocomplete="nickname"></label><p id="nmsg" class="err" role="alert"></p><button class="go dgo" type="submit">Salva nome</button></form>
 <h3 style="margin:26px 0 4px">I miei voti e recensioni</h3>${nv?`<p class="kd">${nv} ${nv>1?"voti":"voto"} · ${nr} ${nr===1?"recensione":"recensioni"} · media ${av} su 5</p><ul class="rv mine">${L.map(r=>`<li>${poster(r.poster,r.title)}<div><button class="l" type="button" data-d="${r.work_key}">${esc(r.title)}${r.year?" ("+esc(r.year)+")":""}</button><div>${oscRO(r.rating,1)} <span class="kd">${fmtRv(r.updated_at)}</span></div>${r.hidden?'<p class="kd">⚠ Nascosta agli altri dopo alcune segnalazioni.</p>':""}${r.body?`<p class="rt">${esc(r.body)}</p>`:""}</div></li>`).join("")}</ul>`:'<p class="ov">Non hai ancora dato nessun voto. Apri un titolo da «I miei film» e assegna le tue statuette.</p>'}
 ${BLK.length?`<h3 style="margin:26px 0 4px">Utenti bloccati</h3><ul class="rv">${BLK.map(b=>`<li><span style="flex:1">${esc(b.nick)}</span><button class="link" type="button" data-unblk="${esc(b.id)}" aria-label="Sblocca ${esc(b.nick)}">Sblocca</button></li>`).join("")}</ul>`:""}<p class="kd" style="margin-top:12px">Nome, foto, voti e recensioni sono pubblici. Email e lista dei film sono private.</p>
