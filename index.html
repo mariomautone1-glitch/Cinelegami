@@ -245,9 +245,9 @@ main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{disp
 <section id="home" hidden>
 <h2>Al cinema adesso</h2><div id="now" class="rail"></div>
 <h2>In arrivo</h2><div id="soon" class="rail"></div>
-<h2>Più visti su Netflix</h2><div id="nf" class="rail"></div>
-<h2>Più visti su Prime Video</h2><div id="pv" class="rail"></div>
-<h2>Più visti su Disney+</h2><div id="dp" class="rail"></div>
+<h2>Novità su Netflix</h2><div id="nf" class="rail"></div>
+<h2>Novità su Prime Video</h2><div id="pv" class="rail"></div>
+<h2>Novità su Disney+</h2><div id="dp" class="rail"></div>
 </section>
 <section id="seenview" hidden></section>
 <section id="profview" hidden></section>
@@ -435,9 +435,11 @@ if(!cur){setMsg("");loadWork("movie",DEFAULT_ID)}else setMsg("Le novità non son
 // Più popolari per servizio: TMDB non pubblica le visualizzazioni, uso la popolarità tra i titoli disponibili in abbonamento in Italia
 const PLAT=[["nf",8],["pv",119],["dp",337]];
 async function railFor(id){
-const q={watch_region:"IT",with_watch_providers:String(id),with_watch_monetization_types:"flatrate",sort_by:"popularity.desc"};
-const[m,t]=await Promise.all([api("/discover/movie",q),api("/discover/tv",q)]);
-return[...(m.results||[]).map(x=>nw(x,"movie")),...(t.results||[]).map(x=>nw(x,"tv"))].filter(f=>f.poster_path).sort((a,b)=>b.pop-a.pop).slice(0,20)}
+const dd=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);let out=[];
+for(const days of[100,365]){const base={watch_region:"IT",with_watch_providers:String(id),with_watch_monetization_types:"flatrate",sort_by:"popularity.desc"},to=dd(0),from=dd(days);
+const[m,t]=await Promise.all([api("/discover/movie",{...base,"primary_release_date.gte":from,"primary_release_date.lte":to}),api("/discover/tv",{...base,"first_air_date.gte":from,"first_air_date.lte":to})]);
+out=[...(m.results||[]).map(x=>nw(x,"movie")),...(t.results||[]).map(x=>nw(x,"tv"))].filter(f=>f.poster_path).sort((a,b)=>b.pop-a.pop).slice(0,20);if(out.length>=8)break}
+return out}
 function loadPlatforms(){PLAT.forEach(([el,id])=>{
 railFor(id).then(L=>{$(el).innerHTML=L.map((f,i)=>pc(f,false,i+1)).join("")||'<p class="sub">Nessun titolo trovato.</p>'})
 .catch(()=>{$(el).innerHTML='<p class="sub">Non disponibile al momento.</p>'})})}
