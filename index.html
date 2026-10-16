@@ -283,6 +283,13 @@ const setMsg=t=>{$("msg").textContent=t||""};
 const tags=a=>a.filter(Boolean).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
 const pa=(p,big)=>p.photo?`<img class="pa${isDir(p)?" dir":""}${big?" big":""}" src="${img(p.photo,big?"w185":"w92")}" alt="">`:`<b class="pa${isDir(p)?" dir":""}${big?" big":""}" style="background:${rc(p)}">${esc(ini(p.name))}</b>`;
 const ch=p=>`<button class="chip" data-p="${p.id}">${pa(p)}${esc(p.name)}</button>`;
+const simC=new Map();
+async function similarOf(w){if(simC.has(w.k))return simC.get(w.k);const b="/"+w.mt+"/"+w.id;let r=[];
+for(const e of["/recommendations","/similar"]){try{const d=await api(b+e);r=(d.results||[]).map(x=>nw(x,w.mt)).filter(x=>x.poster_path&&x.k!==w.k)}catch(err){r=[]}if(r.length>=4)break}
+r=r.slice(0,14);simC.set(w.k,r);return r}
+const simLab=w=>w.anime?"Titoli simili":w.mt==="tv"?"Serie simili":"Film simili";
+function fillSim(id,w,ok,dlg){similarOf(w).then(l=>{if(!ok())return;const el=$(id);if(!el)return;
+el.innerHTML=l.length?`<div class="rail">${l.map(f=>pc(f).replace("data-w=",dlg?"data-d=":"data-w=")).join("")}</div>`:'<span class="kd">Nessun titolo simile trovato.</span>'})}
 const kindOf=w=>w.anime?"Anime":w.mt==="tv"?"Serie TV":"Film";
 const nw=(x,mt)=>{mt=mt||x.media_type||"movie";const g=x.genre_ids||(x.genres||[]).map(a=>a.id);
 return{k:(mt==="tv"?"t":"m")+x.id,id:x.id,mt,title:x.title||x.name||"",release_date:x.release_date||x.first_air_date||"",poster_path:x.poster_path,vote_count:x.vote_count||0,pop:x.popularity||0,vote_average:x.vote_average||0,anime:g.includes(16)&&x.original_language==="ja"}};
@@ -490,7 +497,7 @@ if(!isP){
 i=`<section class="card"><div class="hd">${poster(cur.poster,cur.title,1)}<div><h2>${esc(cur.title)}</h2>${tags([kindOf(cur.w),cur.year,cur.runtime,...cur.genres])}</div></div>`+
 (cur.overview?`<p class="ov">${esc(cut(cur.overview,320))}</p>`:"")+
 `<div class="k">${cur.w.mt==="tv"?"Creata da":"Regia"}</div>${dirs.map(ch).join("")||'<span class="kd">non indicata</span>'}<div class="k">Cast principale</div>${cast.map(ch).join("")}`+
-`<div class="k">Dove vederlo</div><div id="wh" class="wh">Carico…</div><div class="k">Collegamenti</div>${tags([cur.links.length+" opere collegate"])}<div class="dact"><button class="go alt${isSeen(cur.w.k)?" on":""}" type="button" data-seenc="1">${isSeen(cur.w.k)?"✓ Visto":"Segna come visto"}</button></div></section>`}
+`<div class="k">Dove vederlo</div><div id="wh" class="wh">Carico…</div><div class="k">${simLab(cur.w)}</div><div id="sim">Carico…</div><div class="k">Collegamenti</div>${tags([cur.links.length+" opere collegate"])}<div class="dact"><button class="go alt${isSeen(cur.w.k)?" on":""}" type="button" data-seenc="1">${isSeen(cur.w.k)?"✓ Visto":"Segna come visto"}</button></div></section>`}
 else{
 const kn=cur.known[cur.id]||[];
 i=`<section class="card p"><div class="hd">${pa(cur.person,1)}<div><h2>${esc(cur.title)}</h2>${tags([cur.year])}</div></div>${sel?"":'<div id="bio" class="ov"></div>'}`+
@@ -502,7 +509,7 @@ i=`<section class="card p"><div class="hd">${pa(p,1)}<div><h2>${esc(p.name)}</h2
 if(!kn)ensureKnown(p)}
 if(fsel){i=`<section class="card"><div class="hd">${poster(fsel.f.poster_path,fsel.f.title,1)}<div><h2>${esc(fsel.f.title)}</h2>${tags([kindOf(fsel.f),yr(fsel.f)])}</div></div>${fsel.who.some(id=>P.find(x=>x.id===id))?`<div class="k">In comune con</div>${fsel.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}`:""}<div class="dact"><button class="go dgo" type="button" data-det="${fsel.f.k}">Dettagli</button><button class="go dgo alt" type="button" data-go="${fsel.f.k}">Scopri i legami</button><button class="go dgo alt${isSeen(fsel.f.k)?" on":""}" type="button" data-sk="${fsel.f.k}">${isSeen(fsel.f.k)?"✓ Visto":"Segna come visto"}</button></div></section>`+i}
 $("info").innerHTML=i;
-if(!isP&&$("wh")){const ck=cur;fillWhere("wh",cur.w,()=>cur===ck)}
+if(!isP&&$("wh")){const ck=cur;fillWhere("wh",cur.w,()=>cur===ck);fillSim("sim",cur.w,()=>cur===ck,false)}
 $("p").innerHTML=`<h2>${isP?"Opere di ":"Collegamenti di "}${esc(cur.title)}</h2><ul>`+L.slice(0,24).map(o=>`<li>${poster(o.f.poster_path,o.f.title)}<div><button class="l" data-w="${o.f.k}">${esc(o.f.title)}${yr(o.f)?" ("+yr(o.f)+")":""}</button> <span class="kd">${kindOf(o.f)}</span><div>${o.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}</div></div></li>`).join("")+"</ul>";
 if(p)bio(p);else if(isP)bio(cur.person)}
 
@@ -613,7 +620,7 @@ openDlg(`<div class="dtop">${d.poster_path?`<img class="dposter" src="${img(d.po
 `<p class="ov dbio">${esc(d.overview||"Trama non disponibile.")}</p>`+`<div class="k">Dove vederlo</div><div id="whd" class="wh">Carico…</div>`+
 (com?`<p class="ov"><b>In comune con:</b> ${esc(com)}</p>`:"")+
 `<div class="k">${mt==="tv"?"Creata da":"Regia"}</div><div>${c.dirs.slice(0,3).map(x=>dpc(x,"Regista")).join("")||'<span class="kd">non indicata</span>'}</div><div class="k">Cast</div><div>${c.cast.slice(0,10).map(x=>dpc(x,"Attore")).join("")}</div>`+
-`<div class="k">Community</div><div id="comm" class="comm">Carico…</div>`+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button></div>`);fillWhere("whd",W,()=>my===dTok);if(typeof fillComm==="function")fillComm(W,()=>my===dTok)}
+`<div class="k">${simLab(W)}</div><div id="simd">Carico…</div>`+`<div class="k">Community</div><div id="comm" class="comm">Carico…</div>`+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button></div>`);fillWhere("whd",W,()=>my===dTok);fillSim("simd",W,()=>my===dTok,true);if(typeof fillComm==="function")fillComm(W,()=>my===dTok)}
 }catch(e){if(my===dTok){closeDlg();showErr(e)}}}
 const kindK=x=>x.a?"Anime":x[0]==="t"?"Serie TV":"Film";
 function openSeen(pt,keep){if(!keep)lastFocus=document.activeElement;dTok++;
