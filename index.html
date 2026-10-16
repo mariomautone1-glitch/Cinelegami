@@ -268,6 +268,7 @@ main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{disp
 <div id="hs-air"><h2>Serie TV del momento</h2><div id="air" class="rail"></div></div>
 <div id="hs-ani"><h2>Anime in onda</h2><div id="ani" class="rail"></div></div>
 <div id="hs-animov"><h2>Film anime recenti</h2><div id="animov" class="rail"></div></div>
+<div id="hs-cr"><h2>Novità su Crunchyroll</h2><div id="cr" class="rail"></div></div>
 <div id="hs-nf"><h2>Novità su Netflix</h2><div id="nf" class="rail"></div></div>
 <div id="hs-pv"><h2>Novità su Prime Video</h2><div id="pv" class="rail"></div></div>
 <div id="hs-dp"><h2>Novità su Disney+</h2><div id="dp" class="rail"></div></div>
@@ -442,8 +443,8 @@ const show=v=>{$("home").hidden=v!=="home";$("film").hidden=v!=="film";$("seenvi
 const fmtD=d=>{const t=new Date(d+"T00:00:00");return isNaN(t)?d:t.toLocaleDateString("it-IT",{day:"numeric",month:"short"})};
 const pc=(f,soon,rk)=>`<button class="pc" data-w="${f.k}">${rk?`<span class="rk">${rk}</span>`:""}<img src="${img(f.poster_path,"w342")}" alt="" loading="lazy"><span class="pt">${ckm(f.k)}${esc(f.title)}</span><span class="pd">${soon?(f.release_date?"dal "+esc(fmtD(f.release_date)):""):kindOf(f)+(f.vote_average>0?" · ★ "+f.vote_average.toFixed(1):"")}</span></button>`;
 const HM={};
-const HV={all:["now","soon","air","ani","nf","pv","dp"],movie:["now","soon","nf","pv","dp"],tv:["air","nf","pv","dp"],anime:["ani","animov","nf","pv","dp"]};
-const HALL=["now","soon","air","ani","animov","nf","pv","dp"],HRANK={nf:1,pv:1,dp:1};
+const HV={all:["now","soon","air","ani","nf","pv","dp"],movie:["now","soon","nf","pv","dp"],tv:["air","nf","pv","dp"],anime:["ani","animov","cr","nf","pv","dp"]};
+const HALL=["now","soon","air","ani","animov","cr","nf","pv","dp"],HRANK={cr:1,nf:1,pv:1,dp:1};
 const hOk=f=>FILT==="all"||(FILT==="anime"?f.anime:FILT==="tv"?f.mt==="tv"&&!f.anime:f.mt==="movie"&&!f.anime);
 function renderHome(){for(const id of HALL){const box=$("hs-"+id);if(!box)continue;
 if(!HV[FILT].includes(id)){box.hidden=true;continue}
@@ -471,15 +472,15 @@ setMsg("");loadPlatforms();loadExtra();
 }catch(e){if(e&&e.code==="key"){showErr(e);return}
 if(!cur){setMsg("");loadWork("movie",DEFAULT_ID)}else setMsg("Le novità non sono disponibili al momento.")}}
 // Più popolari per servizio: TMDB non pubblica le visualizzazioni, uso la popolarità tra i titoli disponibili in abbonamento in Italia
-const PLAT=[["nf",8],["pv",119],["dp",337]];
-async function railFor(id){
+const PLAT=[["cr",283,{with_genres:"16",with_original_language:"ja"}],["nf",8],["pv",119],["dp",337]];
+async function railFor(id,extra){
 const dd=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);let out=[];
-for(const days of[100,365]){const base={watch_region:"IT",with_watch_providers:String(id),with_watch_monetization_types:"flatrate",sort_by:"popularity.desc"},to=dd(0),from=dd(days);
+for(const days of[100,365]){const base={watch_region:"IT",with_watch_providers:String(id),with_watch_monetization_types:"flatrate",sort_by:"popularity.desc",...(extra||{})},to=dd(0),from=dd(days);
 const[m,t]=await Promise.all([api("/discover/movie",{...base,"primary_release_date.gte":from,"primary_release_date.lte":to}),api("/discover/tv",{...base,"first_air_date.gte":from,"first_air_date.lte":to})]);
 out=[...(m.results||[]).map(x=>nw(x,"movie")),...(t.results||[]).map(x=>nw(x,"tv"))].filter(f=>f.poster_path).sort((a,b)=>b.pop-a.pop).slice(0,40);if(out.length>=8)break}
 return out}
-function loadPlatforms(){PLAT.forEach(([el,id])=>{
-railFor(id).then(L=>{HM[el]=L;renderHome()}).catch(()=>{HM[el]=null;renderHome()})})}
+function loadPlatforms(){PLAT.forEach(([el,id,ex])=>{
+railFor(id,ex).then(L=>{HM[el]=L;renderHome()}).catch(()=>{HM[el]=null;renderHome()})})}
 // Dove vederlo: cinema in Italia e servizi di streaming (dati JustWatch tramite TMDB)
 let THEA=null;
 function theatres(){if(!THEA){const today=new Date().toISOString().slice(0,10),g=(path,p)=>api(path,{region:"IT",page:String(p)}).catch(()=>({results:[]}));
