@@ -445,18 +445,19 @@ const pc=(f,soon,rk)=>`<button class="pc" data-w="${f.k}">${rk?`<span class="rk"
 const HM={};
 const HV={all:["now","soon","air","ani","nf","pv","dp"],movie:["now","soon","nf","pv","dp"],tv:["air","nf","pv","dp"],anime:["ani","animov","cr","nf","pv","dp"]};
 const HALL=["now","soon","air","ani","animov","cr","nf","pv","dp"],HRANK={cr:1,nf:1,pv:1,dp:1};
+const HP={ani:f=>f.anime,animov:f=>f.anime,cr:f=>f.anime,air:f=>f.mt==="tv"&&!f.anime};
 const hOk=f=>FILT==="all"||(FILT==="anime"?f.anime:FILT==="tv"?f.mt==="tv"&&!f.anime:f.mt==="movie"&&!f.anime);
 function renderHome(){for(const id of HALL){const box=$("hs-"+id);if(!box)continue;
 if(!HV[FILT].includes(id)){box.hidden=true;continue}
 const L=HM[id];
 if(L===undefined){box.hidden=false;$(id).innerHTML='<p class="sub">Carico…</p>';continue}
 if(L===null){box.hidden=false;$(id).innerHTML='<p class="sub">Non disponibile al momento.</p>';continue}
-const F=L.filter(hOk).slice(0,20);
+const F=L.filter(hOk).filter(HP[id]||(()=>true)).slice(0,20);
 if(!F.length){box.hidden=true;continue}
 box.hidden=false;$(id).innerHTML=F.map((f,i)=>pc(f,id==="soon",HRANK[id]?i+1:0)).join("")}}
 function loadExtra(){const dd=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);
 const put=(id,p)=>p.then(r=>{HM[id]=(r.results||[]).map(x=>nw(x,id==="animov"?"movie":"tv")).filter(f=>f.poster_path);renderHome()}).catch(()=>{HM[id]=null;renderHome()});
-put("air",api("/trending/tv/week",{}).then(r=>({results:(r.results||[]).filter(x=>!(x.original_language==="ja"&&(x.genre_ids||[]).includes(16)))})));
+put("air",api("/discover/tv",{without_genres:"16",sort_by:"popularity.desc","air_date.gte":dd(30),"air_date.lte":dd(0),"vote_count.gte":"20"}));
 put("ani",api("/discover/tv",{with_genres:"16",with_original_language:"ja",sort_by:"popularity.desc","air_date.gte":dd(45),"air_date.lte":dd(0)}));
 put("animov",api("/discover/movie",{with_genres:"16",with_original_language:"ja",sort_by:"popularity.desc","primary_release_date.gte":dd(365),"primary_release_date.lte":dd(0)}))}
 async function loadHome(){
