@@ -244,6 +244,10 @@ main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{disp
 .rv.mine li{align-items:flex-start}
 .rps{border:0;margin:10px 0 0;padding:0}.rps legend{padding:0}
 .rep{margin-left:6px;font-size:.78rem}
+#recoview[hidden]{display:none}
+.recobtn{border-color:var(--hl)!important;color:var(--hl)!important}
+.rn{font-size:.82rem;color:var(--hl)}
+.rsec{margin:22px 0 0;font-size:1.05rem}
 </style>
 </head>
 <body>
@@ -259,7 +263,7 @@ main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{disp
 <div class="row" style="margin-top:12px"><input id="k" type="password" placeholder="Incolla qui la chiave" autocomplete="off" aria-label="Chiave TMDB"><button id="ks" class="go" type="button">Salva</button></div>
 </section>
 <div class="row"><div class="sw"><input id="q" placeholder="Cerca un film, una serie, un anime, un attore o un regista" autocomplete="off" aria-label="Cosa vuoi cercare" role="combobox" aria-expanded="false" aria-controls="sug" aria-autocomplete="list"><ul id="sug" class="sug" role="listbox" hidden></ul></div><button id="go" class="go" type="button">Cerca</button></div>
-<div id="seg" class="seg" role="group" aria-label="Cosa mostrare nella pagina principale"><button type="button" data-fl="all" aria-pressed="true">Tutto</button><button type="button" data-fl="movie" aria-pressed="false">Film</button><button type="button" data-fl="tv" aria-pressed="false">Serie TV</button><button type="button" data-fl="anime" aria-pressed="false">Anime</button><button type="button" id="seenbtn" class="seenbtn" aria-label="Apri I miei film">✓ I miei film <b id="seenn">0</b></button></div>
+<div id="seg" class="seg" role="group" aria-label="Cosa mostrare nella pagina principale"><button type="button" data-fl="all" aria-pressed="true">Tutto</button><button type="button" data-fl="movie" aria-pressed="false">Film</button><button type="button" data-fl="tv" aria-pressed="false">Serie TV</button><button type="button" data-fl="anime" aria-pressed="false">Anime</button><button type="button" id="recobtn" class="recobtn">★ Consiglia alla community</button><button type="button" id="seenbtn" class="seenbtn" aria-label="Apri I miei film">✓ I miei film <b id="seenn">0</b></button></div>
 <p id="msg" role="status" aria-live="polite"></p>
 <div id="res"></div>
 <section id="home" hidden>
@@ -275,6 +279,7 @@ main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{disp
 </section>
 <section id="seenview" hidden></section>
 <section id="profview" hidden></section>
+<section id="recoview" hidden></section>
 <div id="film" hidden>
 <div class="box"><svg id="g" viewBox="0 0 980 660" role="img" aria-label="Grafo dei collegamenti"></svg></div>
 <div id="info"></div>
@@ -439,7 +444,7 @@ catch(e){if(cur!==my)return;cur.known[p.id]=[]}
 if(cur===my&&sel===p.id)R()}
 function centre(key){closeDlg();if(key[0]==="p")loadPerson(Number(key.slice(1)));else{const w=wkey(key);loadWork(w.mt,w.id)}}
 
-const show=v=>{$("home").hidden=v!=="home";$("film").hidden=v!=="film";$("seenview").hidden=v!=="seen";$("profview").hidden=v!=="prof"};
+const show=v=>{$("home").hidden=v!=="home";$("film").hidden=v!=="film";$("seenview").hidden=v!=="seen";$("profview").hidden=v!=="prof";$("recoview").hidden=v!=="reco"};
 const fmtD=d=>{const t=new Date(d+"T00:00:00");return isNaN(t)?d:t.toLocaleDateString("it-IT",{day:"numeric",month:"short"})};
 const pc=(f,soon,rk)=>`<button class="pc" data-w="${f.k}">${rk?`<span class="rk">${rk}</span>`:""}<img src="${img(f.poster_path,"w342")}" alt="" loading="lazy"><span class="pt">${ckm(f.k)}${esc(f.title)}</span><span class="pd">${soon?(f.release_date?"dal "+esc(fmtD(f.release_date)):""):kindOf(f)+(f.vote_average>0?" · ★ "+f.vote_average.toFixed(1):"")}</span></button>`;
 const HM={};
@@ -724,7 +729,7 @@ openDlg(`<div class="dtop">${d.poster_path?`<img class="dposter" src="${img(d.po
 `<p class="ov dbio">${esc(d.overview||"Trama non disponibile.")}</p>`+`<div class="k">Dove vederlo</div><div id="whd" class="wh">Carico…</div>`+
 (com?`<p class="ov"><b>In comune con:</b> ${esc(com)}</p>`:"")+
 `<div class="k">${mt==="tv"?"Creata da":"Regia"}</div><div>${c.dirs.slice(0,3).map(x=>dpc(x,"Regista")).join("")||'<span class="kd">non indicata</span>'}</div><div class="k">Cast</div><div>${c.cast.slice(0,10).map(x=>dpc(x,"Attore")).join("")}</div>`+
-`<div class="k">${simLab(W)}</div><div id="simd">Carico…</div>`+`<div class="k">Community</div><div id="comm" class="comm">Carico…</div>`+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button></div>`);fillWhere("whd",W,()=>my===dTok);fillSim("simd",W,()=>my===dTok,true);if(typeof fillComm==="function")fillComm(W,()=>my===dTok)}
+`<div class="k">${simLab(W)}</div><div id="simd">Carico…</div>`+`<div class="k">Community</div><div id="comm" class="comm">Carico…</div>`+(SB_ON?`<div class="k">Consigliato dalla community</div><div id="reco" class="comm">Carico…</div>`:"")+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button></div>`);fillWhere("whd",W,()=>my===dTok);fillSim("simd",W,()=>my===dTok,true);if(typeof fillComm==="function"){fillComm(W,()=>my===dTok);if(typeof fillReco==="function")fillReco(W,()=>my===dTok)}}
 }catch(e){if(my===dTok){closeDlg();showErr(e)}}}
 const kindK=x=>x.a?"Anime":x[0]==="t"?"Serie TV":"Film";
 function openSeen(pt,keep){if(!keep)lastFocus=document.activeElement;dTok++;
@@ -782,7 +787,7 @@ if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventLi
 const SB_URL="https://ezswtznereojtyphdbfh.supabase.co",SB_KEY="sb_publishable_Wf5ItERbGV2aw1C0MzZCUA_fDZ3NruZ";
 const CONTACT="info@cinelegami.it";   // email di contatto per la privacy (facoltativa, appare nell'informativa)
 const SB_ON=!!(SB_URL&&SB_KEY);
-let SESS=null,ME=null,MYR={},BLK=[],CLOUD=null,COMM=null,cTok=0,tT=0,busy=false;
+let SESS=null,ME=null,MYR={},MYRC={},BLK=[],CLOUD=null,COMM=null,RC=null,cTok=0,rTok=0,tT=0,busy=false;
 try{SESS=JSON.parse(store.get("cl_sess")||"null")}catch(e){}
 if(SESS&&!(SESS.at&&SESS.rt))SESS=null;
 const nowS=()=>Math.floor(Date.now()/1000);
@@ -800,7 +805,7 @@ let rP=null;
 function refreshSess(){if(!SESS)return Promise.resolve();if(rP)return rP;
 rP=(async()=>{try{const j=await sb("/auth/v1/token?grant_type=refresh_token",{method:"POST",auth:false,body:{refresh_token:SESS.rt}});setSess(j)}catch(e){if(e.status>=400&&e.status<500)clearSess()}finally{rP=null}})();return rP}
 function setSess(j){SESS={at:j.access_token,rt:j.refresh_token,exp:j.expires_at||nowS()+(j.expires_in||3600)};store.set("cl_sess",JSON.stringify(SESS))}
-function clearSess(){SESS=null;ME=null;MYR={};BLK=[];CLOUD=null;store.del("cl_sess");uiAcc();refreshViews()}
+function clearSess(){SESS=null;ME=null;MYR={};MYRC={};BLK=[];CLOUD=null;store.del("cl_sess");uiAcc();refreshViews()}
 function aerr(e){const m=String(e&&e.message||"").toLowerCase(),s=e&&e.status;
 if(e instanceof TypeError)return"Connessione non riuscita. Controlla internet e riprova.";
 if(m.includes("invalid login"))return"Email o password non corretti.";
@@ -816,7 +821,7 @@ return"Qualcosa non ha funzionato. Riprova tra poco."}
 // ---- account: bottone e finestre ----
 function uiAcc(){const pl=$("privl");if(pl)pl.hidden=!SB_ON;const b=$("accb");if(!b)return;b.hidden=!SB_ON;b.innerHTML=ME?avt(ME.nick,ME.avatar,22)+" "+esc(ME.nick):"Accedi";b.setAttribute("aria-label",ME?"Il tuo account":"Accedi o registrati")}
 function avt(n,a,s){s=s||28;return a&&/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(a)?`<img class="av" style="--s:${s}px" src="${a}" alt="">`:`<span class="av ph" style="--s:${s}px" aria-hidden="true">${esc(String(n||"?").slice(0,1).toUpperCase())}</span>`}
-function refreshViews(){if(!$("seenview").hidden)renderSeen();if(!$("profview").hidden){if(ME)renderProfile();else show("home")}}
+function refreshViews(){if(!$("seenview").hidden)renderSeen();if(!$("recoview").hidden)renderReco();if(!$("profview").hidden){if(ME)renderProfile();else show("home")}}
 function authDlg(mode,msg){lastFocus=document.activeElement;const up=mode==="up";
 openDlg(`<h2 id="dt">${up?"Crea il tuo account":"Accedi"}</h2><div class="seg" style="margin:8px 0 0"><button type="button" data-at="in" aria-pressed="${!up}">Accedi</button><button type="button" data-at="up" aria-pressed="${up}">Registrati</button></div><p class="ov">${esc(msg||"Con un account puoi dare voti, scrivere recensioni e ritrovare i tuoi film su ogni dispositivo.")}</p>`+
 `<form id="af" novalidate data-m="${mode}"><label class="fl">Email<input name="email" type="email" autocomplete="email" maxlength="254" required></label>`+
@@ -825,13 +830,13 @@ openDlg(`<h2 id="dt">${up?"Crea il tuo account":"Accedi"}</h2><div class="seg" s
 (up?`<label class="fl ckb"><input type="checkbox" name="ok"><span>Ho letto l'<button type="button" class="link" data-priv>informativa privacy</button> e so che nickname e recensioni saranno pubblici.</span></label>`:"")+
 `<p id="amsg" class="err" role="alert"></p><button class="go dgo" type="submit">${up?"Registrati":"Accedi"}</button>${up?"":'<button type="button" class="link" data-forgot style="margin-left:14px">Password dimenticata?</button>'}</form>`)}
 function privDlg(){lastFocus=lastFocus||document.activeElement;
-openDlg(`<h2 id="dt">Privacy</h2><p class="ov"><b>Che dati raccogliamo.</b> Solo se crei un account: email, password (conservata in forma cifrata, nessuno può leggerla), nickname, i titoli che segni come visti (la lista «I miei film»), i tuoi voti e le tue recensioni.</p><p class="ov"><b>Cosa è pubblico.</b> Nickname, voti e testo delle recensioni. L'email e la lista «I miei film» sono private: li vedi solo tu.</p><p class="ov"><b>A cosa servono.</b> Solo per far funzionare account, lista dei film e recensioni. Non vendiamo né cediamo i dati e non facciamo pubblicità.</p><p class="ov"><b>Dove sono.</b> I dati sono conservati da Supabase, con connessione cifrata. Le regole di accesso sono applicate direttamente dal database.</p><p class="ov"><b>I tuoi diritti.</b> Puoi eliminare in qualsiasi momento account, lista dei film e recensioni dalla finestra «Il tuo account».${CONTACT?" Per altre richieste scrivi a "+esc(CONTACT)+".":""}</p><p class="ov"><b>Senza account</b> la lista «I miei film» resta solo nel tuo dispositivo e non lo riceviamo.</p><p class="ov"><a href="privacy.html" target="_blank" rel="noopener">Leggi l'informativa completa</a></p><button class="go dgo alt" type="button" data-authopen>Indietro</button>`)}
+openDlg(`<h2 id="dt">Privacy</h2><p class="ov"><b>Che dati raccogliamo.</b> Solo se crei un account: email, password (conservata in forma cifrata, nessuno può leggerla), nickname, i titoli che segni come visti (la lista «I miei film»), i tuoi voti, le tue recensioni e i titoli che consigli alla community.</p><p class="ov"><b>Cosa è pubblico.</b> Nickname, voti, testo delle recensioni e consigli. L'email e la lista «I miei film» sono private: li vedi solo tu.</p><p class="ov"><b>A cosa servono.</b> Solo per far funzionare account, lista dei film e recensioni. Non vendiamo né cediamo i dati e non facciamo pubblicità.</p><p class="ov"><b>Dove sono.</b> I dati sono conservati da Supabase, con connessione cifrata. Le regole di accesso sono applicate direttamente dal database.</p><p class="ov"><b>I tuoi diritti.</b> Puoi eliminare in qualsiasi momento account, lista dei film, recensioni e consigli dalla finestra «Il tuo account».${CONTACT?" Per altre richieste scrivi a "+esc(CONTACT)+".":""}</p><p class="ov"><b>Senza account</b> la lista «I miei film» resta solo nel tuo dispositivo e non lo riceviamo.</p><p class="ov"><a href="privacy.html" target="_blank" rel="noopener">Leggi l'informativa completa</a></p><button class="go dgo alt" type="button" data-authopen>Indietro</button>`)}
 function accDlg(msg){lastFocus=document.activeElement;
 openDlg(`<h2 id="dt">Il tuo account</h2><p class="ov"><b>${esc(ME.nick)}</b><br><span class="kd">${esc(ME.email)}</span></p>${msg?`<p class="ov">${esc(msg)}</p>`:""}<div class="dact"><button class="go dgo" type="button" data-logout>Esci</button><button class="go dgo alt" type="button" data-delask>Elimina account</button></div><div id="delbox"></div>`)}
 function newPwDlg(){lastFocus=document.activeElement;
 openDlg(`<h2 id="dt">Scegli una nuova password</h2><form id="rf" novalidate><label class="fl">Nuova password (almeno 8 caratteri)<input name="pw" type="password" autocomplete="new-password" maxlength="72" required></label><p id="amsg" class="err" role="alert"></p><button class="go dgo" type="submit">Salva password</button></form>`)}
 async function loadMe(){try{const u=await sb("/auth/v1/user");const p=await sb("/rest/v1/profiles?select=nickname,avatar&id=eq."+encodeURIComponent(u.id));
-ME={id:u.id,email:u.email,nick:(p&&p[0]&&p[0].nickname)||"utente",avatar:(p&&p[0]&&p[0].avatar)||null};uiAcc();await loadMine();await loadBlocks();await syncSeen();refreshViews()}
+ME={id:u.id,email:u.email,nick:(p&&p[0]&&p[0].nickname)||"utente",avatar:(p&&p[0]&&p[0].avatar)||null};uiAcc();await loadMine();await loadBlocks();await loadMyReco();await syncSeen();refreshViews()}
 catch(e){if(e.status===401||e.status===403)clearSess()}}
 async function loadMine(){MYR={};const rows=await sb("/rest/v1/reviews?select=work_key,rating,body,title,year,poster,anime,updated_at,hidden&user_id=eq."+encodeURIComponent(ME.id)+"&limit=1000");(rows||[]).forEach(r=>{MYR[r.work_key]=r})}
 async function loadBlocks(){try{const r=await sb("/rest/v1/blocks?select=blocked_id,profiles(nickname)&blocker_id=eq."+encodeURIComponent(ME.id)+"&limit=500");BLK=(r||[]).map(x=>({id:x.blocked_id,nick:(x.profiles&&x.profiles.nickname)||"utente"}))}catch(e){BLK=[]}}
@@ -907,7 +912,7 @@ const L=Object.values(MYR).sort((a,b)=>String(b.updated_at||"").localeCompare(St
 el.innerHTML=`<div class="phd">${avt(ME.nick,ME.avatar,88)}<div><h2 style="margin:0">${esc(ME.nick)}</h2><p class="kd" style="margin:2px 0 8px">${esc(ME.email)}</p><button class="go dgo alt" type="button" data-pavatar>${ME.avatar?"Cambia foto":"Aggiungi foto"}</button>${ME.avatar?' <button class="link" type="button" data-pavrm>Rimuovi foto</button>':""}<input id="avf" type="file" accept="image/*" hidden><p id="amsg2" class="err" role="alert"></p></div></div>
 <form id="nf" novalidate><label class="fl">Nome utente (3-20 caratteri: lettere, numeri, . _ -)<input name="nick" value="${esc(ME.nick)}" maxlength="20" autocomplete="nickname"></label><p id="nmsg" class="err" role="alert"></p><button class="go dgo" type="submit">Salva nome</button></form>
 <h3 style="margin:26px 0 4px">I miei voti e recensioni</h3>${nv?`<p class="kd">${nv} ${nv>1?"voti":"voto"} · ${nr} ${nr===1?"recensione":"recensioni"} · media ${av} su 5</p><ul class="rv mine">${L.map(r=>`<li>${poster(r.poster,r.title)}<div><button class="l" type="button" data-d="${r.work_key}">${esc(r.title)}${r.year?" ("+esc(r.year)+")":""}</button><div>${oscRO(r.rating,1)} <span class="kd">${fmtRv(r.updated_at)}</span></div>${r.hidden?'<p class="kd">⚠ Nascosta agli altri dopo alcune segnalazioni.</p>':""}${r.body?`<p class="rt">${esc(r.body)}</p>`:""}</div></li>`).join("")}</ul>`:'<p class="ov">Non hai ancora dato nessun voto. Apri un titolo da «I miei film» e assegna le tue statuette.</p>'}
-${BLK.length?`<h3 style="margin:26px 0 4px">Utenti bloccati</h3><ul class="rv">${BLK.map(b=>`<li><span style="flex:1">${esc(b.nick)}</span><button class="link" type="button" data-unblk="${esc(b.id)}" aria-label="Sblocca ${esc(b.nick)}">Sblocca</button></li>`).join("")}</ul>`:""}<p class="kd" style="margin-top:12px">Nome, foto, voti e recensioni sono pubblici. Email e lista dei film sono private.</p>
+${BLK.length?`<h3 style="margin:26px 0 4px">Utenti bloccati</h3><ul class="rv">${BLK.map(b=>`<li><span style="flex:1">${esc(b.nick)}</span><button class="link" type="button" data-unblk="${esc(b.id)}" aria-label="Sblocca ${esc(b.nick)}">Sblocca</button></li>`).join("")}</ul>`:""}<p class="kd" style="margin-top:12px">Nome, foto, voti, recensioni e consigli sono pubblici. Email e lista dei film sono private.</p>
 <div class="dact" style="margin-top:18px"><button class="go dgo" type="button" data-logout>Esci</button><button class="go dgo alt" type="button" data-delask>Elimina account</button></div><div id="delbox"></div>`}
 function repDlg(u){if(!ME){authDlg("in","Accedi per segnalare una recensione.");return}if(!COMM)return;COMM.rep=u;
 openDlg(`<h2 id="dt">Segnala una recensione</h2><p class="ov">Dicci cosa non va. L'autore non saprà chi ha segnalato. Le segnalazioni le controlliamo noi.</p><form id="rpf" novalidate><fieldset class="rps"><legend class="kd">Motivo</legend>${[["offensivo","Offensiva, insulti o odio"],["spam","Spam o pubblicità"],["nome_foto","Nome o foto inappropriati"],["altro","Altro"]].map((x,i)=>`<label class="fl ckb"><input type="radio" name="reason" value="${x[0]}"${i?"":" checked"}><span>${x[1]}</span></label>`).join("")}</fieldset><label class="fl">Nota (facoltativa, max 300 caratteri)<textarea name="note" class="rpn" maxlength="300" rows="3"></textarea></label><p id="amsg" class="err" role="alert"></p><button class="go dgo" type="submit">Invia segnalazione</button> <button class="link" type="button" data-repback style="margin-left:12px">Annulla</button></form>`,null,true)}
@@ -917,6 +922,45 @@ function toAvatar(file){return new Promise((ok,ko)=>{if(!file||!/^image\//.test(
 fr.onload=()=>{const im=new Image();im.onerror=()=>ko(new Error("img"));im.onload=()=>{const S=128,c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d"),m=Math.min(im.width,im.height);if(!m)return ko(new Error("img"));
 x.fillStyle="#18181b";x.fillRect(0,0,S,S);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,S,S);let q=.85,u=c.toDataURL("image/jpeg",q);while(u.length>25000&&q>.4){q-=.1;u=c.toDataURL("image/jpeg",q)}ok(u)};im.src=fr.result};fr.readAsDataURL(file)})}
 async function patchProfile(o){const r=await sb("/rest/v1/profiles?id=eq."+encodeURIComponent(ME.id),{method:"PATCH",headers:{Prefer:"return=representation"},body:o});if(!r||!r.length)throw new Error("not saved");return r[0]}
+// ---- consigli alla community ----
+const RK={movie:"Film",tv:"Serie TV",anime:"Anime"},kindR=x=>x.anime?"anime":String(x.work_key)[0]==="t"?"tv":"movie";
+let RF="all",RROWS=null;
+async function loadMyReco(){MYRC={};try{const rows=await sb("/rest/v1/recommendations?select=work_key,body,hidden,title,year,poster,anime,updated_at&user_id=eq."+encodeURIComponent(ME.id)+"&limit=1000");(rows||[]).forEach(r=>{MYRC[r.work_key]=r})}catch(e){}}
+const okPoster=p=>/^\/[A-Za-z0-9_.-]{1,78}$/.test(p||"")?p:null;
+async function recoSave(m,body){const row={user_id:ME.id,work_key:m.k,title:String(m.t||"").slice(0,200),year:String(m.y||"").slice(0,4)||null,poster:okPoster(m.p),anime:!!m.a,body};
+await sb("/rest/v1/recommendations?on_conflict=user_id,work_key",{method:"POST",headers:{Prefer:"resolution=merge-duplicates,return=minimal"},body:row});
+const old=MYRC[m.k];MYRC[m.k]={work_key:m.k,body,hidden:!!(old&&old.hidden),title:row.title,year:row.year,poster:row.poster,anime:row.anime,updated_at:new Date().toISOString()};RROWS=null}
+function fillReco(W,ok){const el=$("reco");if(!el)return;
+RC={m:{k:W.k,t:W.title,y:yr(W),p:W.poster_path||"",a:W.anime?1:0},ok,show:5,draft:null};renderReco1()}
+async function renderReco1(){const c=RC,el=$("reco");if(!c||!el)return;const my=++rTok,alive=()=>my===rTok&&RC===c&&(!c.ok||c.ok())&&$("reco");
+const draft=$("rcb")?$("rcb").value:c.draft;
+try{const k=c.m.k,[st,rv]=await Promise.all([sb("/rest/v1/reco_stats?select=n&work_key=eq."+k),sb("/rest/v1/recommendations?select=user_id,body,updated_at,profiles(nickname,avatar)&work_key=eq."+k+"&order=updated_at.desc&limit="+(c.show+1))]);
+if(!alive())return;const n=(st&&st[0]&&st[0].n)||0,mine=MYRC[k],list=(rv||[]).slice(0,c.show),more=(rv||[]).length>c.show;
+c.draft=draft;const txt=draft!=null?draft:(mine&&mine.body)||"";
+el.innerHTML=`<p class="cm-sum">${n?`<b>${n} ${n>1?"persone lo consigliano":"persona lo consiglia"}</b>`:'<span class="kd">Nessuno l\'ha ancora consigliato: sii il primo!</span>'}</p>`+
+(ME?`<div class="cm-me">${mine&&mine.hidden?'<p class="err">Il tuo consiglio è stato nascosto agli altri dopo alcune segnalazioni.</p>':""}<label class="fl" for="rcb">${mine?"Il tuo consiglio":"Perché lo consigli? Da 10 a 500 caratteri, lo vedranno tutti."}</label><textarea id="rcb" maxlength="500" rows="3" placeholder="Scrivi in poche parole perché vale la pena vederlo.">${esc(txt)}</textarea><div class="dact"><button class="go dgo" type="button" data-recsave>${mine?"Aggiorna il consiglio":"Consiglia alla community"}</button>${mine?'<button class="link" type="button" data-recdel>Ritira il mio consiglio</button>':""}</div><p id="rmsg" class="kd" role="status"></p></div>`
+:`<div class="cm-me"><button class="go dgo alt" type="button" data-authopen>Accedi per consigliarlo</button></div>`)+
+(list.length?`<ul class="rv">${list.map(r=>`<li>${avt(r.profiles&&r.profiles.nickname,r.profiles&&r.profiles.avatar,30)}<div><div><b>${esc((r.profiles&&r.profiles.nickname)||"utente")}</b> <span class="kd">${fmtRv(r.updated_at)}</span>${ME&&r.user_id===ME.id?"":` <button class="link rep" type="button" data-rrep="${esc(r.user_id)}">Segnala</button> <button class="link rep" type="button" data-blk="${esc(r.user_id)}" data-bn="${esc((r.profiles&&r.profiles.nickname)||"utente")}">Blocca</button>`}</div><p class="rt">${esc(r.body)}</p></div></li>`).join("")}</ul>${more?'<button class="link" type="button" data-rmore>Mostra altri consigli</button>':""}`:"")}
+catch(e){if(alive())el.innerHTML='<p class="kd">I consigli della community non sono disponibili al momento.</p>'}}
+function rrepDlg(u){if(!ME){authDlg("in","Accedi per segnalare un consiglio.");return}if(!RC)return;RC.rep=u;
+openDlg(`<h2 id="dt">Segnala un consiglio</h2><p class="ov">Dicci cosa non va. L'autore non saprà chi ha segnalato. Le segnalazioni le controlliamo noi.</p><form id="rrf" novalidate><fieldset class="rps"><legend class="kd">Motivo</legend>${[["offensivo","Offensivo, insulti o odio"],["spam","Spam o pubblicità"],["nome_foto","Nome o foto inappropriati"],["altro","Altro"]].map((x,i)=>`<label class="fl ckb"><input type="radio" name="reason" value="${x[0]}"${i?"":" checked"}><span>${x[1]}</span></label>`).join("")}</fieldset><label class="fl">Nota (facoltativa, max 300 caratteri)<textarea name="note" class="rpn" maxlength="300" rows="3"></textarea></label><p id="amsg" class="err" role="alert"></p><button class="go dgo" type="submit">Invia segnalazione</button> <button class="link" type="button" data-repback style="margin-left:12px">Annulla</button></form>`,null,true)}
+$("dlg").addEventListener("submit",async e=>{if(e.target.id!=="rrf")return;e.preventDefault();const f=e.target;if(busy||!ME||!RC)return;busy=true;const b=f.querySelector("[type=submit]");b.disabled=true;
+try{await sb("/rest/v1/reco_reports",{method:"POST",headers:{Prefer:"return=minimal"},body:{reporter_id:ME.id,reco_user_id:RC.rep,work_key:RC.m.k,reason:f.elements.reason.value,note:f.elements.note.value.trim()||null}});toast("Grazie: la segnalazione è stata inviata.");openDetail(RC.m.k,null,true)}
+catch(x){const a=$("amsg");if(a)a.textContent=x.status===409?(/duplicate/i.test(x.message)?"Hai già segnalato questo consiglio.":"Questo consiglio non esiste più."):aerr(x)}finally{busy=false;b.disabled=false}});
+// ---- pagina «Consigliati dalla community» ----
+function showReco(){lastFocus=document.activeElement;closeDlg();show("reco");$("res").innerHTML="";setMsg("");sugKill();renderReco();window.scrollTo(0,0)}
+$("recobtn").addEventListener("click",showReco);
+function drawReco(){const el=$("recoview");if(!el)return;
+const head=`<h2 style="margin-top:10px">Consiglia un film alla community</h2><p class="ov">Hai visto qualcosa che vale la pena? Cerca il titolo, aprine la scheda e scrivi perché lo consigli. Qui sotto trovi i titoli più consigliati dalla community, divisi per categoria.</p><button class="go dgo" type="button" data-recsearch>Cerca un titolo da consigliare</button><div class="seg" role="group" aria-label="Categoria">${[["all","Tutto"],["movie","Film"],["tv","Serie TV"],["anime","Anime"]].map(([k,l])=>`<button type="button" data-rf="${k}" aria-pressed="${RF===k}">${l}</button>`).join("")}</div>`;
+if(RROWS===null){el.innerHTML=head+'<p class="ov">Carico…</p>';return}
+if(RROWS===false){el.innerHTML=head+'<p class="ov">La sezione non è disponibile al momento. Riprova tra poco.</p>';return}
+const cats=["movie","tv","anime"].filter(c=>RF==="all"||RF===c);let any=false,h="";
+for(const c of cats){const L=RROWS.filter(x=>kindR(x)===c);if(!L.length)continue;any=true;
+h+=`<h3 class="rsec">${RK[c]} <span class="kd">· ${L.length} ${L.length>1?"titoli":"titolo"}</span></h3><div class="svg">${L.map(x=>`<article class="svc"><button class="svp" type="button" data-d="${esc(x.work_key)}" aria-label="Dettagli di ${esc(x.title)}">${x.poster?`<img src="${img(x.poster,"w342")}" alt="" loading="lazy">`:`<span class="ph">${esc(ini(x.title))}</span>`}</button><div class="svb"><button class="l" type="button" data-d="${esc(x.work_key)}">${esc(x.title)}${x.year?" ("+esc(x.year)+")":""}</button><div class="rn"><b>${x.n}</b> ${x.n>1?"persone lo consigliano":"persona lo consiglia"}</div></div></article>`).join("")}</div>`}
+el.innerHTML=head+(any?h:'<p class="ov">Nessun consiglio per ora in questa categoria: sii il primo!</p>')}
+async function renderReco(){drawReco();
+try{const rows=await sb("/rest/v1/reco_stats?select=work_key,n,title,year,poster,anime,last_at&order=n.desc,last_at.desc&limit=500");RROWS=rows||[]}catch(e){RROWS=false}
+if(!$("recoview").hidden)drawReco()}
 // ---- eventi ----
 document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)return;
 const sv=t.closest("#seenview");
@@ -929,6 +973,17 @@ const d=t.closest("[data-d]");if(d){openDetail(d.dataset.d,{x:e.clientX||innerWi
 const ub=t.closest("[data-unblk]");if(ub){try{await sb("/rest/v1/blocks?blocked_id=eq."+encodeURIComponent(ub.dataset.unblk)+"&blocker_id=eq."+encodeURIComponent(ME.id),{method:"DELETE"});BLK=BLK.filter(b=>b.id!==ub.dataset.unblk);renderProfile();toast("Utente sbloccato")}catch(x){toast(aerr(x))}return}
 if(t.closest("[data-pavatar]")){$("avf").click();return}
 if(t.closest("[data-pavrm]")){try{await patchProfile({avatar:null});ME.avatar=null;uiAcc();renderProfile();toast("Foto rimossa")}catch(x){$("amsg2").textContent=aerr(x)}return}}
+const rvw=t.closest("#recoview");
+if(rvw){const fb=t.closest("[data-rf]");if(fb){RF=fb.dataset.rf;drawReco();return}
+if(t.closest("[data-recsearch]")){goHome();$("q").focus();return}
+const d=t.closest("[data-d]");if(d){openDetail(d.dataset.d,{x:e.clientX||innerWidth/2,y:e.clientY||innerHeight/2});return}}
+const rrp=t.closest("[data-rrep]");if(rrp){rrepDlg(rrp.dataset.rrep);return}
+if(t.closest("[data-rmore]")&&RC){RC.show+=5;RC.draft=$("rcb")?$("rcb").value:null;renderReco1();return}
+if(t.closest("[data-recsave]")){if(!ME){authDlg("in","Accedi o registrati per consigliare un titolo.");return}const b=$("rcb").value.trim();
+if(b.length<10){$("rmsg").textContent="Scrivi almeno 10 caratteri: racconta perché lo consigli.";return}
+try{await recoSave(RC.m,b);RC.draft=null;await renderReco1();toast("Grazie! Il tuo consiglio è stato pubblicato.")}catch(x){$("rmsg").textContent=aerr(x)}return}
+if(t.closest("[data-recdel]")){const k=RC&&RC.m.k;if(!k||!ME)return;
+try{await sb("/rest/v1/recommendations?work_key=eq."+k+"&user_id=eq."+encodeURIComponent(ME.id),{method:"DELETE"});delete MYRC[k];RROWS=null;RC.draft=null;await renderReco1();refreshViews();toast("Consiglio ritirato")}catch(x){toast(aerr(x))}return}
 const bk=t.closest("[data-blk]");if(bk){blkDlg(bk.dataset.blk,bk.dataset.bn);return}
 const bg=t.closest("[data-blkgo]");if(bg&&COMM&&ME){bg.disabled=true;try{try{await sb("/rest/v1/blocks",{method:"POST",headers:{Prefer:"return=minimal"},body:{blocker_id:ME.id,blocked_id:COMM.blk}})}catch(x){if(x.status!==409)throw x}
 if(!BLK.some(b=>b.id===COMM.blk))BLK.push({id:COMM.blk,nick:bg.dataset.bn});toast("Utente bloccato");openDetail(COMM.m.k,null,true)}catch(x){bg.disabled=false;const a=$("amsg");if(a)a.textContent=aerr(x)}return}
@@ -939,7 +994,7 @@ const at=t.closest("[data-at]");if(at){authDlg(at.dataset.at);return}
 if(t.closest("[data-priv]")){privDlg();return}
 if(t.closest("[data-forgot]")){forgot();return}
 if(t.closest("[data-logout]")){try{await sb("/auth/v1/logout?scope=local",{method:"POST"})}catch(x){}clearSess();closeDlg();toast("Hai effettuato l'uscita.");return}
-if(t.closest("[data-delask]")){$("delbox").innerHTML=`<p class="ov"><b>Attenzione:</b> verranno eliminati per sempre account, lista dei film, voti e recensioni. Per confermare scrivi <b>ELIMINA</b>.</p><input id="delin" class="delin" autocomplete="off" aria-label="Scrivi ELIMINA per confermare"><p id="amsg" class="err" role="alert"></p><button class="go dgo" type="button" data-delgo>Elimina definitivamente</button>`;$("delin").focus();return}
+if(t.closest("[data-delask]")){$("delbox").innerHTML=`<p class="ov"><b>Attenzione:</b> verranno eliminati per sempre account, lista dei film, voti, recensioni e consigli. Per confermare scrivi <b>ELIMINA</b>.</p><input id="delin" class="delin" autocomplete="off" aria-label="Scrivi ELIMINA per confermare"><p id="amsg" class="err" role="alert"></p><button class="go dgo" type="button" data-delgo>Elimina definitivamente</button>`;$("delin").focus();return}
 if(t.closest("[data-delgo]")){if($("delin").value.trim().toUpperCase()!=="ELIMINA"){$("amsg").textContent="Scrivi ELIMINA per confermare.";return}
 try{await sb("/rest/v1/rpc/delete_my_account",{method:"POST",body:{}});clearSess();closeDlg();toast("Account eliminato.")}catch(x){$("amsg").textContent=aerr(x)}return}
 const rt=t.closest("[data-rate]");if(rt){const k=rt.dataset.k,m=metaFor(k);if(!m)return;
