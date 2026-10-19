@@ -462,8 +462,11 @@ put("ani",api("/discover/tv",{with_genres:"16",with_original_language:"ja",sort_
 put("animov",api("/discover/movie",{with_genres:"16",with_original_language:"ja",sort_by:"popularity.desc","primary_release_date.gte":dd(365),"primary_release_date.lte":dd(0)}))}
 async function loadHome(){
 setMsg("Carico le novità…");
-try{const[n0,u0]=await Promise.all([api("/movie/now_playing",{region:"IT"}),api("/movie/upcoming",{region:"IT"})]);
-const n={results:(n0.results||[]).map(x=>nw(x,"movie"))},u={results:(u0.results||[]).map(x=>nw(x,"movie"))};
+try{const pg=(path,p)=>api(path,{region:"IT",page:String(p)}).catch(()=>({results:[]}));
+const[n1,n2,n3,u1,u2]=await Promise.all([pg("/movie/now_playing",1),pg("/movie/now_playing",2),pg("/movie/now_playing",3),pg("/movie/upcoming",1),pg("/movie/upcoming",2)]);
+const dedup=a=>{const m=new Map();a.forEach(x=>m.set(x.id,x));return[...m.values()]};
+const n={results:dedup([...(n1.results||[]),...(n2.results||[]),...(n3.results||[])]).map(x=>nw(x,"movie"))},u={results:dedup([...(u1.results||[]),...(u2.results||[])]).map(x=>nw(x,"movie"))};
+if(!n.results.length&&!u.results.length)throw new Error("vuoto");
 const today=new Date().toISOString().slice(0,10);
 const now=(n.results||[]).filter(f=>f.poster_path).sort((a,b)=>(b.release_date||"").localeCompare(a.release_date||"")).slice(0,40);
 const ids=new Set(now.map(f=>f.k));
