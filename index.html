@@ -217,7 +217,7 @@ main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{disp
 .osf svg{fill:var(--acc);stroke:#b97f12}
 .cm-sum{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .cm-me{margin-top:8px}
-.cm-me textarea,.delin,.rpn{display:block;width:100%;margin-top:8px;padding:10px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--fg);font:inherit;font-size:1rem;resize:vertical}
+.cm-me textarea,#rsb,.delin,.rpn{display:block;width:100%;margin-top:8px;padding:10px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--fg);font:inherit;font-size:1rem;resize:vertical}
 .rv{margin-top:8px}.rv li{align-items:flex-start}
 .rt{margin:4px 0 0;font-size:.92rem;white-space:pre-wrap;overflow-wrap:anywhere}
 .fl{display:block;margin-top:12px;font-size:.85rem;color:var(--mut)}
@@ -316,6 +316,7 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 16px rgba(var(--cr),.28),0 6p
 .top button{min-height:36px;padding:6px 14px;font-size:.84rem;gap:6px}
 .top{margin-bottom:10px}.top .accb{max-width:55vw}
 @media(max-width:560px){.top{margin-bottom:18px}}
+.rsl{margin-top:12px;max-height:50vh;overflow:auto}.rsi{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--bd)}.rsi:last-child{border-bottom:0}.rsp{flex:none;width:44px;height:66px;border-radius:6px;overflow:hidden;background:var(--card);display:grid;place-items:center;color:var(--mut);font-weight:700;font-size:.8rem}.rsp img{width:100%;height:100%;object-fit:cover;display:block}.rst{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.rst b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rsone{margin:8px 0 12px;border-bottom:0}.rsone .rst b{white-space:normal}.go.rsb{min-height:34px;padding:6px 14px;font-size:.85rem;flex:none;margin:0}
 </style>
 </head>
 <body>
@@ -331,7 +332,7 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 16px rgba(var(--cr),.28),0 6p
 <div class="row" style="margin-top:12px"><input id="k" type="password" placeholder="Incolla qui la chiave" autocomplete="off" aria-label="Chiave TMDB"><button id="ks" class="go" type="button">Salva</button></div>
 </section>
 <div class="row"><div class="sw"><input id="q" placeholder="Cerca un film, una serie, un anime, un attore o un regista" autocomplete="off" aria-label="Cosa vuoi cercare" role="combobox" aria-expanded="false" aria-controls="sug" aria-autocomplete="list"><ul id="sug" class="sug" role="listbox" hidden></ul></div><button id="go" class="go" type="button">Cerca</button></div>
-<div id="seg" class="seg" role="group" aria-label="Cosa mostrare nella pagina principale"><button type="button" data-fl="all" aria-pressed="true">Tutto</button><button type="button" data-fl="movie" aria-pressed="false">Film</button><button type="button" data-fl="tv" aria-pressed="false">Serie TV</button><button type="button" data-fl="anime" aria-pressed="false">Anime</button><i class="brk" aria-hidden="true"></i><button type="button" id="recobtn" class="recobtn">Consiglia un film alla community</button></div>
+<div id="seg" class="seg" role="group" aria-label="Cosa mostrare nella pagina principale"><button type="button" data-fl="all" aria-pressed="true">Tutto</button><button type="button" data-fl="movie" aria-pressed="false">Film</button><button type="button" data-fl="tv" aria-pressed="false">Serie TV</button><button type="button" data-fl="anime" aria-pressed="false">Anime</button><i class="brk" aria-hidden="true"></i><button type="button" id="recobtn" class="recobtn">Consigli dalla community</button></div>
 <p id="msg" role="status" aria-live="polite"></p>
 <div id="res"></div>
 <section id="home" hidden>
@@ -1030,8 +1031,42 @@ catch(x){const a=$("amsg");if(a)a.textContent=x.status===409?(/duplicate/i.test(
 // ---- pagina «Consigliati dalla community» ----
 function showReco(){lastFocus=document.activeElement;closeDlg();show("reco");$("res").innerHTML="";setMsg("");sugKill();renderReco();window.scrollTo(0,0)}
 $("recobtn").addEventListener("click",showReco);
+// ---- finestra «Consiglia un titolo»: cerca e consiglia al volo, senza home né grafo ----
+let RS={q:"",list:[],sel:null,busy:false,err:false,tok:0,t:0};
+const rsPoster=w=>`<span class="rsp">${w.poster_path?`<img src="${img(w.poster_path,"w92")}" alt="" loading="lazy">`:`<span>${esc(ini(w.title))}</span>`}</span>`;
+function rsList(){const el=$("rsl");if(!el)return;
+if(RS.q.length<2){el.innerHTML='<p class="kd">Scrivi il titolo di un film, una serie o un anime.</p>';return}
+if(RS.busy){el.innerHTML='<p class="kd">Cerco…</p>';return}
+if(RS.err){el.innerHTML='<p class="kd">Ricerca non riuscita. Controlla internet e riprova.</p>';return}
+if(!RS.list.length){el.innerHTML='<p class="kd">Nessun risultato per «'+esc(RS.q)+'».</p>';return}
+el.innerHTML=RS.list.map(w=>`<div class="rsi">${rsPoster(w)}<div class="rst"><b>${esc(w.title)}</b><span class="kd">${kindOf(w)}${yr(w)?" · "+yr(w):""}${MYRC[w.k]?" · già consigliato da te":""}</span></div><button class="go rsb" type="button" data-rsel="${esc(w.k)}">Consiglia</button></div>`).join("")}
+function rsView(){$("dbody").innerHTML=`<h2 id="dt">Consiglia un titolo</h2><p class="ov">Cerca il titolo e consiglialo in un attimo.</p><input id="rsq" type="search" placeholder="Cerca un film, una serie, un anime…" autocomplete="off" enterkeyhint="search" aria-label="Titolo da consigliare" value="${esc(RS.q)}"><div id="rsl" class="rsl" aria-live="polite"></div>`;
+rsList();setTimeout(()=>{const q=$("rsq");if(q)q.focus()},60)}
+function openRecoSearch(){lastFocus=document.activeElement;RS={q:"",list:[],sel:null,busy:false,err:false,tok:0,t:0};
+openDlg("",null);rsView()}
+function rsSel(k){const w=RS.list.find(x=>x.k===k);if(!w)return;RS.sel=w;
+if(!ME){authDlg("in","Accedi o registrati per consigliare un titolo.");return}
+const mine=MYRC[w.k];
+$("dbody").innerHTML=`<h2 id="dt">Consiglia un titolo</h2><div class="rsi rsone">${rsPoster(w)}<div class="rst"><b>${esc(w.title)}</b><span class="kd">${kindOf(w)}${yr(w)?" · "+yr(w):""}</span></div></div><label class="fl" for="rsb">Perché lo consigli? Da 10 a 500 caratteri, lo vedranno tutti.</label><textarea id="rsb" maxlength="500" rows="4" placeholder="Scrivi in poche parole perché vale la pena vederlo.">${esc(mine?mine.body:"")}</textarea><div class="dact"><button class="go dgo" type="button" data-rssend>${mine?"Aggiorna il consiglio":"Consiglia alla community"}</button><button class="link" type="button" data-rsback>‹ Cambia titolo</button></div><p id="rsm" class="err" role="alert"></p>`;
+setTimeout(()=>{const b=$("rsb");if(b)b.focus()},60)}
+async function rsSend(btn){const w=RS.sel;if(!w||!ME||busy)return;const b=$("rsb").value.trim();
+if(b.length<10){$("rsm").textContent="Scrivi almeno 10 caratteri: racconta perché lo consigli.";return}
+busy=true;btn.disabled=true;
+try{await recoSave({k:w.k,t:w.title,y:yr(w),p:w.poster_path||"",a:w.anime?1:0},b);closeDlg();toast("Grazie! Il tuo consiglio è stato pubblicato.");if(!$("recoview").hidden)renderReco()}
+catch(x){const m=$("rsm");if(m)m.textContent=aerr(x);btn.disabled=false}finally{busy=false}}
+$("dlg").addEventListener("input",e=>{if(e.target.id!=="rsq")return;const q=e.target.value.trim();RS.q=q;clearTimeout(RS.t);const my=++RS.tok;
+if(q.length<2){RS.list=[];RS.busy=false;RS.err=false;rsList();return}
+RS.busy=true;rsList();
+RS.t=setTimeout(async()=>{try{const d=await api("/search/multi",{query:q,include_adult:"false"});if(my!==RS.tok)return;
+RS.list=(d.results||[]).filter(x=>(x.media_type==="movie"||x.media_type==="tv")&&x.poster_path).slice(0,8).map(x=>nw(x,x.media_type));RS.err=false}
+catch(err){if(my!==RS.tok)return;RS.list=[];RS.err=true}
+RS.busy=false;rsList()},350)});
+$("dlg").addEventListener("click",e=>{const t=e.target;if(!t.closest)return;
+const s=t.closest("[data-rsel]");if(s){rsSel(s.dataset.rsel);return}
+const g=t.closest("[data-rssend]");if(g){rsSend(g);return}
+if(t.closest("[data-rsback]"))rsView()});
 function drawReco(){const el=$("recoview");if(!el)return;
-const head=`<h2 style="margin-top:10px">Consiglia un film alla community</h2><p class="ov">Hai visto qualcosa che vale la pena? Cerca il titolo, aprine la scheda e scrivi perché lo consigli. Qui sotto trovi i titoli più consigliati dalla community, divisi per categoria.</p><button class="go dgo" type="button" data-recsearch>Cerca un titolo da consigliare</button><div class="seg" role="group" aria-label="Categoria">${[["all","Tutto"],["movie","Film"],["tv","Serie TV"],["anime","Anime"]].map(([k,l])=>`<button type="button" data-rf="${k}" aria-pressed="${RF===k}">${l}</button>`).join("")}</div>`;
+const head=`<h2 style="margin-top:10px">Consigli dalla community</h2><p class="ov">Hai visto qualcosa che vale la pena? Consiglialo in un attimo, oppure scopri i titoli più consigliati dalla community, divisi per categoria.</p><button class="go dgo" type="button" data-recsearch>Cerca un titolo da consigliare</button><div class="seg" role="group" aria-label="Categoria">${[["all","Tutto"],["movie","Film"],["tv","Serie TV"],["anime","Anime"]].map(([k,l])=>`<button type="button" data-rf="${k}" aria-pressed="${RF===k}">${l}</button>`).join("")}</div>`;
 if(RROWS===null){el.innerHTML=head+'<p class="ov">Carico…</p>';return}
 if(RROWS===false){el.innerHTML=head+'<p class="ov">La sezione non è disponibile al momento. Riprova tra poco.</p>';return}
 const cats=["movie","tv","anime"].filter(c=>RF==="all"||RF===c);let any=false,h="";
@@ -1055,7 +1090,7 @@ if(t.closest("[data-pavatar]")){$("avf").click();return}
 if(t.closest("[data-pavrm]")){try{await patchProfile({avatar:null});ME.avatar=null;uiAcc();renderProfile();toast("Foto rimossa")}catch(x){$("amsg2").textContent=aerr(x)}return}}
 const rvw=t.closest("#recoview");
 if(rvw){const fb=t.closest("[data-rf]");if(fb){RF=fb.dataset.rf;drawReco();return}
-if(t.closest("[data-recsearch]")){goHome();$("q").focus();return}
+if(t.closest("[data-recsearch]")){openRecoSearch();return}
 const d=t.closest("[data-d]");if(d){openDetail(d.dataset.d,{x:e.clientX||innerWidth/2,y:e.clientY||innerHeight/2});return}}
 const rrp=t.closest("[data-rrep]");if(rrp){rrepDlg(rrp.dataset.rrep);return}
 if(t.closest("[data-rmore]")&&RC){RC.show+=5;RC.draft=$("rcb")?$("rcb").value:null;renderReco1();return}
