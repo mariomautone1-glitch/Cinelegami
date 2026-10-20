@@ -380,7 +380,19 @@ const r=await fetch(u.toString(),opt);
 if(r.status===401)throw{code:PROXY?"http":"key"};
 if(r.status===429)throw{code:"rate"};
 if(!r.ok)throw{code:"http"};
-const j=await r.json();cache.set(ck,j);return j}
+const j=await r.json();
+if(!(params&&params.language))await latinTitles(path,params,j);
+cache.set(ck,j);return j}
+// titoli scritti in kanji/hangul/cirillico ecc.: se manca la traduzione italiana si usa quella inglese
+const NONLAT=/[\u0400-\u04ff\u0590-\u06ff\u0900-\u097f\u0e00-\u0e7f\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af\uff66-\uff9f]/;
+async function latinTitles(path,params,j){
+try{const bad=o=>o&&typeof o==="object"&&NONLAT.test(o.title||o.name||"")&&!/^\/(person|search\/person)/.test(path)&&o.media_type!=="person";
+if(Array.isArray(j.results)){if(!j.results.some(bad))return;
+const en=await api(path,Object.assign({},params,{language:"en-US"}));const m=new Map((en.results||[]).map(x=>[x.id,x]));
+j.results.forEach(x=>{if(!bad(x))return;const e=m.get(x.id);if(!e)return;const t=e.title||e.name||"";if(t&&!NONLAT.test(t)){if(x.title!==undefined)x.title=t;if(x.name!==undefined)x.name=t}})}
+else if(bad(j)){const en=await api(path,Object.assign({},params,{language:"en-US"}));const t=en.title||en.name||"";
+if(t&&!NONLAT.test(t)){if(j.title!==undefined)j.title=t;if(j.name!==undefined)j.name=t}}
+}catch(e){}}
 const img=(p,s)=>IMG+s+p;
 const yr=f=>(f.release_date||"").slice(0,4);
 const ST=new Set("il lo la le i gli un una di a the of and e".split(" "));
