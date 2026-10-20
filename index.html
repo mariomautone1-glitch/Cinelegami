@@ -317,6 +317,7 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 16px rgba(var(--cr),.28),0 6p
 .top{margin-bottom:10px}.top .accb{max-width:55vw}
 @media(max-width:560px){.top{margin-bottom:18px}}
 .rsl{margin-top:12px;max-height:50vh;overflow:auto}.rsi{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--bd)}.rsi:last-child{border-bottom:0}.rsp{flex:none;width:44px;height:66px;border-radius:6px;overflow:hidden;background:var(--card);display:grid;place-items:center;color:var(--mut);font-weight:700;font-size:.8rem}.rsp img{width:100%;height:100%;object-fit:cover;display:block}.rst{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.rst b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rsone{margin:8px 0 12px;border-bottom:0}.rsone .rst b{white-space:normal}.go.rsb{min-height:34px;padding:6px 14px;font-size:.85rem;flex:none;margin:0}
+.go.alt.rc{--c:#57c6a0;--c2:#3a8f72;--cr:87,198,160;color:#8fe0c2}
 </style>
 </head>
 <body>
@@ -672,7 +673,7 @@ if(!isP){
 i=`<section class="card"><div class="hd">${poster(cur.poster,cur.title,1)}<div><h2>${esc(cur.title)}</h2>${tags([kindOf(cur.w),cur.year,cur.runtime,...cur.genres])}</div></div>`+
 (cur.overview?`<p class="ov">${esc(cut(cur.overview,320))}</p>`:"")+
 `<div class="k">${cur.w.mt==="tv"?"Creata da":"Regia"}</div>${dirs.map(ch).join("")||'<span class="kd">non indicata</span>'}<div class="k">Cast principale</div>${cast.map(ch).join("")}`+
-`<div class="k">Dove vederlo</div><div id="wh" class="wh">Carico…</div><div class="k">${simLab(cur.w)}</div><div id="sim">Carico…</div><div class="k">Collegamenti</div>${tags([cur.links.length+" opere collegate"])}<div class="dact"><button class="go alt${isSeen(cur.w.k)?" on":""}" type="button" data-seenc="1">${isSeen(cur.w.k)?"✓ Visto":"Segna come visto"}</button></div></section>`}
+`<div class="k">Dove vederlo</div><div id="wh" class="wh">Carico…</div><div class="k">${simLab(cur.w)}</div><div id="sim">Carico…</div><div class="k">Collegamenti</div>${tags([cur.links.length+" opere collegate"])}<div class="dact"><button class="go alt${isSeen(cur.w.k)?" on":""}" type="button" data-seenc="1">${isSeen(cur.w.k)?"✓ Visto":"Segna come visto"}</button>${SB_ON?'<button class="go alt rc" type="button" data-recc="1">Consiglia</button>':""}</div></section>`}
 else{
 const kn=cur.known[cur.id]||[];
 i=`<section class="card p"><div class="hd">${pa(cur.person,1)}<div><h2>${esc(cur.title)}</h2>${tags([cur.year])}</div></div>${sel?"":'<div id="bio" class="ov"></div><div id="dubc"></div>'}`+
@@ -719,6 +720,7 @@ const gd=e.target.closest("[data-det]");if(gd){const r=gd.getBoundingClientRect(
 const gg=e.target.closest("[data-go]");if(gg){centre(gg.dataset.go);return}
 const skb=e.target.closest("[data-sk]");if(skb){const w=GW.get(skb.dataset.sk);if(w)toggleSeen(w);return}
 const f=e.target.closest("[data-w]"),p=e.target.closest("[data-p]"),sp=e.target.closest("[data-sp]");
+if(e.target.closest("[data-recc]")){if(cur&&cur.w)openRecoFor(Object.assign({},cur.w,{poster_path:cur.poster}));return}
 if(e.target.closest("[data-seenc]")){if(cur&&cur.w)toggleSeen(Object.assign({},cur.w,{poster_path:cur.poster}));return}
 if(f){$("res").innerHTML="";centre(f.dataset.w)}
 else if(sp){$("res").innerHTML="";centre("p"+sp.dataset.sp)}
@@ -810,7 +812,7 @@ openDlg(`<div class="dtop">${d.poster_path?`<img class="dposter" src="${img(d.po
 `<p class="ov dbio">${esc(d.overview||"Trama non disponibile.")}</p>`+`<div class="k">Dove vederlo</div><div id="whd" class="wh">Carico…</div>`+
 (com?`<p class="ov"><b>In comune con:</b> ${esc(com)}</p>`:"")+
 `<div class="k">${mt==="tv"?"Creata da":"Regia"}</div><div>${c.dirs.slice(0,3).map(x=>dpc(x,"Regista")).join("")||'<span class="kd">non indicata</span>'}</div><div class="k">Cast</div><div>${c.cast.slice(0,10).map(x=>dpc(x,"Attore")).join("")}</div>`+
-`<div class="k">${simLab(W)}</div><div id="simd">Carico…</div>`+`<div class="k">Community</div><div id="comm" class="comm">Carico…</div>`+(SB_ON?`<div class="k">Consigliato dalla community</div><div id="reco" class="comm">Carico…</div>`:"")+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button></div>`);fillWhere("whd",W,()=>my===dTok);fillSim("simd",W,()=>my===dTok,true);if(typeof fillComm==="function"){fillComm(W,()=>my===dTok);if(typeof fillReco==="function")fillReco(W,()=>my===dTok)}}
+`<div class="k">${simLab(W)}</div><div id="simd">Carico…</div>`+`<div class="k">Community</div><div id="comm" class="comm">Carico…</div>`+(SB_ON?`<div class="k">Consigliato dalla community</div><div id="reco" class="comm">Carico…</div>`:"")+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button>${SB_ON?'<button class="go dgo alt rc" type="button" data-recd="1">Consiglia</button>':""}</div>`);fillWhere("whd",W,()=>my===dTok);fillSim("simd",W,()=>my===dTok,true);if(typeof fillComm==="function"){fillComm(W,()=>my===dTok);if(typeof fillReco==="function")fillReco(W,()=>my===dTok)}}
 }catch(e){if(my===dTok){closeDlg();showErr(e)}}}
 const kindK=x=>x.a?"Anime":x[0]==="t"?"Serie TV":"Film";
 function openSeen(pt,keep){if(!keep)lastFocus=document.activeElement;dTok++;
@@ -820,6 +822,7 @@ openDlg(`<h2 id="dt">Titoli visti</h2>`+(n?`<p class="ov">${[c.f&&c.f+(c.f>1?" f
 updSeen();
 $("dlg").addEventListener("click",e=>{
 const al=e.target.closest("[data-all]");if(al){const box=$("allw");if(box){const open=box.hidden;if(open&&!box.innerHTML)box.innerHTML=dAll.map(allRow).join("");box.hidden=!open;al.setAttribute("aria-expanded",open);al.textContent=open?"Nascondi i lavori":"Vedi tutti i lavori ("+dAll.length+")";if(open)box.scrollIntoView({block:"nearest"})}return}
+const rcd=e.target.closest("[data-recd]");if(rcd&&dW){openRecoFor(dW);return}
 const sn=e.target.closest("[data-seen]");if(sn&&dW){toggleSeen(dW);const on=isSeen(dW.k);sn.classList.toggle("on",on);sn.textContent=on?"✓ Visto":"Segna come visto";return}
 const un=e.target.closest("[data-unseen]");if(un){const i=SEEN.findIndex(x=>x.k===un.dataset.unseen);if(i>=0){SEEN.splice(i,1);store.set("cl_seen",JSON.stringify(SEEN));updSeen();if(cur&&!$("film").hidden)R();openSeen(null,true)}return}
 if(e.target.closest(".dx")||e.target.classList.contains("dbk")){closeDlg();return}
@@ -1044,7 +1047,9 @@ function rsView(){$("dbody").innerHTML=`<h2 id="dt">Consiglia un titolo</h2><p c
 rsList();setTimeout(()=>{const q=$("rsq");if(q)q.focus()},60)}
 function openRecoSearch(){lastFocus=document.activeElement;RS={q:"",list:[],sel:null,busy:false,err:false,tok:0,t:0};
 openDlg("",null);rsView()}
-function rsSel(k){const w=RS.list.find(x=>x.k===k);if(!w)return;RS.sel=w;
+function rsSel(k){const w=RS.list.find(x=>x.k===k);if(w)rsPick(w)}
+function openRecoFor(w){lastFocus=document.activeElement;RS={q:"",list:[w],sel:null,busy:false,err:false,tok:0,t:0};openDlg("",null);rsPick(w)}
+function rsPick(w){RS.sel=w;
 if(!ME){authDlg("in","Accedi o registrati per consigliare un titolo.");return}
 const mine=MYRC[w.k];
 $("dbody").innerHTML=`<h2 id="dt">Consiglia un titolo</h2><div class="rsi rsone">${rsPoster(w)}<div class="rst"><b>${esc(w.title)}</b><span class="kd">${kindOf(w)}${yr(w)?" · "+yr(w):""}</span></div></div><label class="fl" for="rsb">Perché lo consigli? Da 10 a 500 caratteri, lo vedranno tutti.</label><textarea id="rsb" maxlength="500" rows="4" placeholder="Scrivi in poche parole perché vale la pena vederlo.">${esc(mine?mine.body:"")}</textarea><div class="dact"><button class="go dgo" type="button" data-rssend>${mine?"Aggiorna il consiglio":"Consiglia alla community"}</button><button class="link" type="button" data-rsback>‹ Cambia titolo</button></div><p id="rsm" class="err" role="alert"></p>`;
