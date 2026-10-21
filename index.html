@@ -500,7 +500,7 @@ people.forEach((p,i)=>{known[p.id]=cr[i]?pworks(cr[i],W.k).slice(0,12):[];
 known[p.id].slice(0,10).forEach(f=>{const e=L.get(f.k)||{f,who:[]};e.who.push(p.id);L.set(f.k,e)})});
 const rt=mt==="tv"?((d.number_of_seasons?d.number_of_seasons+(d.number_of_seasons>1?" stagioni":" stagione"):"")):(d.runtime?Math.floor(d.runtime/60)+"h "+(d.runtime%60)+"min":"");
 cur={kind:"work",id:d.id,w:W,title:W.title,year:yr(W),runtime:rt,genres:(d.genres||[]).map(g=>g.name),overview:d.overview,poster:d.poster_path,people,known,links:[...L.values()]};
-sel=null;selF=null;$("q").value=W.title;setMsg("");show("film");R(true);
+sel=null;selF=null;$("q").value="";setMsg("");show("film");R(true);
 }catch(e){if(my===tok)showErr(e)}}
 
 const DEPT={Acting:"Attore o attrice",Directing:"Regista",Writing:"Sceneggiatura",Production:"Produzione"};
@@ -522,7 +522,7 @@ const L=new Map();
 works.slice(0,12).forEach(w=>{const who=col.filter(e=>e.ws.has(w.k)).map(e=>e.x.id);L.set(w.k,{f:w,who:who.length?who:[id]})});
 const person={id,name:d.name,role:d.known_for_department==="Directing"?"Regista":"Attore",photo:d.profile_path};
 cur={kind:"person",id,w:null,title:d.name,year:DEPT[d.known_for_department]||"Persona",runtime:"",genres:[],overview:"",poster:d.profile_path,person,people,known:{[id]:works},links:[...L.values()]};
-sel=null;selF=null;$("q").value=d.name;setMsg("");show("film");R(true);
+sel=null;selF=null;$("q").value="";setMsg("");show("film");R(true);
 }catch(e){if(my===tok)showErr(e)}}
 async function ensureKnown(p){const my=cur;
 try{const cc=await api("/person/"+p.id+"/combined_credits");if(cur!==my)return;cur.known[p.id]=pworks(cc,cur.kind==="work"?cur.w.k:null).slice(0,12)}
@@ -862,6 +862,7 @@ if($("home").hidden)goHome();else renderHome()});
 const goHome=()=>{closeDlg();show("home");if(!$("now").innerHTML)loadHome();window.scrollTo(0,0)};$("homebtn").addEventListener("click",goHome);document.querySelector(".mark").addEventListener("click",goHome);
 $("go").addEventListener("click",cerca);
 $("q").addEventListener("keydown",e=>{if(e.key==="Enter")cerca()});
+$("q").addEventListener("focus",()=>{if($("q").value.trim().length>=2)$("q").dispatchEvent(new Event("input"))});
 function saveKey(){const v=$("k").value.trim();if(!v)return;KEY=v;store.set("cl_tmdb_key",v);$("k").value="";$("keybox").hidden=true;cache.clear();setMsg("");if(cur)centre(cur.kind==="person"?"p"+cur.id:cur.w.k);else{show("home");loadHome()}}
 $("ks").addEventListener("click",saveKey);
 $("k").addEventListener("keydown",e=>{if(e.key==="Enter")saveKey()});
@@ -921,7 +922,7 @@ openDlg(`<h2 id="dt">${up?"Crea il tuo account":"Accedi"}</h2><div class="seg" s
 function privDlg(){lastFocus=lastFocus||document.activeElement;
 openDlg(`<h2 id="dt">Privacy</h2><p class="ov"><b>Che dati raccogliamo.</b> Solo se crei un account: email, password (conservata in forma cifrata, nessuno può leggerla), nickname, i titoli che segni come visti (la lista «I miei film»), i tuoi voti, le tue recensioni e i titoli che consigli alla community.</p><p class="ov"><b>Cosa è pubblico.</b> Nickname, voti, testo delle recensioni e consigli. L'email e la lista «I miei film» sono private: li vedi solo tu.</p><p class="ov"><b>A cosa servono.</b> Solo per far funzionare account, lista dei film e recensioni. Non vendiamo né cediamo i dati e non facciamo pubblicità.</p><p class="ov"><b>Dove sono.</b> I dati sono conservati da Supabase, con connessione cifrata. Le regole di accesso sono applicate direttamente dal database.</p><p class="ov"><b>I tuoi diritti.</b> Puoi eliminare in qualsiasi momento account, lista dei film, recensioni e consigli dalla finestra «Il tuo account».${CONTACT?" Per altre richieste scrivi a "+esc(CONTACT)+".":""}</p><p class="ov"><b>Senza account</b> la lista «I miei film» resta solo nel tuo dispositivo e non lo riceviamo.</p><p class="ov"><a href="privacy.html" target="_blank" rel="noopener">Leggi l'informativa completa</a></p><button class="go dgo alt" type="button" data-authopen>Indietro</button>`)}
 function accDlg(msg){lastFocus=document.activeElement;
-openDlg(`<h2 id="dt">Il tuo account</h2><p class="ov"><b>${esc(ME.nick)}</b><br><span class="kd">${esc(ME.email)}</span></p>${msg?`<p class="ov">${esc(msg)}</p>`:""}<div class="dact"><button class="go dgo" type="button" data-logout>Esci</button><button class="go dgo alt" type="button" data-delask>Elimina account</button></div><div id="delbox"></div>`)}
+openDlg(`<h2 id="dt">Il tuo account</h2><p class="ov"><b>${esc(ME.nick)}</b><br><span class="kd">${esc(ME.email)}</span></p>${msg?`<p class="ov">${esc(msg)}</p>`:""}<div class="dact"><button class="go dgo alt" type="button" data-chpw>Cambia password</button><button class="go dgo alt" type="button" data-chpw>Cambia password</button><button class="go dgo" type="button" data-logout>Esci</button><button class="go dgo alt" type="button" data-delask>Elimina account</button></div><div id="delbox"></div>`)}
 function newPwDlg(){lastFocus=document.activeElement;
 openDlg(`<h2 id="dt">Scegli una nuova password</h2><form id="rf" novalidate><label class="fl">Nuova password (almeno 8 caratteri)<input name="pw" type="password" autocomplete="new-password" maxlength="72" required></label><p id="amsg" class="err" role="alert"></p><button class="go dgo" type="submit">Salva password</button></form>`)}
 async function loadMe(){try{const u=await sb("/auth/v1/user");const p=await sb("/rest/v1/profiles?select=nickname,avatar&id=eq."+encodeURIComponent(u.id));
@@ -1002,7 +1003,7 @@ el.innerHTML=`<div class="phd">${avt(ME.nick,ME.avatar,88)}<div><h2 style="margi
 <form id="nf" novalidate><label class="fl">Nome utente (3-20 caratteri: lettere, numeri, . _ -)<input name="nick" value="${esc(ME.nick)}" maxlength="20" autocomplete="nickname"></label><p id="nmsg" class="err" role="alert"></p><button class="go dgo" type="submit">Salva nome</button></form>
 <h3 style="margin:26px 0 4px">I miei voti e recensioni</h3>${nv?`<p class="kd">${nv} ${nv>1?"voti":"voto"} · ${nr} ${nr===1?"recensione":"recensioni"} · media ${av} su 5</p><ul class="rv mine">${L.map(r=>`<li>${poster(r.poster,r.title)}<div><button class="l" type="button" data-d="${r.work_key}">${esc(r.title)}${r.year?" ("+esc(r.year)+")":""}</button><div>${oscRO(r.rating,1)} <span class="kd">${fmtRv(r.updated_at)}</span></div>${r.hidden?'<p class="kd">⚠ Nascosta agli altri dopo alcune segnalazioni.</p>':""}${r.body?`<p class="rt">${esc(r.body)}</p>`:""}</div></li>`).join("")}</ul>`:'<p class="ov">Non hai ancora dato nessun voto. Apri un titolo da «I miei film» e assegna le tue statuette.</p>'}
 ${BLK.length?`<h3 style="margin:26px 0 4px">Utenti bloccati</h3><ul class="rv">${BLK.map(b=>`<li><span style="flex:1">${esc(b.nick)}</span><button class="link" type="button" data-unblk="${esc(b.id)}" aria-label="Sblocca ${esc(b.nick)}">Sblocca</button></li>`).join("")}</ul>`:""}<p class="kd" style="margin-top:12px">Nome, foto, voti, recensioni e consigli sono pubblici. Email e lista dei film sono private.</p>
-<div class="dact" style="margin-top:18px"><button class="go dgo" type="button" data-logout>Esci</button><button class="go dgo alt" type="button" data-delask>Elimina account</button></div><div id="delbox"></div>`}
+<div class="dact" style="margin-top:18px"><button class="go dgo alt" type="button" data-chpw>Cambia password</button><button class="go dgo" type="button" data-logout>Esci</button><button class="go dgo alt" type="button" data-delask>Elimina account</button></div><div id="delbox"></div>`}
 function repDlg(u){if(!ME){authDlg("in","Accedi per segnalare una recensione.");return}if(!COMM)return;COMM.rep=u;
 openDlg(`<h2 id="dt">Segnala una recensione</h2><p class="ov">Dicci cosa non va. L'autore non saprà chi ha segnalato. Le segnalazioni le controlliamo noi.</p><form id="rpf" novalidate><fieldset class="rps"><legend class="kd">Motivo</legend>${[["offensivo","Offensiva, insulti o odio"],["spam","Spam o pubblicità"],["nome_foto","Nome o foto inappropriati"],["altro","Altro"]].map((x,i)=>`<label class="fl ckb"><input type="radio" name="reason" value="${x[0]}"${i?"":" checked"}><span>${x[1]}</span></label>`).join("")}</fieldset><label class="fl">Nota (facoltativa, max 300 caratteri)<textarea name="note" class="rpn" maxlength="300" rows="3"></textarea></label><p id="amsg" class="err" role="alert"></p><button class="go dgo" type="submit">Invia segnalazione</button> <button class="link" type="button" data-repback style="margin-left:12px">Annulla</button></form>`,null,true)}
 function blkDlg(u,n){if(!ME){authDlg("in","Accedi per bloccare un utente.");return}if(!COMM)return;COMM.blk=u;
@@ -1118,6 +1119,7 @@ const ao=t.closest("[data-authopen]");if(ao){authDlg("in");return}
 const at=t.closest("[data-at]");if(at){authDlg(at.dataset.at);return}
 if(t.closest("[data-priv]")){privDlg();return}
 if(t.closest("[data-forgot]")){forgot();return}
+if(t.closest("[data-chpw]")){newPwDlg();return}
 if(t.closest("[data-logout]")){try{await sb("/auth/v1/logout?scope=local",{method:"POST"})}catch(x){}clearSess();closeDlg();toast("Hai effettuato l'uscita.");return}
 if(t.closest("[data-delask]")){$("delbox").innerHTML=`<p class="ov"><b>Attenzione:</b> verranno eliminati per sempre account, lista dei film, voti, recensioni e consigli. Per confermare scrivi <b>ELIMINA</b>.</p><input id="delin" class="delin" autocomplete="off" aria-label="Scrivi ELIMINA per confermare"><p id="amsg" class="err" role="alert"></p><button class="go dgo" type="button" data-delgo>Elimina definitivamente</button>`;$("delin").focus();return}
 if(t.closest("[data-delgo]")){if($("delin").value.trim().toUpperCase()!=="ELIMINA"){$("amsg").textContent="Scrivi ELIMINA per confermare.";return}
