@@ -12,6 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="CineLegami">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://image.tmdb.org; connect-src 'self' https://cinelegami.mariomautone1.workers.dev https://api.themoviedb.org https://*.supabase.co https://www.wikidata.org https://it.wikipedia.org; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<link rel="preconnect" href="https://cinelegami.mariomautone1.workers.dev" crossorigin>
+<link rel="preconnect" href="https://image.tmdb.org" crossorigin>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>CineLegami – i collegamenti tra film, serie, anime, registi e attori</title>
 <link rel="canonical" href="https://cinelegami.it/">
@@ -318,6 +320,8 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 16px rgba(var(--cr),.28),0 6p
 @media(max-width:560px){.top{margin-bottom:18px}}
 .rsl{margin-top:12px;max-height:50vh;overflow:auto}.rsi{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--bd)}.rsi:last-child{border-bottom:0}.rsp{flex:none;width:44px;height:66px;border-radius:6px;overflow:hidden;background:var(--card);display:grid;place-items:center;color:var(--mut);font-weight:700;font-size:.8rem}.rsp img{width:100%;height:100%;object-fit:cover;display:block}.rst{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.rst b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rsone{margin:8px 0 12px;border-bottom:0}.rsone .rst b{white-space:normal}.go.rsb{min-height:34px;padding:6px 14px;font-size:.85rem;flex:none;margin:0}
 .go.alt.rc{--c:#57c6a0;--c2:#3a8f72;--cr:87,198,160;color:#8fe0c2}
+body.dlgopen .recobtn{animation:none}
+@media(hover:none){.recobtn{animation:none!important}}
 </style>
 </head>
 <body>
@@ -383,7 +387,7 @@ if(r.status===401)throw{code:PROXY?"http":"key"};
 if(r.status===429)throw{code:"rate"};
 if(!r.ok)throw{code:"http"};
 const j=await r.json();
-if(!(params&&params.language))await latinTitles(path,params,j);
+if(!(params&&params.language))await Promise.race([latinTitles(path,params,j),new Promise(r=>setTimeout(r,1200))]);
 cache.set(ck,j);return j}
 // titoli scritti in kanji/hangul/cirillico ecc.: se manca la traduzione italiana si usa quella inglese
 const NONLAT=/[\u0400-\u04ff\u0590-\u06ff\u0900-\u097f\u0e00-\u0e7f\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af\uff66-\uff9f]/;
