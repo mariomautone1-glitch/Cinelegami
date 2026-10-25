@@ -207,16 +207,6 @@ body.dlgopen{overflow:hidden}
 .lg:focus-visible .logo{filter:drop-shadow(0 0 10px rgba(242,180,71,.7))}
 .mark{cursor:pointer;display:none;width:min(44vw,190px);height:auto;margin:0 auto 4px}
 main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{display:block}
-.os{display:inline-flex;flex-direction:row-reverse;vertical-align:middle;gap:1px;--oh:26px}
-.os.big{--oh:36px;gap:3px}.os.sm{--oh:15px}
-.os svg{display:block;min-width:0;max-width:none;height:var(--oh);width:calc(var(--oh)*.4545);fill:none;stroke:#6f695f;stroke-width:1.5;stroke-linejoin:round}
-.os button{background:none;border:0;padding:2px;margin:0;cursor:pointer;line-height:0;border-radius:6px}
-.os button.on svg,.os.rw button:hover svg,.os.rw button:hover~button svg{fill:var(--acc);stroke:#b97f12}
-.os.rw button:focus-visible{outline:2px solid var(--hl)}
-.os.ro{flex-direction:row}
-.os1{position:relative;display:inline-block}
-.osf{position:absolute;left:0;top:0;bottom:0;overflow:hidden}
-.osf svg{fill:var(--acc);stroke:#b97f12}
 .cm-sum{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .cm-me{margin-top:8px}
 .cm-me textarea,#rsb,.delin,.rpn{display:block;width:100%;margin-top:8px;padding:10px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--fg);font:inherit;font-size:1rem;resize:vertical}
@@ -237,7 +227,6 @@ main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{disp
 .toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--card);border:1px solid var(--hl);color:var(--fg);padding:10px 18px;border-radius:999px;font-size:.9rem;opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:90vw}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 #seenview[hidden]{display:none}
-@media(max-width:700px){.os.big{--oh:32px}}
 .av{width:var(--s,28px);height:var(--s,28px);border-radius:50%;object-fit:cover;vertical-align:middle;display:inline-grid;place-items:center;flex:none}
 .av.ph{background:var(--dir);color:#121014;font-weight:700;font-size:calc(var(--s,28px)*.5)}
 .accb .av{margin:-3px 4px -3px -8px}
@@ -322,6 +311,21 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 16px rgba(var(--cr),.28),0 6p
 .go.alt.rc{--c:#57c6a0;--c2:#3a8f72;--cr:87,198,160;color:#8fe0c2}
 body.dlgopen .recobtn{animation:none}
 @media(hover:none){.recobtn{animation:none!important}}
+.pr{--v:0;display:flex;align-items:center;gap:12px;max-width:380px;padding:6px 0;touch-action:pan-y;-webkit-user-select:none;user-select:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pr.ro{cursor:default;display:inline-flex;vertical-align:middle;width:150px;padding:0;gap:8px}
+.pr .prt{position:relative;flex:1;height:12px;margin:0 13px 0 13px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--bd);transition:border-color .25s}
+.pr .prf{position:absolute;left:0;top:-1px;bottom:-1px;width:calc(var(--v)*1%);border-radius:999px;background:linear-gradient(90deg,#c9821a,var(--acc));box-shadow:0 0 14px rgba(242,180,71,.45);transition:width .45s cubic-bezier(.2,.9,.25,1.1)}
+.pr .prf::after{content:"";position:absolute;right:-13px;top:50%;width:26px;height:26px;margin-top:-13px;background:#fff3d6;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21zM12.00 4.50a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2zM17.14 8.23a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2zM15.17 14.27a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2zM8.83 14.27a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2zM6.86 8.23a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2zM12 10.4a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21zM12.00 4.50a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2zM17.14 8.23a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2zM15.17 14.27a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2zM8.83 14.27a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2zM6.86 8.23a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2zM12 10.4a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2z'/%3E%3C/svg%3E") center/contain no-repeat;filter:drop-shadow(0 0 6px rgba(242,180,71,.6));transform:rotate(calc(var(--v)*7.2deg));transition:transform .45s cubic-bezier(.2,.9,.25,1.1),background .2s}
+.pr .prn{flex:none;min-width:3.1em;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;color:var(--acc)}
+.pr[data-v=""] .prn{color:var(--mut);font-weight:500}
+.pr[data-v=""]:not(.live) .prf::after{background:#8b8478;filter:none}
+.pr.rw:hover .prt,.pr.live .prt,.pr.rw:focus-visible .prt{border-color:var(--acc)}
+.pr.live .prf,.pr.live .prf::after{transition-duration:.07s}
+.pr.live .prn{color:var(--hl)}
+.pr:focus-visible{outline:2px solid var(--hl);outline-offset:3px;border-radius:10px}
+.pr.big .prt{height:16px}.pr.big .prf::after{width:32px;height:32px;margin-top:-16px;right:-16px}.pr.big .prt{margin:0 16px}.pr.big .prn{font-size:1.15rem}
+.pr.sm .prt{height:7px;margin:0 9px}.pr.sm .prf::after{width:17px;height:17px;margin-top:-8.5px;right:-9px}.pr.sm .prn{min-width:2.8em;font-size:.82rem}
+@media(prefers-reduced-motion:reduce){.pr .prf,.pr .prf::after{transition:none}}
 </style>
 </head>
 <body>
@@ -362,7 +366,6 @@ body.dlgopen .recobtn{animation:none}
 <p class="note">Dati e immagini: TMDB. Disponibilità in streaming: JustWatch. This product uses the TMDB API but is not endorsed or certified by TMDB. <button id="chg" class="link" type="button">Cambia chiave</button> <button class="link" type="button" data-priv id="privl">Privacy</button> <a href="info.html">Info</a></p>
 <p class="note copy">Copyright © 2026 Mario Mautone – Tutti i diritti riservati</p>
 </main>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="osc" viewBox="0 0 20 44"><circle cx="10" cy="5" r="3.4"/><path d="M6.6 9.5c1.100-1 2.200-1.400 3.400-1.400s2.300.4 3.400 1.400l.9 14.500c.1 2.700-.9 5.200-2.200 7.200l-.5 3.300H8.300l-.5-3.300c-1.300-2-2.300-4.500-2.200-7.200z"/><rect x="5" y="34.500" width="10" height="3" rx=".8"/><rect x="2.500" y="37.500" width="15" height="5.500" rx="1"/></symbol></svg>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="dlg" class="dlg" hidden><div class="dbk"></div><div class="dcard" role="dialog" aria-modal="true" aria-labelledby="dt"><button class="dx" type="button" aria-label="Chiudi">×</button><div id="dbody"></div></div></div>
 <script>
@@ -872,7 +875,7 @@ if(PROXY||KEY){show("home");loadHome()}else $("keybox").hidden=false;
 if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
 <script>
-// ===== Account, visti con voto a Oscar e recensioni (servizio Supabase) =====
+// ===== Account, visti con voto in percentuale e recensioni (servizio Supabase) =====
 // Compilare dopo aver creato il progetto su supabase.com (vedi GUIDA-ACCOUNT.md). Se restano vuoti, account e recensioni restano spenti.
 const SB_URL="https://ezswtznereojtyphdbfh.supabase.co",SB_KEY="sb_publishable_Wf5ItERbGV2aw1C0MzZCUA_fDZ3NruZ";
 const CONTACT="info@cinelegami.it";   // email di contatto per la privacy (facoltativa, appare nell'informativa)
@@ -928,7 +931,7 @@ openDlg(`<h2 id="dt">Scegli una nuova password</h2><form id="rf" novalidate><lab
 async function loadMe(){try{const u=await sb("/auth/v1/user");const p=await sb("/rest/v1/profiles?select=nickname,avatar&id=eq."+encodeURIComponent(u.id));
 ME={id:u.id,email:u.email,nick:(p&&p[0]&&p[0].nickname)||"utente",avatar:(p&&p[0]&&p[0].avatar)||null};uiAcc();await loadMine();await loadBlocks();await loadMyReco();await syncSeen();refreshViews()}
 catch(e){if(e.status===401||e.status===403)clearSess()}}
-async function loadMine(){MYR={};const rows=await sb("/rest/v1/reviews?select=work_key,rating,body,title,year,poster,anime,updated_at,hidden&user_id=eq."+encodeURIComponent(ME.id)+"&limit=1000");(rows||[]).forEach(r=>{MYR[r.work_key]=r})}
+async function loadMine(){MYR={};const rows=await sbS("/rest/v1/reviews?select=work_key,rating,score,body,title,year,poster,anime,updated_at,hidden&user_id=eq."+encodeURIComponent(ME.id)+"&limit=1000");(rows||[]).forEach(r=>{MYR[r.work_key]=r})}
 async function loadBlocks(){try{const r=await sb("/rest/v1/blocks?select=blocked_id,profiles(nickname)&blocker_id=eq."+encodeURIComponent(ME.id)+"&limit=500");BLK=(r||[]).map(x=>({id:x.blocked_id,nick:(x.profiles&&x.profiles.nickname)||"utente"}))}catch(e){BLK=[]}}
 async function nickFree(n){const r=await sb("/rest/v1/profiles?select=id&nickname=ilike."+encodeURIComponent(n.replace(/[\\_%]/g,"\\$&")),{auth:false});return!(r&&r.length)}
 async function submitAuth(f){const m=f.dataset.m,v=n=>(f.elements[n]?f.elements[n].value:"").trim(),em=v("email"),pw=f.elements.pw.value,out=$("amsg");
@@ -958,16 +961,41 @@ let sct=0;
 function seenChanged(){if(!ME||!CLOUD)return;clearTimeout(sct);sct=setTimeout(async()=>{try{const keys=new Set(SEEN.map(x=>x.k)),add=SEEN.filter(x=>!CLOUD.has(x.k)),del=[...CLOUD].filter(k=>!keys.has(k)&&/^[mt]\d+$/.test(k));
 if(add.length)await pushSeen(add);for(const k of del){await sb("/rest/v1/seen?work_key=eq."+k,{method:"DELETE"});CLOUD.delete(k)}}catch(e){}},400)}
 function seenHook(){seenChanged();refreshViews()}
-// ---- statuette Oscar ----
-const OS='<svg viewBox="0 0 20 44" aria-hidden="true"><use href="#osc"/></svg>';
-const oscRW=(k,v,big)=>`<span class="os rw${big?" big":""}" role="radiogroup" aria-label="Il tuo voto, da 1 a 5 Oscar">`+[5,4,3,2,1].map(n=>`<button type="button" role="radio" aria-checked="${n===v}" aria-label="${n} ${n>1?"Oscar":"Oscar"}" data-rate="${n}" data-k="${k}" class="${v&&n<=v?"on":""}">${OS}</button>`).join("")+`</span>`;
-function oscRO(v,sm){const f=Math.max(0,Math.min(5,Number(v)||0));return`<span class="os ro${sm?" sm":""}" role="img" aria-label="${f.toFixed(1).replace(".",",")} su 5 Oscar">`+[0,1,2,3,4].map(i=>`<span class="os1">${OS}<span class="osf" style="width:${Math.max(0,Math.min(1,f-i))*100}%">${OS}</span></span>`).join("")+`</span>`}
+// ---- voto in percentuale (0-100%): barra che sale al passaggio, rocchetto che gira ----
+let SCORE_OK=true;
+const noScore=p=>p.replace(/,score\b|,avg_pct\b/g,"");
+async function sbS(path,opt){if(!SCORE_OK)return sb(noScore(path),opt);try{return await sb(path,opt)}catch(e){if(e&&e.status===400){SCORE_OK=false;return sb(noScore(path),opt)}throw e}}
+const pctOf=r=>r?(r.score!=null?Number(r.score):Number(r.rating)*20):null;
+const clampP=p=>Math.max(0,Math.min(100,Math.round(Number(p)||0)));
+function pctRW(k,v,cls){const has=v!=null,p=has?clampP(v):0;return`<div class="pr rw${cls?" "+cls:""}" style="--v:${p}" data-prk="${k}" data-v="${has?p:""}" role="slider" tabindex="0" aria-label="Il tuo voto, da 0 a 100 per cento" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-valuetext="${has?p+" per cento":"nessun voto"}"><span class="prt"><span class="prf"></span></span><span class="prn">${has?p+"%":"Vota"}</span></div>`}
+function pctRO(v,sm){const p=clampP(v);return`<span class="pr ro${sm?" sm":""}" style="--v:${p}" role="img" aria-label="${p} per cento"><span class="prt"><span class="prf"></span></span><span class="prn">${p}%</span></span>`}
+const prAt=(el,e)=>{const r=el.querySelector(".prt").getBoundingClientRect();return clampP((e.clientX-r.left)/r.width*100)};
+function prShow(el,p){el.style.setProperty("--v",p);el.querySelector(".prn").textContent=p+"%";el.setAttribute("aria-valuenow",p);el.classList.add("live")}
+function prReset(el){const v=el.dataset.v;el.style.setProperty("--v",v===""?0:v);el.querySelector(".prn").textContent=v===""?"Vota":v+"%";el.setAttribute("aria-valuenow",v===""?0:v);el.classList.remove("live")}
+let PRD=null;
+document.addEventListener("pointermove",e=>{if(PRD){prShow(PRD.el,prAt(PRD.el,e));return}
+if(e.pointerType!=="mouse")return;const el=e.target.closest&&e.target.closest(".pr.rw");if(el)prShow(el,prAt(el,e))});
+document.addEventListener("pointerout",e=>{if(PRD)return;const el=e.target.closest&&e.target.closest(".pr.rw");if(el&&!el.contains(e.relatedTarget))prReset(el)});
+document.addEventListener("pointerdown",e=>{const el=e.target.closest&&e.target.closest(".pr.rw");if(!el||e.button>0)return;PRD={el,id:e.pointerId};try{el.setPointerCapture(e.pointerId)}catch(x){}prShow(el,prAt(el,e))});
+document.addEventListener("pointerup",e=>{if(!PRD)return;const{el}=PRD;PRD=null;const p=prAt(el,e);prShow(el,p);prCommit(el.dataset.prk,p,el)});
+document.addEventListener("pointercancel",()=>{if(PRD){prReset(PRD.el);PRD=null}});
+document.addEventListener("keydown",e=>{const el=e.target.closest&&e.target.closest(".pr.rw");if(!el)return;
+const cur=el.dataset.v===""?0:Number(el.dataset.v),live=el.classList.contains("live")?Number(el.getAttribute("aria-valuenow")):cur;
+const st={ArrowRight:5,ArrowUp:5,ArrowLeft:-5,ArrowDown:-5,PageUp:10,PageDown:-10}[e.key];
+if(st!==undefined){e.preventDefault();prShow(el,clampP(live+st));return}
+if(e.key==="Home"){e.preventDefault();prShow(el,0);return}if(e.key==="End"){e.preventDefault();prShow(el,100);return}
+if(e.key==="Enter"||e.key===" "){e.preventDefault();prCommit(el.dataset.prk,clampP(el.getAttribute("aria-valuenow")),el)}});
+async function prCommit(k,p,el){const m=metaFor(k);if(!m){if(el)prReset(el);return}
+if(!ME){if(el)prReset(el);authDlg("in","Accedi o registrati per dare voti e scrivere recensioni.");return}
+try{if(await rate(m,p)){if(COMM&&COMM.m.k===k&&$("comm"))renderComm();refreshViews();toast("Voto salvato: "+p+"%")}}catch(x){if(el)prReset(el);toast(aerr(x))}}
 const fmtRv=t=>{const d=new Date(t);return isNaN(d)?"":d.toLocaleDateString("it-IT",{day:"numeric",month:"short",year:"numeric"})};
 function metaFor(k){if(COMM&&COMM.m.k===k)return COMM.m;const x=SEEN.find(s=>s.k===k);return x?{k:x.k,t:x.t,y:x.y,p:x.p,a:x.a}:null}
 async function rate(m,n,body){if(!ME){authDlg("in","Accedi o registrati per dare voti e scrivere recensioni.");return false}
-const old=MYR[m.k],row={user_id:ME.id,work_key:m.k,title:String(m.t||"").slice(0,200),year:String(m.y||"").slice(0,4)||null,poster:m.p||null,anime:!!m.a,rating:n,body:body===undefined?(old?old.body:null):body};
-await sb("/rest/v1/reviews?on_conflict=user_id,work_key",{method:"POST",headers:{Prefer:"resolution=merge-duplicates,return=minimal"},body:row});
-MYR[m.k]={work_key:m.k,rating:n,body:row.body,hidden:!!(old&&old.hidden),title:row.title,year:row.year,poster:row.poster,anime:row.anime,updated_at:new Date().toISOString()};
+const old=MYR[m.k],row={user_id:ME.id,work_key:m.k,title:String(m.t||"").slice(0,200),year:String(m.y||"").slice(0,4)||null,poster:m.p||null,anime:!!m.a,rating:Math.max(1,Math.ceil(n/20)),body:body===undefined?(old?old.body:null):body};
+if(SCORE_OK)row.score=n;
+const put=()=>sb("/rest/v1/reviews?on_conflict=user_id,work_key",{method:"POST",headers:{Prefer:"resolution=merge-duplicates,return=minimal"},body:row});
+try{await put()}catch(e){if(SCORE_OK&&e&&e.status===400){SCORE_OK=false;delete row.score;await put()}else throw e}
+MYR[m.k]={work_key:m.k,rating:row.rating,score:SCORE_OK?n:null,body:row.body,hidden:!!(old&&old.hidden),title:row.title,year:row.year,poster:row.poster,anime:row.anime,updated_at:new Date().toISOString()};
 if(!isSeen(m.k)){SEEN.unshift({k:m.k,t:m.t,y:m.y||"",p:m.p||"",a:m.a?1:0,d:Date.now()});store.set("cl_seen",JSON.stringify(SEEN));updSeen();seenChanged()}
 return true}
 // ---- community nella finestra dei dettagli ----
@@ -976,20 +1004,20 @@ if(!SB_ON){el.innerHTML='<p class="kd">Voti e recensioni della community in arri
 COMM={m:{k:W.k,t:W.title,y:yr(W),p:W.poster_path||"",a:W.anime?1:0},ok,more:0,draft:null};renderComm()}
 async function renderComm(){const c=COMM,el=$("comm");if(!c||!el)return;const my=++cTok,alive=()=>my===cTok&&COMM===c&&(!c.ok||c.ok())&&$("comm");
 const draft=$("rvt")?$("rvt").value:c.draft;
-try{const k=c.m.k,[st,rv]=await Promise.all([sb("/rest/v1/work_stats?select=n,avg&work_key=eq."+k),sb("/rest/v1/reviews?select=user_id,rating,body,updated_at,profiles(nickname,avatar)&work_key=eq."+k+"&body=not.is.null&order=updated_at.desc&limit=11&offset="+c.more)]);
+try{const k=c.m.k,[st,rv]=await Promise.all([sbS("/rest/v1/work_stats?select=n,avg,avg_pct&work_key=eq."+k),sbS("/rest/v1/reviews?select=user_id,rating,score,body,updated_at,profiles(nickname,avatar)&work_key=eq."+k+"&body=not.is.null&order=updated_at.desc&limit=11&offset="+c.more)]);
 if(!alive())return;const s=st&&st[0],mine=MYR[k],list=(rv||[]).slice(0,10),more=(rv||[]).length>10;
 c.draft=draft;const txt=draft!=null?draft:(mine&&mine.body)||"";
-el.innerHTML=`<div class="cm-sum">${s&&s.n?`${oscRO(s.avg)} <b>${Number(s.avg).toFixed(1).replace(".",",")}</b> su 5 <span class="kd">· ${s.n} ${s.n>1?"voti":"voto"}</span>`:'<span class="kd">Ancora nessun voto: sii il primo!</span>'}</div>`+
-(ME?`<div class="cm-me">${mine&&mine.hidden?'<p class="err">La tua recensione è stata nascosta agli altri dopo alcune segnalazioni.</p>':""}<div class="k">Il tuo voto</div>${oscRW(k,mine?mine.rating:0,1)}<textarea id="rvt" maxlength="1500" rows="3" placeholder="Scrivi la tua recensione (facoltativa). La vedranno tutti." aria-label="La tua recensione">${esc(txt)}</textarea><div class="dact"><button class="go dgo" type="button" data-revsave>${mine&&mine.body?"Aggiorna recensione":"Pubblica recensione"}</button>${mine?'<button class="link" type="button" data-revdel>Elimina il mio voto e la recensione</button>':""}</div><p id="cmsg" class="kd" role="status"></p></div>`
+el.innerHTML=`<div class="cm-sum">${s&&s.n?`${pctRO(s.avg_pct!=null?s.avg_pct:s.avg*20)} <span class="kd">· media di ${s.n} ${s.n>1?"voti":"voto"}</span>`:'<span class="kd">Ancora nessun voto: sii il primo!</span>'}</div>`+
+(ME?`<div class="cm-me">${mine&&mine.hidden?'<p class="err">La tua recensione è stata nascosta agli altri dopo alcune segnalazioni.</p>':""}<div class="k">Il tuo voto</div>${pctRW(k,mine?pctOf(mine):null,"big")}<textarea id="rvt" maxlength="1500" rows="3" placeholder="Scrivi la tua recensione (facoltativa). La vedranno tutti." aria-label="La tua recensione">${esc(txt)}</textarea><div class="dact"><button class="go dgo" type="button" data-revsave>${mine&&mine.body?"Aggiorna recensione":"Pubblica recensione"}</button>${mine?'<button class="link" type="button" data-revdel>Elimina il mio voto e la recensione</button>':""}</div><p id="cmsg" class="kd" role="status"></p></div>`
 :`<div class="cm-me"><button class="go dgo alt" type="button" data-authopen>Accedi per votare e recensire</button></div>`)+
-(list.length?`<ul class="rv">${list.map(r=>`<li>${avt(r.profiles&&r.profiles.nickname,r.profiles&&r.profiles.avatar,30)}<div><div><b>${esc((r.profiles&&r.profiles.nickname)||"utente")}</b> ${oscRO(r.rating,1)} <span class="kd">${fmtRv(r.updated_at)}</span>${ME&&r.user_id===ME.id?"":` <button class="link rep" type="button" data-rep="${esc(r.user_id)}">Segnala</button> <button class="link rep" type="button" data-blk="${esc(r.user_id)}" data-bn="${esc((r.profiles&&r.profiles.nickname)||"utente")}">Blocca</button>`}</div><p class="rt">${esc(r.body)}</p></div></li>`).join("")}</ul>${more?'<button class="link" type="button" data-more>Mostra altre recensioni</button>':""}`:"")}
+(list.length?`<ul class="rv">${list.map(r=>`<li>${avt(r.profiles&&r.profiles.nickname,r.profiles&&r.profiles.avatar,30)}<div><div><b>${esc((r.profiles&&r.profiles.nickname)||"utente")}</b> ${pctRO(pctOf(r),1)} <span class="kd">${fmtRv(r.updated_at)}</span>${ME&&r.user_id===ME.id?"":` <button class="link rep" type="button" data-rep="${esc(r.user_id)}">Segnala</button> <button class="link rep" type="button" data-blk="${esc(r.user_id)}" data-bn="${esc((r.profiles&&r.profiles.nickname)||"utente")}">Blocca</button>`}</div><p class="rt">${esc(r.body)}</p></div></li>`).join("")}</ul>${more?'<button class="link" type="button" data-more>Mostra altre recensioni</button>':""}`:"")}
 catch(e){if(alive())el.innerHTML='<p class="kd">Recensioni non disponibili al momento.</p>'}}
 // ---- sezione «I miei visti» ----
 const kindS=x=>x.a?"Anime":x.k[0]==="t"?"Serie TV":"Film";
 function renderSeen(){const el=$("seenview"),n=SEEN.length,c={f:0,t:0,a:0};SEEN.forEach(x=>{if(x.a)c.a++;else if(x.k[0]==="t")c.t++;else c.f++});
 const rated=Object.keys(MYR).filter(k=>isSeen(k)).length;
 el.innerHTML=`<h2 style="margin-top:10px">I miei film</h2>`+
-(n?`<p class="ov">${[c.f&&c.f+" film",c.t&&c.t+" serie TV",c.a&&c.a+" anime"].filter(Boolean).join(" · ")}${ME?` · ${rated} con il tuo voto`:""}</p><div class="svg">${SEEN.map(x=>{const r=MYR[x.k];return`<article class="svc"><button class="svp" type="button" data-d="${x.k}" aria-label="Dettagli di ${esc(x.t)}">${x.p?`<img src="${img(x.p,"w342")}" alt="" loading="lazy">`:`<span class="ph">${esc(ini(x.t))}</span>`}</button><div class="svb"><button class="l" type="button" data-d="${x.k}">${esc(x.t)}${x.y?" ("+esc(x.y)+")":""}</button><div class="kd">${kindS(x)}</div>${SB_ON?oscRW(x.k,r?r.rating:0):""}${r&&r.body?`<p class="svr">${esc(r.body)}</p>`:""}<div class="sva">${SB_ON?`<button class="link" type="button" data-d="${x.k}">${r&&r.body?"Modifica recensione":"Scrivi recensione"}</button>`:"<span></span>"}<button class="svx" type="button" data-unsee="${x.k}" aria-label="Togli ${esc(x.t)} dalla tua lista">✕</button></div></div></article>`}).join("")}</div>`
+(n?`<p class="ov">${[c.f&&c.f+" film",c.t&&c.t+" serie TV",c.a&&c.a+" anime"].filter(Boolean).join(" · ")}${ME?` · ${rated} con il tuo voto`:""}</p><div class="svg">${SEEN.map(x=>{const r=MYR[x.k];return`<article class="svc"><button class="svp" type="button" data-d="${x.k}" aria-label="Dettagli di ${esc(x.t)}">${x.p?`<img src="${img(x.p,"w342")}" alt="" loading="lazy">`:`<span class="ph">${esc(ini(x.t))}</span>`}</button><div class="svb"><button class="l" type="button" data-d="${x.k}">${esc(x.t)}${x.y?" ("+esc(x.y)+")":""}</button><div class="kd">${kindS(x)}</div>${SB_ON?pctRW(x.k,r?pctOf(r):null,"sm"):""}${r&&r.body?`<p class="svr">${esc(r.body)}</p>`:""}<div class="sva">${SB_ON?`<button class="link" type="button" data-d="${x.k}">${r&&r.body?"Modifica recensione":"Scrivi recensione"}</button>`:"<span></span>"}<button class="svx" type="button" data-unsee="${x.k}" aria-label="Togli ${esc(x.t)} dalla tua lista">✕</button></div></div></article>`}).join("")}</div>`
 :`<p class="ov">Non hai ancora segnato nessun titolo. Apri un film, una serie o un anime e premi «Segna come visto»: lo ritroverai qui.</p>`)+
 (SB_ON?(ME?`<p class="kd" style="margin-top:14px">La tua lista è salvata nel tuo account e sono privati. Voti e recensioni sono pubblici con il tuo nickname.</p>`:`<p class="kd" style="margin-top:14px">L'elenco è salvato solo su questo dispositivo. <button class="link" type="button" data-authopen>Accedi o registrati</button> per sincronizzarlo, dare voti e scrivere recensioni.</p>`):`<p class="kd" style="margin-top:14px">L'elenco è salvato solo su questo dispositivo.</p>`)}
 function showSeenView(){lastFocus=document.activeElement;closeDlg();show("seen");$("res").innerHTML="";setMsg("");sugKill();renderSeen();window.scrollTo(0,0)}
@@ -998,10 +1026,10 @@ $("accb").addEventListener("click",()=>ME?showProfile():authDlg("in"));
 // ---- pagina profilo ----
 function showProfile(){lastFocus=document.activeElement;closeDlg();show("prof");$("res").innerHTML="";setMsg("");sugKill();renderProfile();window.scrollTo(0,0)}
 function renderProfile(){const el=$("profview");if(!ME){show("home");return}
-const L=Object.values(MYR).sort((a,b)=>String(b.updated_at||"").localeCompare(String(a.updated_at||""))),nv=L.length,nr=L.filter(x=>x.body).length,av=nv?(L.reduce((s,x)=>s+x.rating,0)/nv).toFixed(1).replace(".",","):"";
+const L=Object.values(MYR).sort((a,b)=>String(b.updated_at||"").localeCompare(String(a.updated_at||""))),nv=L.length,nr=L.filter(x=>x.body).length,av=nv?Math.round(L.reduce((s,x)=>s+pctOf(x),0)/nv)+"%":"";
 el.innerHTML=`<div class="phd">${avt(ME.nick,ME.avatar,88)}<div><h2 style="margin:0">${esc(ME.nick)}</h2><p class="kd" style="margin:2px 0 8px">${esc(ME.email)}</p><button class="go dgo alt" type="button" data-pavatar>${ME.avatar?"Cambia foto":"Aggiungi foto"}</button>${ME.avatar?' <button class="link" type="button" data-pavrm>Rimuovi foto</button>':""}<input id="avf" type="file" accept="image/*" hidden><p id="amsg2" class="err" role="alert"></p></div></div>
 <form id="nf" novalidate><label class="fl">Nome utente (3-20 caratteri: lettere, numeri, . _ -)<input name="nick" value="${esc(ME.nick)}" maxlength="20" autocomplete="nickname"></label><p id="nmsg" class="err" role="alert"></p><button class="go dgo" type="submit">Salva nome</button></form>
-<h3 style="margin:26px 0 4px">I miei voti e recensioni</h3>${nv?`<p class="kd">${nv} ${nv>1?"voti":"voto"} · ${nr} ${nr===1?"recensione":"recensioni"} · media ${av} su 5</p><ul class="rv mine">${L.map(r=>`<li>${poster(r.poster,r.title)}<div><button class="l" type="button" data-d="${r.work_key}">${esc(r.title)}${r.year?" ("+esc(r.year)+")":""}</button><div>${oscRO(r.rating,1)} <span class="kd">${fmtRv(r.updated_at)}</span></div>${r.hidden?'<p class="kd">⚠ Nascosta agli altri dopo alcune segnalazioni.</p>':""}${r.body?`<p class="rt">${esc(r.body)}</p>`:""}</div></li>`).join("")}</ul>`:'<p class="ov">Non hai ancora dato nessun voto. Apri un titolo da «I miei film» e assegna le tue statuette.</p>'}
+<h3 style="margin:26px 0 4px">I miei voti e recensioni</h3>${nv?`<p class="kd">${nv} ${nv>1?"voti":"voto"} · ${nr} ${nr===1?"recensione":"recensioni"} · media ${av}</p><ul class="rv mine">${L.map(r=>`<li>${poster(r.poster,r.title)}<div><button class="l" type="button" data-d="${r.work_key}">${esc(r.title)}${r.year?" ("+esc(r.year)+")":""}</button><div>${pctRO(pctOf(r),1)} <span class="kd">${fmtRv(r.updated_at)}</span></div>${r.hidden?'<p class="kd">⚠ Nascosta agli altri dopo alcune segnalazioni.</p>':""}${r.body?`<p class="rt">${esc(r.body)}</p>`:""}</div></li>`).join("")}</ul>`:'<p class="ov">Non hai ancora dato nessun voto. Apri un titolo da «I miei film» e assegna la tua percentuale.</p>'}
 ${BLK.length?`<h3 style="margin:26px 0 4px">Utenti bloccati</h3><ul class="rv">${BLK.map(b=>`<li><span style="flex:1">${esc(b.nick)}</span><button class="link" type="button" data-unblk="${esc(b.id)}" aria-label="Sblocca ${esc(b.nick)}">Sblocca</button></li>`).join("")}</ul>`:""}<p class="kd" style="margin-top:12px">Nome, foto, voti, recensioni e consigli sono pubblici. Email e lista dei film sono private.</p>
 <div class="dact" style="margin-top:18px"><button class="go dgo alt" type="button" data-chpw>Cambia password</button><button class="go dgo" type="button" data-logout>Esci</button><button class="go dgo alt" type="button" data-delask>Elimina account</button></div><div id="delbox"></div>`}
 function repDlg(u){if(!ME){authDlg("in","Accedi per segnalare una recensione.");return}if(!COMM)return;COMM.rep=u;
@@ -1091,7 +1119,7 @@ if(!$("recoview").hidden)drawReco()}
 document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)return;
 const sv=t.closest("#seenview");
 if(sv){if(t.closest("#sback")){show("home");if(!$("now").innerHTML)loadHome();return}
-const d=t.closest("[data-d]");if(d&&!t.closest("[data-rate]")){openDetail(d.dataset.d,{x:e.clientX||innerWidth/2,y:e.clientY||innerHeight/2});return}
+const d=t.closest("[data-d]");if(d&&!t.closest("[data-prk]")){openDetail(d.dataset.d,{x:e.clientX||innerWidth/2,y:e.clientY||innerHeight/2});return}
 const u=t.closest("[data-unsee]");if(u){const i=SEEN.findIndex(x=>x.k===u.dataset.unsee);if(i>=0){SEEN.splice(i,1);store.set("cl_seen",JSON.stringify(SEEN));updSeen();seenHook()}return}}
 const pv=t.closest("#profview");
 if(pv){if(t.closest("#pback")){show("home");if(!$("now").innerHTML)loadHome();return}
@@ -1124,11 +1152,8 @@ if(t.closest("[data-logout]")){try{await sb("/auth/v1/logout?scope=local",{metho
 if(t.closest("[data-delask]")){$("delbox").innerHTML=`<p class="ov"><b>Attenzione:</b> verranno eliminati per sempre account, lista dei film, voti, recensioni e consigli. Per confermare scrivi <b>ELIMINA</b>.</p><input id="delin" class="delin" autocomplete="off" aria-label="Scrivi ELIMINA per confermare"><p id="amsg" class="err" role="alert"></p><button class="go dgo" type="button" data-delgo>Elimina definitivamente</button>`;$("delin").focus();return}
 if(t.closest("[data-delgo]")){if($("delin").value.trim().toUpperCase()!=="ELIMINA"){$("amsg").textContent="Scrivi ELIMINA per confermare.";return}
 try{await sb("/rest/v1/rpc/delete_my_account",{method:"POST",body:{}});clearSess();closeDlg();toast("Account eliminato.")}catch(x){$("amsg").textContent=aerr(x)}return}
-const rt=t.closest("[data-rate]");if(rt){const k=rt.dataset.k,m=metaFor(k);if(!m)return;
-if(!ME){authDlg("in","Accedi o registrati per dare voti e scrivere recensioni.");return}
-try{if(await rate(m,Number(rt.dataset.rate))){if(COMM&&COMM.m.k===k&&$("comm"))renderComm();refreshViews();toast("Voto salvato")}}catch(x){toast(aerr(x))}return}
-if(t.closest("[data-revsave]")){const k=COMM&&COMM.m.k,mine=k&&MYR[k];if(!mine){$("cmsg").textContent="Prima scegli un voto da 1 a 5 Oscar.";return}
-const b=$("rvt").value.trim()||null;try{await rate(COMM.m,mine.rating,b);COMM.draft=null;await renderComm();toast(b?"Recensione pubblicata":"Voto salvato")}catch(x){$("cmsg").textContent=aerr(x)}return}
+if(t.closest("[data-revsave]")){const k=COMM&&COMM.m.k,mine=k&&MYR[k];if(!mine){$("cmsg").textContent="Prima scegli un voto con la barra.";return}
+const b=$("rvt").value.trim()||null;try{await rate(COMM.m,pctOf(mine),b);COMM.draft=null;await renderComm();toast(b?"Recensione pubblicata":"Voto salvato")}catch(x){$("cmsg").textContent=aerr(x)}return}
 if(t.closest("[data-revdel]")){const k=COMM&&COMM.m.k;if(!k||!ME)return;
 try{await sb("/rest/v1/reviews?work_key=eq."+k+"&user_id=eq."+encodeURIComponent(ME.id),{method:"DELETE"});delete MYR[k];COMM.draft=null;await renderComm();refreshViews();toast("Eliminata")}catch(x){toast(aerr(x))}return}
 if(t.closest("[data-more]")&&COMM){COMM.more+=10;COMM.draft=$("rvt")?$("rvt").value:null;renderComm();return}
