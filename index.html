@@ -713,15 +713,31 @@ if(p)bio(p);else if(isP)bio(cur.person);{const dp=p||(isP&&!sel?cur.person:null)
 
 let bioId=0;
 async function bio(p){bioId=p.id;
-try{let d=await api("/person/"+p.id),bEn=false;if(!d.biography){const r=await itFirst("/person/"+p.id,d,"biography");d=r.d;bEn=r.en}
+try{let d=await api("/person/"+p.id),bEn="";if(!d.biography){const r=await itFirst("/person/"+p.id,d,"biography");d=r.d;bEn=srcNote(r)}
 if(bioId!==p.id)return;const el=$("bio");if(!el)return;
 let born="";if(d.birthday){const t=new Date(d.birthday);born="Nato/a il "+(isNaN(t)?d.birthday:t.toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"}))+(d.place_of_birth?", "+d.place_of_birth:"")}
 const b=cut((d.biography||"").trim(),320);
-el.innerHTML=[born&&`<div>${esc(born)}</div>`,b&&`<div style="margin-top:6px">${esc(b)}</div>`+(bEn?ENNOTE:"")].filter(Boolean).join("")}catch(e){}}
+el.innerHTML=[born&&`<div>${esc(born)}</div>`,b&&`<div style="margin-top:6px">${esc(b)}</div>`+bEn].filter(Boolean).join("")}catch(e){}}
 
 const ENNOTE='<div class="kd" style="margin-top:4px;font-size:.78rem">Non disponibile in italiano: testo originale in inglese.</div>';
-async function itFirst(path,d0,f){if(d0[f])return{d:d0,en:false};try{const it=await api(path,{language:"it"});if(it[f])return{d:Object.assign({},d0,{[f]:it[f]}),en:false}}catch(e){}
-const en=await api(path,{language:"en-US"});return{d:Object.assign({},d0,{[f]:en[f]||""}),en:!!en[f]}}
+const WIKINOTE='<div class="kd" style="margin-top:4px;font-size:.78rem">Testo da Wikipedia in italiano (licenza CC BY-SA).</div>';
+const srcNote=r=>r.wiki?WIKINOTE:r.en?ENNOTE:"",wikiC=new Map();
+async function wikiIntro(prop,id){const key=prop+id;if(wikiC.has(key))return wikiC.get(key);let out="";
+try{const q=await wget(WD+"?action=query&list=search&format=json&origin=*&srsearch="+encodeURIComponent("haswbstatement:"+prop+"="+id));
+const qid=q.query&&q.query.search&&q.query.search[0]&&q.query.search[0].title;
+if(qid){const e=await wget(WD+"?action=wbgetentities&format=json&origin=*&props=sitelinks&sitefilter=itwiki&ids="+encodeURIComponent(qid));
+const en=e.entities&&e.entities[qid],t=en&&en.sitelinks&&en.sitelinks.itwiki&&en.sitelinks.itwiki.title;
+if(t){const r=await wget(WI+"?action=query&format=json&origin=*&redirects=1&prop=extracts&exintro=1&explaintext=1&exsectionformat=plain&titles="+encodeURIComponent(t));
+const pg=r.query&&r.query.pages,k0=pg&&Object.keys(pg)[0];let tx=String((k0&&pg[k0].extract)||"").trim().replace(/\n{3,}/g,"\n\n");
+if(tx.length>1500){const c=tx.slice(0,1500),dot=c.lastIndexOf(". ");tx=dot>600?c.slice(0,dot+1):c.trimEnd()+"…"}
+if(tx.length>=40)out=tx}}}catch(err){return null}
+wikiC.set(key,out);return out||null}
+// italiano di TMDB -> italiano generico -> Wikipedia in italiano -> inglese (con nota)
+async function itFirst(path,d0,f){if(d0[f])return{d:d0,en:false,wiki:false};
+try{const it=await api(path,{language:"it"});if(it[f])return{d:Object.assign({},d0,{[f]:it[f]}),en:false,wiki:false}}catch(e){}
+const m=path.match(/^\/(person|movie|tv)\/(\d+)/);
+if(m){const w=await wikiIntro({person:"P4985",movie:"P4947",tv:"P4983"}[m[1]],m[2]);if(w)return{d:Object.assign({},d0,{[f]:w}),en:false,wiki:true}}
+const en=await api(path,{language:"en-US"});return{d:Object.assign({},d0,{[f]:en[f]||""}),en:!!en[f],wiki:false}}
 let FILT="all",lastQ="";
 const pe=x=>({t:"p",id:x.id,name:x.name,photo:x.profile_path,dept:x.known_for_department}),we=(x,mt)=>({t:"w",w:nw(x,mt)});
 const sc=e=>e.t==="p"?`<button class="chip" data-sp="${e.id}">${pa({photo:e.photo,name:e.name,role:""})}${esc(e.name)} <span class="kd">· ${DEPT[e.dept]||"Persona"}</span></button>`:fc(e.w);
@@ -823,7 +839,7 @@ if(my!==dTok)return;
 const lines=[d.birthday&&("Nato/a il "+fmtLong(d.birthday)+(d.place_of_birth?", "+d.place_of_birth:"")),d.deathday&&("Morto/a il "+fmtLong(d.deathday))].filter(Boolean);
 dAll=allWorks(cc);const wk=pworks(cc,null).slice(0,10),here=!!cur&&cur.kind==="person"&&cur.id===pid;
 openDlg(`<div class="dtop">${d.profile_path?`<img class="dposter" src="${img(d.profile_path,"w342")}" alt="">`:`<span class="dposter ph">${esc(ini(d.name))}</span>`}<div><h2 id="dt">${esc(d.name)}</h2>${tags([DEPT[d.known_for_department]||"Persona"])}${lines.map(l=>`<p class="ov">${esc(l)}</p>`).join("")}</div></div>`+
-`<p class="ov dbio">${esc(d.biography||"Nessuna biografia disponibile.")}</p>`+(r0.en?ENNOTE:"")+`<div id="dubd"></div>`+
+`<p class="ov dbio">${esc(d.biography||"Nessuna biografia disponibile.")}</p>`+srcNote(r0)+`<div id="dubd"></div>`+
 `<div class="k">Conosciuto per</div><div>${wk.map(dwc).join("")||'<span class="kd">nessuna opera trovata</span>'}</div>`+(dAll.length>wk.length?`<button class="go dgo alt" type="button" data-all="1" aria-expanded="false">Vedi tutti i lavori (${dAll.length})</button><div id="allw" hidden></div>`:"")+
 (here?"":`<button class="go dgo" type="button" data-go="p${pid}">Scopri i legami</button>`));fillDubP("dubd",pid,()=>my===dTok)}
 else{const{mt,id}=wkey(key),base=(mt==="tv"?"/tv/":"/movie/")+id;
@@ -835,7 +851,7 @@ const len=mt==="tv"?[d.number_of_seasons?d.number_of_seasons+(d.number_of_season
 const rate=d.vote_average>0?"★ "+d.vote_average.toFixed(1)+" ("+d.vote_count+" voti)":"";
 const com=o?o.who.map(i=>(cur.people.find(x=>x.id===i)||{}).name).filter(Boolean).join(", "):"";
 openDlg(`<div class="dtop">${d.poster_path?`<img class="dposter" src="${img(d.poster_path,"w342")}" alt="">`:`<span class="dposter ph">${esc(ini(W.title))}</span>`}<div><h2 id="dt">${esc(W.title)}</h2>${tags([kindOf(W),yr(W),len,...(d.genres||[]).map(g=>g.name)])}${rate?`<p class="ov">${esc(rate)}</p>`:""}${d.tagline?`<p class="ov"><i>${esc(d.tagline)}</i></p>`:""}</div></div>`+
-`<p class="ov dbio">${esc(d.overview||"Trama non disponibile.")}</p>`+(r1.en?ENNOTE:"")+`<div class="k">Dove vederlo</div><div id="whd" class="wh">Carico…</div>`+
+`<p class="ov dbio">${esc(d.overview||"Trama non disponibile.")}</p>`+srcNote(r1)+`<div class="k">Dove vederlo</div><div id="whd" class="wh">Carico…</div>`+
 (com?`<p class="ov"><b>In comune con:</b> ${esc(com)}</p>`:"")+
 `<div class="k">${mt==="tv"?"Creata da":"Regia"}</div><div>${c.dirs.slice(0,3).map(x=>dpc(x,"Regista")).join("")||'<span class="kd">non indicata</span>'}</div><div class="k">Cast</div><div>${c.cast.slice(0,10).map(x=>dpc(x,"Attore")).join("")}</div>`+
 `<div class="k">${simLab(W)}</div><div id="simd">Carico…</div>`+`<div class="k">Community</div><div id="comm" class="comm">Carico…</div>`+(SB_ON?`<div class="k">Consigliato dalla community</div><div id="reco" class="comm">Carico…</div>`:"")+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button>${SB_ON?'<button class="go dgo alt rc" type="button" data-recd="1">Consiglia</button>':""}</div>`);fillWhere("whd",W,()=>my===dTok);fillSim("simd",W,()=>my===dTok,true);if(typeof fillComm==="function"){fillComm(W,()=>my===dTok);if(typeof fillReco==="function")fillReco(W,()=>my===dTok)}}
