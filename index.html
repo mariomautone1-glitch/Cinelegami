@@ -339,6 +339,12 @@ main{position:relative}
 .sitesw a:active{transform:scale(.94)}
 @media(max-width:480px){.sitesw a span{display:none}.sitesw a{padding:7px 9px}.sitesw a::before{width:17px;height:17px}}
 body.leaving main{opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s}
+/* ===== testi lunghi con "Mostra di più" ===== */
+.xt{margin:10px 0 0}.xt>.xp{margin:0;font-size:.92rem;line-height:1.55;white-space:pre-line;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;line-clamp:4;overflow:hidden}
+.xt>.xp.open{display:block;overflow:visible}
+.more{font:inherit;font-size:.84rem;font-weight:600;color:var(--hl);background:none;border:0;padding:6px 0 2px;cursor:pointer}.more[hidden]{display:none}
+.more:hover{text-decoration:underline}
+.dub:not(.open) li:nth-child(n+3){display:none}
 </style>
 </head>
 <body>
@@ -459,7 +465,7 @@ if(res!==undefined)dubC.set(k,res);return res}
 function fillDubP(id,pid,ok){dubOfPerson(pid).then(r=>{if(!ok())return;const el=$(id);if(!el)return;
 if(r===undefined){el.innerHTML="";return}
 const url=r?"https://it.wikipedia.org/wiki/"+encodeURIComponent(r.title.replace(/ /g,"_"))+"#Doppiatori_italiani":"";
-el.innerHTML=`<div class="k">Doppiatori italiani</div>`+(r&&r.list.length?`<ul class="dub">${r.list.map(x=>`<li><b>${esc(x.n)}</b>${x.w?` <span class="kd">· ${esc(cut(x.w,110))}</span>`:""}</li>`).join("")}</ul><p class="kd">Fonte: <a href="${url}" target="_blank" rel="noopener noreferrer">Wikipedia</a> (licenza CC BY-SA)</p>`:'<p class="kd">Doppiatori italiani non trovati su Wikipedia per questa persona.</p>')}).catch(()=>{})}
+el.innerHTML=`<div class="k">Doppiatori italiani</div>`+(r&&r.list.length?`<ul class="dub">${r.list.map(x=>`<li><b>${esc(x.n)}</b>${x.w?` <span class="kd">· ${esc(cut(x.w,110))}</span>`:""}</li>`).join("")}</ul>${r.list.length>2?`<button type="button" class="more" data-more="d">Mostra tutti (${r.list.length})</button>`:""}<p class="kd">Fonte: <a href="${url}" target="_blank" rel="noopener noreferrer">Wikipedia</a> (licenza CC BY-SA)</p>`:'<p class="kd">Doppiatori italiani non trovati su Wikipedia per questa persona.</p>')}).catch(()=>{})}
 const simC=new Map();
 async function similarOf(w){if(simC.has(w.k))return simC.get(w.k);const b="/"+w.mt+"/"+w.id;let r=[];
 for(const e of["/recommendations","/similar"]){try{const d=await api(b+e);r=(d.results||[]).map(x=>nw(x,w.mt)).filter(x=>x.poster_path&&x.k!==w.k)}catch(err){r=[]}if(r.length>=4)break}
@@ -481,6 +487,13 @@ if(SEEN.length>2000)SEEN.length=2000;
 store.set("cl_seen",JSON.stringify(SEEN));updSeen();if(cur&&!$("film").hidden)R();if(typeof seenHook==="function")seenHook()}
 const fc=f=>`<button class="chip" data-w="${f.k}">${ckm(f.k)}${f.poster_path?`<img class="po" src="${img(f.poster_path,"w92")}" alt="">`:""}${esc(f.title)}${yr(f)?" ("+yr(f)+")":""} <span class="kd">· ${kindOf(f)}</span></button>`;
 const poster=(path,t,big)=>path?`<img class="fa${big?" big":""}" src="${img(path,big?"w185":"w92")}" alt="">`:`<span class="fa${big?" big":""}">${esc(ini(t))}</span>`;
+const xtx=t=>`<div class="xt"><p class="xp">${esc(t)}</p><button type="button" class="more" data-more="t" hidden>Mostra di più</button></div>`;
+function xtScan(){document.querySelectorAll(".more[data-more]:not([data-s])").forEach(b=>{const p=b.previousElementSibling;if(!p)return;
+if(b.dataset.more==="t"){if(!p.clientHeight)return;b.hidden=!(p.classList.contains("open")||p.scrollHeight>p.clientHeight+1)}b.dataset.s="1"})}
+let xtT=0;new MutationObserver(()=>{cancelAnimationFrame(xtT);xtT=requestAnimationFrame(xtScan)}).observe(document.body,{childList:true,subtree:true});
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".more[data-more]");if(!b)return;const p=b.previousElementSibling;if(!p)return;
+const o=p.classList.toggle("open");b.textContent=o?"Mostra meno":(b.dataset.more==="d"?"Mostra tutti":"Mostra di più")});
+addEventListener("resize",()=>document.querySelectorAll(".more[data-more=t][data-s]").forEach(b=>delete b.dataset.s));
 const cut=(s,n)=>s&&s.length>n?s.slice(0,n).replace(/\s+\S*$/,"")+"…":(s||"");
 
 function showErr(e){
@@ -693,7 +706,7 @@ const dirs=P.filter(isDir),cast=P.filter(p=>!isDir(p));
 let i;
 if(!isP){
 i=`<section class="card"><div class="hd">${poster(cur.poster,cur.title,1)}<div><h2>${esc(cur.title)}</h2>${tags([kindOf(cur.w),cur.year,cur.runtime,...cur.genres])}</div></div>`+
-(cur.overview?`<p class="ov">${esc(cut(cur.overview,320))}</p>`:"")+
+(cur.overview?xtx(cur.overview):"")+
 `<div class="k">${cur.w.mt==="tv"?"Creata da":"Regia"}</div>${dirs.map(ch).join("")||'<span class="kd">non indicata</span>'}<div class="k">Cast principale</div>${cast.map(ch).join("")}`+
 `<div class="k">Dove vederlo</div><div id="wh" class="wh">Carico…</div><div class="k">${simLab(cur.w)}</div><div id="sim">Carico…</div><div class="k">Collegamenti</div>${tags([cur.links.length+" opere collegate"])}<div class="dact"><button class="go alt${isSeen(cur.w.k)?" on":""}" type="button" data-seenc="1">${isSeen(cur.w.k)?"✓ Visto":"Segna come visto"}</button>${SB_ON?'<button class="go alt rc" type="button" data-recc="1">Consiglia</button>':""}</div></section>`}
 else{
@@ -716,8 +729,8 @@ async function bio(p){bioId=p.id;
 try{let d=await api("/person/"+p.id),bEn="";if(!d.biography){const r=await itFirst("/person/"+p.id,d,"biography");d=r.d;bEn=srcNote(r)}
 if(bioId!==p.id)return;const el=$("bio");if(!el)return;
 let born="";if(d.birthday){const t=new Date(d.birthday);born="Nato/a il "+(isNaN(t)?d.birthday:t.toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"}))+(d.place_of_birth?", "+d.place_of_birth:"")}
-const b=cut((d.biography||"").trim(),320);
-el.innerHTML=[born&&`<div>${esc(born)}</div>`,b&&`<div style="margin-top:6px">${esc(b)}</div>`+bEn].filter(Boolean).join("")}catch(e){}}
+const b=(d.biography||"").trim();
+el.innerHTML=[born&&`<div>${esc(born)}</div>`,b&&xtx(b)+bEn].filter(Boolean).join("")}catch(e){}}
 
 const ENNOTE='<div class="kd" style="margin-top:4px;font-size:.78rem">Non disponibile in italiano: testo originale in inglese.</div>';
 const WIKINOTE='<div class="kd" style="margin-top:4px;font-size:.78rem">Testo da Wikipedia in italiano (licenza CC BY-SA).</div>';
@@ -729,7 +742,7 @@ if(qid){const e=await wget(WD+"?action=wbgetentities&format=json&origin=*&props=
 const en=e.entities&&e.entities[qid],t=en&&en.sitelinks&&en.sitelinks.itwiki&&en.sitelinks.itwiki.title;
 if(t){const r=await wget(WI+"?action=query&format=json&origin=*&redirects=1&prop=extracts&exintro=1&explaintext=1&exsectionformat=plain&titles="+encodeURIComponent(t));
 const pg=r.query&&r.query.pages,k0=pg&&Object.keys(pg)[0];let tx=String((k0&&pg[k0].extract)||"").trim().replace(/\n{3,}/g,"\n\n");
-if(tx.length>1500){const c=tx.slice(0,1500),dot=c.lastIndexOf(". ");tx=dot>600?c.slice(0,dot+1):c.trimEnd()+"…"}
+if(tx.length>4000){const c=tx.slice(0,4000),dot=c.lastIndexOf(". ");tx=dot>1500?c.slice(0,dot+1):c.trimEnd()+"…"}
 if(tx.length>=40)out=tx}}}catch(err){return null}
 wikiC.set(key,out);return out||null}
 // italiano di TMDB -> italiano generico -> Wikipedia in italiano -> inglese (con nota)
@@ -839,7 +852,7 @@ if(my!==dTok)return;
 const lines=[d.birthday&&("Nato/a il "+fmtLong(d.birthday)+(d.place_of_birth?", "+d.place_of_birth:"")),d.deathday&&("Morto/a il "+fmtLong(d.deathday))].filter(Boolean);
 dAll=allWorks(cc);const wk=pworks(cc,null).slice(0,10),here=!!cur&&cur.kind==="person"&&cur.id===pid;
 openDlg(`<div class="dtop">${d.profile_path?`<img class="dposter" src="${img(d.profile_path,"w342")}" alt="">`:`<span class="dposter ph">${esc(ini(d.name))}</span>`}<div><h2 id="dt">${esc(d.name)}</h2>${tags([DEPT[d.known_for_department]||"Persona"])}${lines.map(l=>`<p class="ov">${esc(l)}</p>`).join("")}</div></div>`+
-`<p class="ov dbio">${esc(d.biography||"Nessuna biografia disponibile.")}</p>`+srcNote(r0)+`<div id="dubd"></div>`+
+xtx(d.biography||"Nessuna biografia disponibile.")+srcNote(r0)+`<div id="dubd"></div>`+
 `<div class="k">Conosciuto per</div><div>${wk.map(dwc).join("")||'<span class="kd">nessuna opera trovata</span>'}</div>`+(dAll.length>wk.length?`<button class="go dgo alt" type="button" data-all="1" aria-expanded="false">Vedi tutti i lavori (${dAll.length})</button><div id="allw" hidden></div>`:"")+
 (here?"":`<button class="go dgo" type="button" data-go="p${pid}">Scopri i legami</button>`));fillDubP("dubd",pid,()=>my===dTok)}
 else{const{mt,id}=wkey(key),base=(mt==="tv"?"/tv/":"/movie/")+id;
@@ -851,7 +864,7 @@ const len=mt==="tv"?[d.number_of_seasons?d.number_of_seasons+(d.number_of_season
 const rate=d.vote_average>0?"★ "+d.vote_average.toFixed(1)+" ("+d.vote_count+" voti)":"";
 const com=o?o.who.map(i=>(cur.people.find(x=>x.id===i)||{}).name).filter(Boolean).join(", "):"";
 openDlg(`<div class="dtop">${d.poster_path?`<img class="dposter" src="${img(d.poster_path,"w342")}" alt="">`:`<span class="dposter ph">${esc(ini(W.title))}</span>`}<div><h2 id="dt">${esc(W.title)}</h2>${tags([kindOf(W),yr(W),len,...(d.genres||[]).map(g=>g.name)])}${rate?`<p class="ov">${esc(rate)}</p>`:""}${d.tagline?`<p class="ov"><i>${esc(d.tagline)}</i></p>`:""}</div></div>`+
-`<p class="ov dbio">${esc(d.overview||"Trama non disponibile.")}</p>`+srcNote(r1)+`<div class="k">Dove vederlo</div><div id="whd" class="wh">Carico…</div>`+
+xtx(d.overview||"Trama non disponibile.")+srcNote(r1)+`<div class="k">Dove vederlo</div><div id="whd" class="wh">Carico…</div>`+
 (com?`<p class="ov"><b>In comune con:</b> ${esc(com)}</p>`:"")+
 `<div class="k">${mt==="tv"?"Creata da":"Regia"}</div><div>${c.dirs.slice(0,3).map(x=>dpc(x,"Regista")).join("")||'<span class="kd">non indicata</span>'}</div><div class="k">Cast</div><div>${c.cast.slice(0,10).map(x=>dpc(x,"Attore")).join("")}</div>`+
 `<div class="k">${simLab(W)}</div><div id="simd">Carico…</div>`+`<div class="k">Community</div><div id="comm" class="comm">Carico…</div>`+(SB_ON?`<div class="k">Consigliato dalla community</div><div id="reco" class="comm">Carico…</div>`:"")+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button>${SB_ON?'<button class="go dgo alt rc" type="button" data-recd="1">Consiglia</button>':""}</div>`);fillWhere("whd",W,()=>my===dTok);fillSim("simd",W,()=>my===dTok,true);if(typeof fillComm==="function"){fillComm(W,()=>my===dTok);if(typeof fillReco==="function")fillReco(W,()=>my===dTok)}}
