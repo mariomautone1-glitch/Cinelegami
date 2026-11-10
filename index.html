@@ -945,6 +945,7 @@ let rP=null;
 function refreshSess(){if(!SESS)return Promise.resolve();if(rP)return rP;
 rP=(async()=>{try{const j=await sb("/auth/v1/token?grant_type=refresh_token",{method:"POST",auth:false,body:{refresh_token:SESS.rt}});setSess(j)}catch(e){if(e.status>=400&&e.status<500)clearSess()}finally{rP=null}})();return rP}
 function setSess(j){SESS={at:j.access_token,rt:j.refresh_token,exp:j.expires_at||nowS()+(j.expires_in||3600)};store.set("cl_sess",JSON.stringify(SESS))}
+function wipeSeen(){SEEN=[];CLOUD=null;store.del("cl_seen");store.del("cl_owner");updSeen()}
 function clearSess(){SESS=null;ME=null;MYR={};MYRC={};BLK=[];CLOUD=null;store.del("cl_sess");uiAcc();refreshViews()}
 function aerr(e){const m=String(e&&e.message||"").toLowerCase(),s=e&&e.status;
 if(e instanceof TypeError)return"Connessione non riuscita. Controlla internet e riprova.";
@@ -976,7 +977,7 @@ openDlg(`<h2 id="dt">Il tuo account</h2><p class="ov"><b>${esc(ME.nick)}</b><br>
 function newPwDlg(){lastFocus=document.activeElement;
 openDlg(`<h2 id="dt">Scegli una nuova password</h2><form id="rf" novalidate><label class="fl">Nuova password (almeno 8 caratteri)<input name="pw" type="password" autocomplete="new-password" maxlength="72" required></label><p id="amsg" class="err" role="alert"></p><button class="go dgo" type="submit">Salva password</button></form>`)}
 async function loadMe(){try{const u=await sb("/auth/v1/user");const p=await sb("/rest/v1/profiles?select=nickname,avatar&id=eq."+encodeURIComponent(u.id));
-ME={id:u.id,email:u.email,nick:(p&&p[0]&&p[0].nickname)||"utente",avatar:(p&&p[0]&&p[0].avatar)||null};uiAcc();await loadMine();await loadBlocks();await loadMyReco();await syncSeen();refreshViews()}
+ME={id:u.id,email:u.email,nick:(p&&p[0]&&p[0].nickname)||"utente",avatar:(p&&p[0]&&p[0].avatar)||null};{const ow=store.get("cl_owner");if(ow&&ow!==u.id){SEEN=[];store.del("cl_seen")}store.set("cl_owner",u.id)}uiAcc();await loadMine();await loadBlocks();await loadMyReco();await syncSeen();refreshViews()}
 catch(e){if(e.status===401||e.status===403)clearSess()}}
 async function loadMine(){MYR={};const rows=await sbS("/rest/v1/reviews?select=work_key,rating,score,body,title,year,poster,anime,updated_at,hidden&user_id=eq."+encodeURIComponent(ME.id)+"&limit=1000");(rows||[]).forEach(r=>{MYR[r.work_key]=r})}
 async function loadBlocks(){try{const r=await sb("/rest/v1/blocks?select=blocked_id,profiles(nickname)&blocker_id=eq."+encodeURIComponent(ME.id)+"&limit=500");BLK=(r||[]).map(x=>({id:x.blocked_id,nick:(x.profiles&&x.profiles.nickname)||"utente"}))}catch(e){BLK=[]}}
@@ -1195,10 +1196,10 @@ const at=t.closest("[data-at]");if(at){authDlg(at.dataset.at);return}
 if(t.closest("[data-priv]")){privDlg();return}
 if(t.closest("[data-forgot]")){forgot();return}
 if(t.closest("[data-chpw]")){newPwDlg();return}
-if(t.closest("[data-logout]")){try{await sb("/auth/v1/logout?scope=local",{method:"POST"})}catch(x){}clearSess();closeDlg();toast("Hai effettuato l'uscita.");return}
+if(t.closest("[data-logout]")){try{await sb("/auth/v1/logout?scope=local",{method:"POST"})}catch(x){}clearSess();wipeSeen();closeDlg();toast("Hai effettuato l'uscita.");return}
 if(t.closest("[data-delask]")){$("delbox").innerHTML=`<p class="ov"><b>Attenzione:</b> verranno eliminati per sempre account, lista dei film, voti, recensioni e consigli. Per confermare scrivi <b>ELIMINA</b>.</p><input id="delin" class="delin" autocomplete="off" aria-label="Scrivi ELIMINA per confermare"><p id="amsg" class="err" role="alert"></p><button class="go dgo" type="button" data-delgo>Elimina definitivamente</button>`;$("delin").focus();return}
 if(t.closest("[data-delgo]")){if($("delin").value.trim().toUpperCase()!=="ELIMINA"){$("amsg").textContent="Scrivi ELIMINA per confermare.";return}
-try{await sb("/rest/v1/rpc/delete_my_account",{method:"POST",body:{}});clearSess();closeDlg();toast("Account eliminato.")}catch(x){$("amsg").textContent=aerr(x)}return}
+try{await sb("/rest/v1/rpc/delete_my_account",{method:"POST",body:{}});clearSess();wipeSeen();closeDlg();toast("Account eliminato.")}catch(x){$("amsg").textContent=aerr(x)}return}
 if(t.closest("[data-revsave]")){const k=COMM&&COMM.m.k,mine=k&&MYR[k];if(!mine){$("cmsg").textContent="Prima scegli un voto con la barra.";return}
 const b=$("rvt").value.trim()||null;try{await rate(COMM.m,pctOf(mine),b);COMM.draft=null;await renderComm();toast(b?"Recensione pubblicata":"Voto salvato")}catch(x){$("cmsg").textContent=aerr(x)}return}
 if(t.closest("[data-revdel]")){const k=COMM&&COMM.m.k;if(!k||!ME)return;
