@@ -207,6 +207,7 @@ body.dlgopen{overflow:hidden}
 .lg:focus-visible .logo{filter:drop-shadow(0 0 10px rgba(242,180,71,.7))}
 .mark{cursor:pointer;display:none;width:min(44vw,190px);height:auto;margin:0 auto 4px}
 main:has(#home:not([hidden])) .mark,main:has(#seenview:not([hidden])) .mark{display:block}
+.pick{color:var(--gold,#f2b447);font-size:.82rem;white-space:nowrap}
 .cm-sum{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .cm-me{margin-top:8px}
 .cm-me textarea,#rsb,.delin,.rpn{display:block;width:100%;margin-top:8px;padding:10px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--fg);font:inherit;font-size:1rem;resize:vertical}
@@ -708,7 +709,7 @@ if(!isP){
 i=`<section class="card"><div class="hd">${poster(cur.poster,cur.title,1)}<div><h2>${esc(cur.title)}</h2>${tags([kindOf(cur.w),cur.year,cur.runtime,...cur.genres])}</div></div>`+
 (cur.overview?xtx(cur.overview):"")+
 `<div class="k">${cur.w.mt==="tv"?"Creata da":"Regia"}</div>${dirs.map(ch).join("")||'<span class="kd">non indicata</span>'}<div class="k">Cast principale</div>${cast.map(ch).join("")}`+
-`<div class="k">Dove vederlo</div><div id="wh" class="wh">Carico…</div><div class="k">${simLab(cur.w)}</div><div id="sim">Carico…</div><div class="k">Collegamenti</div>${tags([cur.links.length+" opere collegate"])}<div class="dact"><button class="go alt${isSeen(cur.w.k)?" on":""}" type="button" data-seenc="1">${isSeen(cur.w.k)?"✓ Visto":"Segna come visto"}</button>${SB_ON?'<button class="go alt rc" type="button" data-recc="1">Consiglia</button>':""}</div></section>`}
+`<div class="k">Dove vederlo</div><div id="wh" class="wh">Carico…</div><div class="k">${simLab(cur.w)}</div><div id="sim">Carico…</div><div class="k">Collegamenti</div>${tags([cur.links.length+" opere collegate"])}${SB_ON?`<div class="k">Community</div><div class="comm" data-gck="${cur.w.k}">Carico…</div>`:""}<div class="dact"><button class="go alt${isSeen(cur.w.k)?" on":""}" type="button" data-seenc="1">${isSeen(cur.w.k)?"✓ Visto":"Segna come visto"}</button></div></section>`}
 else{
 const kn=cur.known[cur.id]||[];
 i=`<section class="card p"><div class="hd">${pa(cur.person,1)}<div><h2>${esc(cur.title)}</h2>${tags([cur.year])}</div></div>${sel?"":'<div id="bio" class="ov"></div><div id="dubc"></div>'}`+
@@ -718,9 +719,10 @@ if(p){const kn=cur.known[p.id];
 i=`<section class="card p"><div class="hd">${pa(p,1)}<div><h2>${esc(p.name)}</h2>${tags([isDir(p)?"Regista":"Attore o attrice",p.char?"Interpreta "+p.char:""])}</div></div><div id="bio" class="ov"></div><div id="dubc"></div>`+
 `<div class="k">Altre opere di ${esc(p.name)}</div><div>${kn?(kn.slice(0,10).map(fc).join("")||"Nessun'altra opera trovata."):"Carico…"}</div><div class="dact"><button class="go dgo" type="button" data-det="p${p.id}">Dettagli</button><button class="go dgo alt" type="button" data-go="p${p.id}">Scopri i legami</button></div></section>`+i;
 if(!kn)ensureKnown(p)}
-if(fsel){i=`<section class="card"><div class="hd">${poster(fsel.f.poster_path,fsel.f.title,1)}<div><h2>${esc(fsel.f.title)}</h2>${tags([kindOf(fsel.f),yr(fsel.f)])}</div></div>${fsel.who.some(id=>P.find(x=>x.id===id))?`<div class="k">In comune con</div>${fsel.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}`:""}<div class="dact"><button class="go dgo" type="button" data-det="${fsel.f.k}">Dettagli</button><button class="go dgo alt" type="button" data-go="${fsel.f.k}">Scopri i legami</button><button class="go dgo alt${isSeen(fsel.f.k)?" on":""}" type="button" data-sk="${fsel.f.k}">${isSeen(fsel.f.k)?"✓ Visto":"Segna come visto"}</button>${SB_ON?`<button class="go dgo alt rc" type="button" data-recf="${fsel.f.k}">Consiglia</button>`:""}</div></section>`+i}
+if(fsel){i=`<section class="card"><div class="hd">${poster(fsel.f.poster_path,fsel.f.title,1)}<div><h2>${esc(fsel.f.title)}</h2>${tags([kindOf(fsel.f),yr(fsel.f)])}</div></div>${fsel.who.some(id=>P.find(x=>x.id===id))?`<div class="k">In comune con</div>${fsel.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}`:""}${SB_ON?`<div class="k">Community</div><div class="comm" data-gck="${fsel.f.k}">Carico…</div>`:""}<div class="dact"><button class="go dgo" type="button" data-det="${fsel.f.k}">Dettagli</button><button class="go dgo alt" type="button" data-go="${fsel.f.k}">Scopri i legami</button><button class="go dgo alt${isSeen(fsel.f.k)?" on":""}" type="button" data-sk="${fsel.f.k}">${isSeen(fsel.f.k)?"✓ Visto":"Segna come visto"}</button></div></section>`+i}
 $("info").innerHTML=i;
 if(!isP&&$("wh")){const ck=cur;fillWhere("wh",cur.w,()=>cur===ck);fillSim("sim",cur.w,()=>cur===ck,false)}
+if(typeof fillGc==="function")document.querySelectorAll("#info [data-gck]").forEach(el=>fillGc(el))
 $("p").innerHTML=`<h2>${isP?"Opere di ":"Collegamenti di "}${esc(cur.title)}</h2><ul>`+L.slice(0,24).map(o=>`<li>${poster(o.f.poster_path,o.f.title)}<div><button class="l" data-w="${o.f.k}">${esc(o.f.title)}${yr(o.f)?" ("+yr(o.f)+")":""}</button> <span class="kd">${kindOf(o.f)}</span><div>${o.who.map(id=>{const q=P.find(x=>x.id===id);return q?ch(q):""}).join("")}</div></div></li>`).join("")+"</ul>";
 if(p)bio(p);else if(isP)bio(cur.person);{const dp=p||(isP&&!sel?cur.person:null);if(dp&&$("dubc")){const ck2=cur,sk2=sel;fillDubP("dubc",dp.id,()=>cur===ck2&&sel===sk2)}}}
 
@@ -867,7 +869,7 @@ openDlg(`<div class="dtop">${d.poster_path?`<img class="dposter" src="${img(d.po
 xtx(d.overview||"Trama non disponibile.")+srcNote(r1)+`<div class="k">Dove vederlo</div><div id="whd" class="wh">Carico…</div>`+
 (com?`<p class="ov"><b>In comune con:</b> ${esc(com)}</p>`:"")+
 `<div class="k">${mt==="tv"?"Creata da":"Regia"}</div><div>${c.dirs.slice(0,3).map(x=>dpc(x,"Regista")).join("")||'<span class="kd">non indicata</span>'}</div><div class="k">Cast</div><div>${c.cast.slice(0,10).map(x=>dpc(x,"Attore")).join("")}</div>`+
-`<div class="k">${simLab(W)}</div><div id="simd">Carico…</div>`+`<div class="k">Community</div><div id="comm" class="comm">Carico…</div>`+(SB_ON?`<div class="k">Consigliato dalla community</div><div id="reco" class="comm">Carico…</div>`:"")+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button>${SB_ON?'<button class="go dgo alt rc" type="button" data-recd="1">Consiglia</button>':""}</div>`);fillWhere("whd",W,()=>my===dTok);fillSim("simd",W,()=>my===dTok,true);if(typeof fillComm==="function"){fillComm(W,()=>my===dTok);if(typeof fillReco==="function")fillReco(W,()=>my===dTok)}}
+`<div class="k">${simLab(W)}</div><div id="simd">Carico…</div>`+`<div class="k">Community</div><div id="comm" class="comm">Carico…</div>`+`<div class="dact">${here?"":`<button class="go dgo" type="button" data-go="${key}">Scopri i legami</button>`}<button class="go dgo alt${isSeen(key)?" on":""}" type="button" data-seen="${key}">${isSeen(key)?"✓ Visto":"Segna come visto"}</button></div>`);fillWhere("whd",W,()=>my===dTok);fillSim("simd",W,()=>my===dTok,true);if(typeof fillComm==="function"){fillComm(W,()=>my===dTok)}}
 }catch(e){if(my===dTok){closeDlg();showErr(e)}}}
 const kindK=x=>x.a?"Anime":x[0]==="t"?"Serie TV":"Film";
 function openSeen(pt,keep){if(!keep)lastFocus=document.activeElement;dTok++;
@@ -927,6 +929,7 @@ if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventLi
 const SB_URL="https://ezswtznereojtyphdbfh.supabase.co",SB_KEY="sb_publishable_Wf5ItERbGV2aw1C0MzZCUA_fDZ3NruZ";
 const CONTACT="info@cinelegami.it";   // email di contatto per la privacy (facoltativa, appare nell'informativa)
 const SB_ON=!!(SB_URL&&SB_KEY);
+const PICK_MIN=60;
 let SESS=null,ME=null,MYR={},MYRC={},BLK=[],CLOUD=null,COMM=null,RC=null,cTok=0,rTok=0,tT=0,busy=false;
 try{SESS=JSON.parse(store.get("cl_sess")||"null")}catch(e){}
 if(SESS&&!(SESS.at&&SESS.rt))SESS=null;
@@ -977,7 +980,7 @@ openDlg(`<h2 id="dt">Il tuo account</h2><p class="ov"><b>${esc(ME.nick)}</b><br>
 function newPwDlg(){lastFocus=document.activeElement;
 openDlg(`<h2 id="dt">Scegli una nuova password</h2><form id="rf" novalidate><label class="fl">Nuova password (almeno 8 caratteri)<input name="pw" type="password" autocomplete="new-password" maxlength="72" required></label><p id="amsg" class="err" role="alert"></p><button class="go dgo" type="submit">Salva password</button></form>`)}
 async function loadMe(){try{const u=await sb("/auth/v1/user");const p=await sb("/rest/v1/profiles?select=nickname,avatar&id=eq."+encodeURIComponent(u.id));
-ME={id:u.id,email:u.email,nick:(p&&p[0]&&p[0].nickname)||"utente",avatar:(p&&p[0]&&p[0].avatar)||null};{const ow=store.get("cl_owner");if(ow&&ow!==u.id){SEEN=[];store.del("cl_seen")}store.set("cl_owner",u.id)}uiAcc();await loadMine();await loadBlocks();await loadMyReco();await syncSeen();refreshViews()}
+ME={id:u.id,email:u.email,nick:(p&&p[0]&&p[0].nickname)||"utente",avatar:(p&&p[0]&&p[0].avatar)||null};{const ow=store.get("cl_owner");if(ow&&ow!==u.id){SEEN=[];store.del("cl_seen")}store.set("cl_owner",u.id)}uiAcc();await loadMine();await loadBlocks();await syncSeen();refreshViews()}
 catch(e){if(e.status===401||e.status===403)clearSess()}}
 async function loadMine(){MYR={};const rows=await sbS("/rest/v1/reviews?select=work_key,rating,score,body,title,year,poster,anime,updated_at,hidden&user_id=eq."+encodeURIComponent(ME.id)+"&limit=1000");(rows||[]).forEach(r=>{MYR[r.work_key]=r})}
 async function loadBlocks(){try{const r=await sb("/rest/v1/blocks?select=blocked_id,profiles(nickname)&blocker_id=eq."+encodeURIComponent(ME.id)+"&limit=500");BLK=(r||[]).map(x=>({id:x.blocked_id,nick:(x.profiles&&x.profiles.nickname)||"utente"}))}catch(e){BLK=[]}}
@@ -1055,11 +1058,20 @@ const draft=$("rvt")?$("rvt").value:c.draft;
 try{const k=c.m.k,[st,rv]=await Promise.all([sbS("/rest/v1/work_stats?select=n,avg,avg_pct&work_key=eq."+k),sbS("/rest/v1/reviews?select=user_id,rating,score,body,updated_at,profiles(nickname,avatar)&work_key=eq."+k+"&body=not.is.null&order=updated_at.desc&limit=11&offset="+c.more)]);
 if(!alive())return;const s=st&&st[0],mine=MYR[k],list=(rv||[]).slice(0,10),more=(rv||[]).length>10;
 c.draft=draft;const txt=draft!=null?draft:(mine&&mine.body)||"";
-el.innerHTML=`<div class="cm-sum">${s&&s.n?`${pctRO(s.avg_pct!=null?s.avg_pct:s.avg*20)} <span class="kd">· media di ${s.n} ${s.n>1?"voti":"voto"}</span>`:'<span class="kd">Ancora nessun voto: sii il primo!</span>'}</div>`+
+el.innerHTML=`<div class="cm-sum">${s&&s.n?`${pctRO(s.avg_pct!=null?s.avg_pct:s.avg*20)} <span class="kd">· media di ${s.n} ${s.n>1?"voti":"voto"}</span>${(s.avg_pct!=null?s.avg_pct:s.avg*20)>=PICK_MIN?' <b class="pick">★ Consigliato dalla community</b>':""}`:'<span class="kd">Ancora nessun voto: sii il primo!</span>'}</div>`+
 (ME?`<div class="cm-me">${mine&&mine.hidden?'<p class="err">La tua recensione è stata nascosta agli altri dopo alcune segnalazioni.</p>':""}<div class="k">Il tuo voto</div>${pctRW(k,mine?pctOf(mine):null,"big")}<textarea id="rvt" maxlength="1500" rows="3" placeholder="Scrivi la tua recensione (facoltativa). La vedranno tutti." aria-label="La tua recensione">${esc(txt)}</textarea><div class="dact"><button class="go dgo" type="button" data-revsave>${mine&&mine.body?"Aggiorna recensione":"Pubblica recensione"}</button>${mine?'<button class="link" type="button" data-revdel>Elimina il mio voto e la recensione</button>':""}</div><p id="cmsg" class="kd" role="status"></p></div>`
 :`<div class="cm-me"><button class="go dgo alt" type="button" data-authopen>Accedi per votare e recensire</button></div>`)+
 (list.length?`<ul class="rv">${list.map(r=>`<li>${avt(r.profiles&&r.profiles.nickname,r.profiles&&r.profiles.avatar,30)}<div><div><b>${esc((r.profiles&&r.profiles.nickname)||"utente")}</b> ${pctRO(pctOf(r),1)} <span class="kd">${fmtRv(r.updated_at)}</span>${ME&&r.user_id===ME.id?"":` <button class="link rep" type="button" data-rep="${esc(r.user_id)}">Segnala</button> <button class="link rep" type="button" data-blk="${esc(r.user_id)}" data-bn="${esc((r.profiles&&r.profiles.nickname)||"utente")}">Blocca</button>`}</div><p class="rt">${esc(r.body)}</p></div></li>`).join("")}</ul>${more?'<button class="link" type="button" data-more>Mostra altre recensioni</button>':""}`:"")}
 catch(e){if(alive())el.innerHTML='<p class="kd">Recensioni non disponibili al momento.</p>'}}
+
+// ---- voti e recensioni dentro le schede del grafo (sempre visibili, anche se il titolo non è tra i tuoi visti) ----
+async function fillGc(el){const k=el.dataset.gck;if(!k)return;
+try{const[st,rv]=await Promise.all([sbS("/rest/v1/work_stats?select=n,avg,avg_pct&work_key=eq."+k),sbS("/rest/v1/reviews?select=user_id,rating,score,body,updated_at,profiles(nickname,avatar)&work_key=eq."+k+"&body=not.is.null&order=updated_at.desc&limit=3")]);
+if(!el.isConnected)return;const s=st&&st[0],list=rv||[],p=s?(s.avg_pct!=null?s.avg_pct:s.avg*20):0;
+el.innerHTML=`<div class="cm-sum">${s&&s.n?`${pctRO(p)} <span class="kd">· media di ${s.n} ${s.n>1?"voti":"voto"}</span>${p>=PICK_MIN?' <b class="pick">★ Consigliato dalla community</b>':""}`:'<span class="kd">Ancora nessun voto: sii il primo!</span>'}</div>`+
+(list.length?`<ul class="rv">${list.map(r=>`<li>${avt(r.profiles&&r.profiles.nickname,r.profiles&&r.profiles.avatar,30)}<div><div><b>${esc((r.profiles&&r.profiles.nickname)||"utente")}</b> ${pctRO(pctOf(r),1)} <span class="kd">${fmtRv(r.updated_at)}</span></div><p class="rt">${esc(r.body)}</p></div></li>`).join("")}</ul>`:"")+
+`<button class="link" type="button" data-det="${esc(k)}">${list.length?"Leggi tutte le recensioni e vota":"Vota e scrivi la recensione"}</button>`}
+catch(e){if(el.isConnected)el.innerHTML='<p class="kd">Recensioni non disponibili al momento.</p>'}}
 // ---- sezione «I miei visti» ----
 const kindS=x=>x.a?"Anime":x.k[0]==="t"?"Serie TV":"Film";
 function renderSeen(){const el=$("seenview"),n=SEEN.length,c={f:0,t:0,a:0};SEEN.forEach(x=>{if(x.a)c.a++;else if(x.k[0]==="t")c.t++;else c.f++});
@@ -1153,15 +1165,15 @@ const s=t.closest("[data-rsel]");if(s){rsSel(s.dataset.rsel);return}
 const g=t.closest("[data-rssend]");if(g){rsSend(g);return}
 if(t.closest("[data-rsback]"))rsView()});
 function drawReco(){const el=$("recoview");if(!el)return;
-const head=`<h2 style="margin-top:10px">Consigli dalla community</h2><p class="ov">Hai visto qualcosa che vale la pena? Consiglialo in un attimo, oppure scopri i titoli più consigliati dalla community, divisi per categoria.</p><button class="go dgo" type="button" data-recsearch>Cerca un titolo da consigliare</button><div class="seg" role="group" aria-label="Categoria">${[["all","Tutto"],["movie","Film"],["tv","Serie TV"],["anime","Anime"]].map(([k,l])=>`<button type="button" data-rf="${k}" aria-pressed="${RF===k}">${l}</button>`).join("")}</div>`;
+const head=`<h2 style="margin-top:10px">Consigli dalla community</h2><p class="ov">I titoli che la community ha votato bene: la media dei voti è almeno del ${PICK_MIN}%. Tocca un titolo per leggere tutte le recensioni. Per far entrare un titolo qui basta votarlo e, se vuoi, scrivere una recensione.</p><div class="seg" role="group" aria-label="Categoria">${[["all","Tutto"],["movie","Film"],["tv","Serie TV"],["anime","Anime"]].map(([k,l])=>`<button type="button" data-rf="${k}" aria-pressed="${RF===k}">${l}</button>`).join("")}</div>`;
 if(RROWS===null){el.innerHTML=head+'<p class="ov">Carico…</p>';return}
 if(RROWS===false){el.innerHTML=head+'<p class="ov">La sezione non è disponibile al momento. Riprova tra poco.</p>';return}
 const cats=["movie","tv","anime"].filter(c=>RF==="all"||RF===c);let any=false,h="";
 for(const c of cats){const L=RROWS.filter(x=>kindR(x)===c);if(!L.length)continue;any=true;
-h+=`<h3 class="rsec">${RK[c]} <span class="kd">· ${L.length} ${L.length>1?"titoli":"titolo"}</span></h3><div class="svg">${L.map(x=>`<article class="svc"><button class="svp" type="button" data-d="${esc(x.work_key)}" aria-label="Dettagli di ${esc(x.title)}">${x.poster?`<img src="${img(x.poster,"w342")}" alt="" loading="lazy">`:`<span class="ph">${esc(ini(x.title))}</span>`}</button><div class="svb"><button class="l" type="button" data-d="${esc(x.work_key)}">${esc(x.title)}${x.year?" ("+esc(x.year)+")":""}</button><div class="rn"><b>${x.n}</b> ${x.n>1?"persone lo consigliano":"persona lo consiglia"}</div></div></article>`).join("")}</div>`}
-el.innerHTML=head+(any?h:'<p class="ov">Nessun consiglio per ora in questa categoria: sii il primo!</p>')}
+h+=`<h3 class="rsec">${RK[c]} <span class="kd">· ${L.length} ${L.length>1?"titoli":"titolo"}</span></h3><div class="svg">${L.map(x=>`<article class="svc"><button class="svp" type="button" data-d="${esc(x.work_key)}" aria-label="Dettagli di ${esc(x.title)}">${x.poster?`<img src="${img(x.poster,"w342")}" alt="" loading="lazy">`:`<span class="ph">${esc(ini(x.title))}</span>`}</button><div class="svb"><button class="l" type="button" data-d="${esc(x.work_key)}">${esc(x.title)}${x.year?" ("+esc(x.year)+")":""}</button><div class="rn">${pctRO(x.avg_pct,1)}<span class="kd"> · ${x.n} ${x.n>1?"voti":"voto"}</span></div></div></article>`).join("")}</div>`}
+el.innerHTML=head+(any?h:'<p class="ov">Ancora nessun titolo sopra il ${PICK_MIN}% in questa categoria: vota i film che hai visto!</p>')}
 async function renderReco(){drawReco();
-try{const rows=await sb("/rest/v1/reco_stats?select=work_key,n,title,year,poster,anime,last_at&order=n.desc,last_at.desc&limit=500");RROWS=rows||[]}catch(e){RROWS=false}
+try{const rows=await sbS("/rest/v1/community_picks?select=work_key,n,avg_pct,title,year,poster,anime,last_at&avg_pct=gte."+PICK_MIN+"&order=avg_pct.desc,n.desc,last_at.desc&limit=500");RROWS=rows||[]}catch(e){RROWS=false}
 if(!$("recoview").hidden)drawReco()}
 // ---- eventi ----
 document.addEventListener("click",async e=>{const t=e.target;if(!t.closest)return;
